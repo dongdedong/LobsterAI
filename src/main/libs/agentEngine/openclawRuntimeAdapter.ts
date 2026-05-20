@@ -4032,15 +4032,20 @@ export class OpenClawRuntimeAdapter extends EventEmitter implements CoworkRuntim
     if (!thinkingText) return;
 
     if (!turn.thinkingMessageId) {
-      const thinkingMessage = this.store.addMessage(sessionId, {
-        type: 'assistant',
+      const messagePayload = {
+        type: 'assistant' as const,
         content: thinkingText,
         metadata: {
           isThinking: true,
           isStreaming: true,
           isFinal: false,
         },
-      });
+      };
+      // If assistant message already exists, insert thinking BEFORE it
+      // (agent stream may deliver text before chat delta delivers thinking)
+      const thinkingMessage = turn.assistantMessageId
+        ? this.store.insertMessageBeforeId(sessionId, turn.assistantMessageId, messagePayload)
+        : this.store.addMessage(sessionId, messagePayload);
       turn.thinkingMessageId = thinkingMessage.id;
       this.emit('message', sessionId, thinkingMessage);
       return;
