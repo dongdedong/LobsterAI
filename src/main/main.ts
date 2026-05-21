@@ -77,6 +77,17 @@ import {
   DEFAULT_MANAGED_AGENT_ID,
   OpenClawChannelSessionSync,
 } from './libs/openclawChannelSessionSync';
+import {
+  classifyAppConfigChange,
+  classifyCoworkConfigChange,
+  classifyImOpenClawConfigChange,
+  classifyPluginConfigChange,
+  createStableConfigFingerprint,
+  OpenClawConfigImpact,
+  OpenClawConfigImpactReason,
+  OpenClawPluginChangeAction,
+  removeImpactDecisionReasons,
+} from './libs/openclawConfigImpact';
 import type { ResolvedMcpServer } from './libs/openclawConfigSync';
 import { buildProviderSelection, OpenClawConfigSync } from './libs/openclawConfigSync';
 import { OpenClawEngineManager, type OpenClawEngineStatus } from './libs/openclawEngineManager';
@@ -1956,6 +1967,11 @@ const activeStreamControllers = new Map<string, AbortController>();
 let lastReloadAt = 0;
 const MIN_RELOAD_INTERVAL_MS = 5000;
 type AppConfigSettings = {
+  api?: unknown;
+  app?: Record<string, unknown>;
+  model?: unknown;
+  providers?: Record<string, unknown>;
+  shortcuts?: Record<string, unknown>;
   theme?: string;
   language?: string;
   useSystemProxy?: boolean;
@@ -2167,12 +2183,25 @@ if (!gotTheLock) {
       const systemProxyChanged = getUseSystemProxyFromConfig(previousAppConfig) !==
         getUseSystemProxyFromConfig(nextAppConfig);
       refreshEndpointsTestMode(getStore());
-      const syncResult = await syncOpenClawConfig({
-        reason: 'app-config-change',
-        restartGatewayIfRunning: false,
-      });
-      if (!syncResult.success) {
-        console.error('[OpenClaw] Failed to sync config after app_config update:', syncResult.error);
+      const impactDecision = classifyAppConfigChange(previousAppConfig, value);
+      const proxyChanged = impactDecision.reasons.includes(OpenClawConfigImpactReason.AppUseSystemProxy);
+      const actionDecision = removeImpactDecisionReasons(impactDecision, [
+        OpenClawConfigImpactReason.AppUseSystemProxy,
+      ]);
+
+      if (proxyChanged && getOpenClawEngineManager().getStatus().phase === 'running') {
+        console.log('[OpenClaw] Deferred app_config sync to the system proxy watcher.');
+        return;
+      }
+
+      if (actionDecision.impact !== OpenClawConfigImpact.None) {
+        const syncResult = await syncOpenClawConfig({
+          reason: 'app-config-change',
+          restartGatewayIfRunning: actionDecision.impact === OpenClawConfigImpact.Restart,
+        });
+        if (!syncResult.success) {
+          console.error('[OpenClaw] Failed to sync config after app_config update:', syncResult.error);
+        }
       }
       if (syncResult.success && browserWebAccessChanged && !systemProxyChanged) {
         const engineStatus = getOpenClawEngineManager().getStatus();
@@ -4295,13 +4324,11 @@ if (!gotTheLock) {
 
       const nextConfig = getCoworkStore().getConfig();
 
-      const shouldSyncOpenClawConfig = normalizedExecutionMode !== undefined
-        || normalizedAgentEngine !== undefined
-        || normalizedConfig.workingDirectory !== undefined
-        || Object.values(normalizedEmbedding).some(v => v !== undefined);
-      if (shouldSyncOpenClawConfig) {
+      const impactDecision = classifyCoworkConfigChange(previousConfig, nextConfig);
+      if (impactDecision.impact !== OpenClawConfigImpact.None) {
         const syncResult = await syncOpenClawConfig({
           reason: 'cowork-config-change',
+          restartGatewayIfRunning: impactDecision.impact === OpenClawConfigImpact.Restart,
         });
         if (!syncResult.success && nextConfig.agentEngine === 'openclaw') {
           return {
@@ -4350,7 +4377,11 @@ if (!gotTheLock) {
       const result = await manager.installPlugin(params, sendLog);
       if (result.ok) {
         sendLog('Syncing gateway config...\n');
-        await syncOpenClawConfig({ reason: 'plugin-install' });
+        const impactDecision = classifyPluginConfigChange(OpenClawPluginChangeAction.Install);
+        await syncOpenClawConfig({
+          reason: 'plugin-install',
+          restartGatewayIfRunning: impactDecision.impact === OpenClawConfigImpact.Restart,
+        });
         sendLog('Gateway config synced.\n');
       }
       return result;
@@ -4365,7 +4396,11 @@ if (!gotTheLock) {
       const manager = new PluginManager(getCoworkStore());
       const result = await manager.uninstallPlugin(pluginId);
       if (result.ok) {
-        await syncOpenClawConfig({ reason: 'plugin-uninstall' });
+        const impactDecision = classifyPluginConfigChange(OpenClawPluginChangeAction.Uninstall);
+        await syncOpenClawConfig({
+          reason: 'plugin-uninstall',
+          restartGatewayIfRunning: impactDecision.impact === OpenClawConfigImpact.Restart,
+        });
       }
       return result;
     } catch (error) {
@@ -4378,7 +4413,11 @@ if (!gotTheLock) {
       const { PluginManager } = await import('./libs/pluginManager');
       const manager = new PluginManager(getCoworkStore());
       manager.setPluginEnabled(pluginId, enabled);
-      await syncOpenClawConfig({ reason: 'plugin-toggle' });
+      const impactDecision = classifyPluginConfigChange(OpenClawPluginChangeAction.Toggle);
+      await syncOpenClawConfig({
+        reason: 'plugin-toggle',
+        restartGatewayIfRunning: impactDecision.impact === OpenClawConfigImpact.Restart,
+      });
       return { ok: true };
     } catch (error) {
       return { ok: false, error: error instanceof Error ? error.message : 'Failed to toggle plugin' };
@@ -4402,7 +4441,11 @@ if (!gotTheLock) {
       const { PluginManager } = await import('./libs/pluginManager');
       const manager = new PluginManager(getCoworkStore());
       manager.savePluginConfig(pluginId, config);
-      await syncOpenClawConfig({ reason: 'plugin-config' });
+      const impactDecision = classifyPluginConfigChange(OpenClawPluginChangeAction.Config);
+      await syncOpenClawConfig({
+        reason: 'plugin-config',
+        restartGatewayIfRunning: impactDecision.impact === OpenClawConfigImpact.Restart,
+      });
       return { ok: true };
     } catch (error) {
       return { ok: false, error: error instanceof Error ? error.message : 'Failed to save plugin config' };
@@ -4498,9 +4541,9 @@ if (!gotTheLock) {
     }
   });
 
-  // Debounce + serialization for im:config:set → syncOpenClawConfig.
-  // Rapid sequential config changes (e.g. toggling 4 platforms) are coalesced
-  // into a single gateway restart instead of N restarts.
+  // Debounce + serialization for IM config sync requests.
+  // A single Settings Save can include many IM edits; they are coalesced into
+  // one OpenClaw config sync and at most one gateway restart.
   // The running/pending flags prevent concurrent sync operations from racing:
   // if a sync is in progress when new changes arrive, they are queued and
   // a follow-up sync runs after the current one completes.
@@ -4508,23 +4551,47 @@ if (!gotTheLock) {
   let imConfigSyncRunning = false;
   let imConfigSyncPending = false;
   let imConfigSyncRestartGatewayIfRunning = false;
+  let lastSyncedImOpenClawConfigFingerprint: string | null = null;
   const IM_CONFIG_SYNC_DEBOUNCE_MS = 600;
   type IMConfigSyncOptions = {
     restartGatewayIfRunning?: boolean;
   };
   type IMConfigSetOptions = IMConfigSyncOptions & {
     syncGateway?: boolean;
+    markRestartOnSave?: boolean;
+  };
+  type IMConfigSyncResult = {
+    success: boolean;
+    error?: string;
+    pending?: boolean;
+  };
+  let imConfigRestartOnNextSettingsSave = false;
+
+  const getCurrentImOpenClawConfigFingerprint = () => {
+    return createStableConfigFingerprint(getIMGatewayManager().getConfig());
   };
 
-  const doImConfigSync = async () => {
+  const ensureLastSyncedImOpenClawConfigFingerprint = (fallbackFingerprint?: string) => {
+    if (lastSyncedImOpenClawConfigFingerprint === null) {
+      lastSyncedImOpenClawConfigFingerprint = fallbackFingerprint ?? getCurrentImOpenClawConfigFingerprint();
+    }
+    return lastSyncedImOpenClawConfigFingerprint;
+  };
+
+  const doImConfigSync = async (): Promise<IMConfigSyncResult> => {
     imConfigSyncRunning = true;
     const restartGatewayIfRunning = imConfigSyncRestartGatewayIfRunning;
     imConfigSyncRestartGatewayIfRunning = false;
     try {
-      await syncOpenClawConfig({
+      const syncResult = await syncOpenClawConfig({
         reason: 'im-config-change',
         restartGatewayIfRunning,
       });
+      if (!syncResult.success) {
+        throw new Error(syncResult.error || 'OpenClaw config sync failed.');
+      }
+      lastSyncedImOpenClawConfigFingerprint = getCurrentImOpenClawConfigFingerprint();
+      imConfigRestartOnNextSettingsSave = false;
       // After config sync, ensure the runtime adapter's WebSocket client
       // is connected so channel events are received.
       if (openClawRuntimeAdapter) {
@@ -4534,8 +4601,13 @@ if (!gotTheLock) {
           console.error('[IM] Failed to connect gateway client after config sync:', connectError);
         }
       }
+      return { success: true };
     } catch (error) {
-      console.error('[IM] Debounced config sync failed:', error);
+      console.error('[IM] Config sync failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'OpenClaw config sync failed.',
+      };
     } finally {
       imConfigSyncRunning = false;
       if (imConfigSyncPending) {
@@ -4564,25 +4636,68 @@ if (!gotTheLock) {
     }, IM_CONFIG_SYNC_DEBOUNCE_MS);
   };
 
+  const runImConfigSyncNow = async (options: IMConfigSyncOptions = {}): Promise<IMConfigSyncResult> => {
+    if (options.restartGatewayIfRunning) {
+      imConfigSyncRestartGatewayIfRunning = true;
+    }
+    if (imConfigSyncTimer) {
+      clearTimeout(imConfigSyncTimer);
+      imConfigSyncTimer = null;
+    }
+    if (imConfigSyncRunning) {
+      imConfigSyncPending = true;
+      return { success: true, pending: true };
+    }
+    return await doImConfigSync();
+  };
+
+  const recordImOpenClawConfigMutation = (
+    previousFingerprint: string,
+    nextFingerprint: string,
+    options: IMConfigSetOptions = {},
+  ) => {
+    ensureLastSyncedImOpenClawConfigFingerprint(previousFingerprint);
+    if (options.markRestartOnSave) {
+      imConfigRestartOnNextSettingsSave = true;
+    }
+    const impactDecision = classifyImOpenClawConfigChange(previousFingerprint, nextFingerprint, {
+      forceRestart: options.restartGatewayIfRunning === true,
+    });
+    if (impactDecision.impact === OpenClawConfigImpact.None) {
+      return;
+    }
+
+    if (options.syncGateway) {
+      scheduleImConfigSync({
+        restartGatewayIfRunning:
+          options.restartGatewayIfRunning === true
+          || impactDecision.impact === OpenClawConfigImpact.Restart,
+      });
+    }
+  };
+
+  const mutateImOpenClawConfig = (
+    mutate: () => void,
+    options: IMConfigSetOptions = {},
+  ) => {
+    const previousFingerprint = getCurrentImOpenClawConfigFingerprint();
+    mutate();
+    const nextFingerprint = getCurrentImOpenClawConfigFingerprint();
+    recordImOpenClawConfigMutation(previousFingerprint, nextFingerprint, options);
+  };
+
   ipcMain.handle('im:config:set', async (_event, config: Partial<IMGatewayConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().setConfig(config, {
+      mutateImOpenClawConfig(() => {
+        getIMGatewayManager().setConfig(config, {
+          syncGateway: false,
+          restartGatewayIfRunning: false,
+        });
+      }, {
         syncGateway: options?.syncGateway,
         restartGatewayIfRunning: options?.restartGatewayIfRunning,
+        markRestartOnSave: options?.markRestartOnSave,
       });
-
-      // Sync OpenClaw config once for all platform changes (instead of per-platform).
-      // setConfig() already persists to DB synchronously, so syncOpenClawConfig just
-      // needs to regenerate openclaw.json and restart the gateway once.
-      // Only trigger sync when explicitly requested via syncGateway flag (e.g. from
-      // the global Save button), to avoid frequent gateway restarts on every field blur.
-      const hasOpenClawChange = config.telegram || config.discord || config.dingtalk
-        || config.feishu || config.qq || config.wecom || config.popo || config.weixin;
-      if (options?.syncGateway && hasOpenClawChange && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync({
-          restartGatewayIfRunning: options.restartGatewayIfRunning === true,
-        });
-      }
       return { success: true };
     } catch (error) {
       return {
@@ -4592,15 +4707,27 @@ if (!gotTheLock) {
     }
   });
 
-  // Explicitly trigger OpenClaw config sync + gateway restart.
-  // Called from the global Settings Save button after config fields have been
-  // persisted to DB via im:config:set (without syncGateway flag).
+  // Explicitly apply IM settings to OpenClaw.
+  // Called from the global Settings Save button after IM fields have been
+  // persisted locally without gateway sync.
   ipcMain.handle('im:config:sync', async () => {
     try {
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync({ restartGatewayIfRunning: true });
+      const nextFingerprint = getCurrentImOpenClawConfigFingerprint();
+      const previousFingerprint = ensureLastSyncedImOpenClawConfigFingerprint(nextFingerprint);
+      const impactDecision = classifyImOpenClawConfigChange(previousFingerprint, nextFingerprint, {
+        forceRestart: imConfigRestartOnNextSettingsSave,
+      });
+      if (impactDecision.impact === OpenClawConfigImpact.None) {
+        lastSyncedImOpenClawConfigFingerprint = nextFingerprint;
+        return { success: true, skipped: true };
       }
-      return { success: true };
+      const syncResult = await runImConfigSyncNow({
+        restartGatewayIfRunning: impactDecision.impact === OpenClawConfigImpact.Restart,
+      });
+      if (!syncResult.success) {
+        return { success: false, error: syncResult.error };
+      }
+      return { success: true, skipped: false };
     } catch (error) {
       return {
         success: false,
@@ -4667,7 +4794,14 @@ if (!gotTheLock) {
 
   ipcMain.handle('im:weixin:qr-login-wait', async (_event, sessionKey?: string) => {
     try {
+      const previousFingerprint = getCurrentImOpenClawConfigFingerprint();
       const result = await getIMGatewayManager().weixinQrLoginWait(sessionKey);
+      const nextFingerprint = getCurrentImOpenClawConfigFingerprint();
+      recordImOpenClawConfigMutation(previousFingerprint, nextFingerprint, {
+        syncGateway: false,
+        restartGatewayIfRunning: false,
+        markRestartOnSave: result.connected === true || result.alreadyConnected === true,
+      });
       return { success: true, ...result };
     } catch (error) {
       return { success: false, connected: false, message: error instanceof Error ? error.message : 'Weixin QR login failed' };
@@ -4712,12 +4846,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:popo:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:popo:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deletePopoInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deletePopoInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -4727,12 +4865,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:popo:instance:config:set', async (_event, instanceId: string, config: Record<string, unknown>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:popo:instance:config:set', async (_event, instanceId: string, config: Record<string, unknown>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setPopoInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setPopoInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -4912,12 +5054,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:dingtalk:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:dingtalk:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteDingTalkInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteDingTalkInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -4927,12 +5073,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:dingtalk:instance:config:set', async (_event, instanceId: string, config: Partial<DingTalkInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:dingtalk:instance:config:set', async (_event, instanceId: string, config: Partial<DingTalkInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setDingTalkInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setDingTalkInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -4962,12 +5112,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:nim:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:nim:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteNimInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteNimInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -4977,12 +5131,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:nim:instance:config:set', async (_event, instanceId: string, config: Partial<NimInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:nim:instance:config:set', async (_event, instanceId: string, config: Partial<NimInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setNimInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setNimInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5012,12 +5170,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:qq:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:qq:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteQQInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteQQInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5027,12 +5189,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:qq:instance:config:set', async (_event, instanceId: string, config: Partial<QQInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:qq:instance:config:set', async (_event, instanceId: string, config: Partial<QQInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setQQInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setQQInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5062,12 +5228,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:feishu:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:feishu:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteFeishuInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteFeishuInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5077,12 +5247,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:feishu:instance:config:set', async (_event, instanceId: string, config: Partial<FeishuInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:feishu:instance:config:set', async (_event, instanceId: string, config: Partial<FeishuInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setFeishuInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setFeishuInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5134,12 +5308,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:email:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:email:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteEmailInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteEmailInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5149,12 +5327,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:wecom:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:wecom:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteWecomInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteWecomInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5164,12 +5346,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:email:instance:config:set', async (_event, instanceId: string, config: Partial<EmailMultiInstanceConfig['instances'][number]>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:email:instance:config:set', async (_event, instanceId: string, config: Partial<EmailMultiInstanceConfig['instances'][number]>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setEmailInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setEmailInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5179,12 +5365,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:wecom:instance:config:set', async (_event, instanceId: string, config: Partial<WecomInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:wecom:instance:config:set', async (_event, instanceId: string, config: Partial<WecomInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setWecomInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setWecomInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5214,12 +5404,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:telegram:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:telegram:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteTelegramInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteTelegramInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5229,12 +5423,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:telegram:instance:config:set', async (_event, instanceId: string, config: Partial<TelegramInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:telegram:instance:config:set', async (_event, instanceId: string, config: Partial<TelegramInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setTelegramInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setTelegramInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5264,12 +5462,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:discord:instance:delete', async (_event, instanceId: string) => {
+  ipcMain.handle('im:discord:instance:delete', async (_event, instanceId: string, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().deleteDiscordInstance(instanceId);
-      if (getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().deleteDiscordInstance(instanceId),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -5279,12 +5481,16 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle('im:discord:instance:config:set', async (_event, instanceId: string, config: Partial<DiscordInstanceConfig>, options?: { syncGateway?: boolean }) => {
+  ipcMain.handle('im:discord:instance:config:set', async (_event, instanceId: string, config: Partial<DiscordInstanceConfig>, options?: IMConfigSetOptions) => {
     try {
-      getIMGatewayManager().getIMStore().setDiscordInstanceConfig(instanceId, config);
-      if (options?.syncGateway && getOpenClawEngineManager().getStatus().phase === 'running') {
-        scheduleImConfigSync();
-      }
+      mutateImOpenClawConfig(
+        () => getIMGatewayManager().getIMStore().setDiscordInstanceConfig(instanceId, config),
+        {
+          syncGateway: options?.syncGateway,
+          restartGatewayIfRunning: options?.restartGatewayIfRunning,
+          markRestartOnSave: options?.markRestartOnSave,
+        },
+      );
       return { success: true };
     } catch (error) {
       return {
@@ -7117,10 +7323,11 @@ end tell'`, { timeout: 5000 });
           if (getOpenClawEngineManager().getStatus().phase === 'running') {
             void syncOpenClawConfig({
               reason: 'system-proxy-changed',
-              restartGatewayIfRunning: false,
-            }).finally(() => {
-              console.log(`${gwDiagTs()} restarting gateway after proxy change`);
-              void getOpenClawEngineManager().restartGateway('proxy-change');
+              restartGatewayIfRunning: true,
+            }).then((result) => {
+              if (!result.success) {
+                console.error('[OpenClaw] Failed to sync config after system proxy change:', result.error);
+              }
             });
           }
         });
