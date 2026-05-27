@@ -1084,7 +1084,7 @@ type OpenClawConfigSyncDeps = {
   getSkillsList?: () => Array<{ id: string; enabled: boolean }>;
   getAgents?: () => Agent[];
   getUserPlugins?: () => Array<{ pluginId: string; enabled: boolean; config?: Record<string, unknown> }>;
-  getSubscriptionStatus?: () => string;
+  canUseMediaGeneration?: () => boolean;
 };
 
 export class OpenClawConfigSync {
@@ -1112,7 +1112,7 @@ export class OpenClawConfigSync {
   private readonly getSkillsList?: () => Array<{ id: string; enabled: boolean }>;
   private readonly getAgents?: () => Agent[];
   private readonly getUserPlugins: () => Array<{ pluginId: string; enabled: boolean; config?: Record<string, unknown> }>;
-  private readonly getSubscriptionStatus: () => string;
+  private readonly canUseMediaGeneration: () => boolean;
   private previousBindingsJson?: string;
   private currentBindingsObj: { bindings?: Array<Record<string, unknown>> } = {};
 
@@ -1141,7 +1141,7 @@ export class OpenClawConfigSync {
     this.getSkillsList = deps.getSkillsList;
     this.getAgents = deps.getAgents;
     this.getUserPlugins = deps.getUserPlugins ?? (() => []);
-    this.getSubscriptionStatus = deps.getSubscriptionStatus ?? (() => 'free');
+    this.canUseMediaGeneration = deps.canUseMediaGeneration ?? (() => false);
   }
 
   /**
@@ -1205,7 +1205,7 @@ export class OpenClawConfigSync {
     };
   }
 
-  private buildWebToolsConfig(browserWebAccess: BrowserWebAccessConfig, isSubscribed = false): Record<string, unknown> {
+  private buildWebToolsConfig(browserWebAccess: BrowserWebAccessConfig): Record<string, unknown> {
     const fetch = browserWebAccess.webFetch;
     const fetchConfig = {
       enabled: fetch.enabled,
@@ -1221,10 +1221,9 @@ export class OpenClawConfigSync {
 
     return {
       deny: [
-        ...MANAGED_TOOL_DENY,
-        ...(isSubscribed ? ['image_generate', 'video_generate'] : []),
+        ...MANAGED_TOOL_DENY
       ],
-      loopDetection: MANAGED_TOOL_LOOP_DETECTION,
+loopDetection: MANAGED_TOOL_LOOP_DETECTION,
       web: {
         search: {
           enabled: false,
@@ -1469,7 +1468,7 @@ export class OpenClawConfigSync {
       && bindingsJson !== this.previousBindingsJson;
     this.previousBindingsJson = bindingsJson;
 
-    const isSubscribed = this.getSubscriptionStatus() === 'active';
+    const canUseMediaGeneration = this.canUseMediaGeneration();
 
     const managedConfig: Record<string, unknown> = {
       gateway: {
@@ -1551,7 +1550,7 @@ export class OpenClawConfigSync {
       commands: {
         ownerAllowFrom: MANAGED_OWNER_ALLOW_FROM,
       },
-      tools: this.buildWebToolsConfig(browserWebAccess, isSubscribed),
+      tools: this.buildWebToolsConfig(browserWebAccess),
       browser: this.buildBrowserConfig(browserWebAccess),
       skills: {
         entries: {
@@ -1628,7 +1627,7 @@ export class OpenClawConfigSync {
             ? { feishu: { enabled: false } }
             : {}),
           ...(hasAskUserPlugin ? { 'ask-user-question': { enabled: true } } : {}),
-          ...(hasMediaGenPlugin ? { 'lobster-media-generation': { enabled: isSubscribed } } : {}),
+          ...(hasMediaGenPlugin ? { 'lobster-media-generation': { enabled: canUseMediaGeneration } } : {}),
           // Some OpenClaw versions auto-inject qwen-portal-auth for
           // Qwen/DashScope URLs. Declare it only when the plugin actually
           // exists, otherwise it becomes a stale entry on every startup.
@@ -1702,7 +1701,7 @@ export class OpenClawConfigSync {
 
     // Sync LobsterMediaGeneration plugin config — uses media callback endpoint
     const mediaCallbackUrl = this.getMediaCallbackUrl?.();
-    if (hasMediaGenPlugin && isSubscribed && mediaCallbackUrl && managedConfig.plugins) {
+    if (hasMediaGenPlugin && canUseMediaGeneration && mediaCallbackUrl && managedConfig.plugins) {
       const plugins = managedConfig.plugins as Record<string, unknown>;
       const entries = plugins.entries as Record<string, Record<string, unknown>>;
       entries['lobster-media-generation'] = {

@@ -67,6 +67,7 @@ import { PlatformRegistry } from '../shared/platform';
 import { ProviderName } from '../shared/providers';
 import { AgentManager } from './agentManager';
 import { APP_NAME } from './appConstants';
+import { authQuotaGateStateFromQuota, AuthSubscriptionStatus, createDefaultAuthQuotaGateState, normalizeAuthQuota } from './authQuota';
 import { getAutoLaunchEnabled, isAutoLaunched, setAutoLaunchEnabled } from './autoLaunchManager';
 import { type CoworkMessage, CoworkStore } from './coworkStore';
 import { setLanguage, t } from './i18n';
@@ -135,12 +136,12 @@ import {
   getElectronNodeRuntimePath,
   probeCoworkModelReadiness,
 } from './libs/coworkUtil';
-import {
+import { getPortalTasksUrl,
   getHtmlSharePublicBaseUrl,
   getServerApiBaseUrl,
   getSkillStoreUrl,
   isTestModeEnabled,
-  getPortalTasksUrl, refreshEndpointsTestMode,
+  refreshEndpointsTestMode,
 } from './libs/endpoints';
 import {
   mergeEnterpriseOpenclawConfig,
@@ -212,6 +213,12 @@ import {
   type MediaSelectionState,
   resolveMediaGenerationGate,
 } from './mediaGenerationPolicy';
+import {
+  applyMediaReferencesToGenerationParams,
+  type MediaAttachmentRefMain,
+  MediaGenerationRequestType,
+  summarizeMediaGenerationParamsForLog,
+} from './mediaGenerationReferences';
 import { OpenClawSessionIpc } from './openclawSession/constants';
 import { OpenClawSessionPolicyIpc } from './openclawSessionPolicy/constants';
 import {
@@ -1253,7 +1260,8 @@ let sqliteBackupManager: SqliteBackupManager | null = null;
 let openClawEngineManager: OpenClawEngineManager | null = null;
 let openClawConfigSync: OpenClawConfigSync | null = null;
 let openClawBootstrapPromise: Promise<OpenClawEngineStatus> | null = null;
-let cachedSubscriptionStatus = 'free';
+let cachedSubscriptionStatus: string = AuthSubscriptionStatus.Free;
+let cachedMediaGenerationEntitled = false;
 let openClawStatusForwarderBound = false;
 let coworkRuntimeForwarderBound = false;
 let memoryMigrationDone = false;
@@ -1643,7 +1651,7 @@ const getOpenClawConfigSync = (): OpenClawConfigSync => {
         getCoworkStore()
           .listUserPlugins()
           .map(p => ({ pluginId: p.pluginId, enabled: p.enabled, config: p.config })),
-      getSubscriptionStatus: () => cachedSubscriptionStatus,
+      canUseMediaGeneration: () => cachedMediaGenerationEntitled,
     });
   }
   return openClawConfigSync;
@@ -2432,18 +2440,6 @@ const mediaSelectionBySession = new Map<string, MediaSelectionState>();
 let mediaGenerationHandler: ((request: MediaGenerationRequest) => Promise<MediaGenerationResponse>) | null = null;
 
 // Media attachment references per session (for @ mentions, FR-9)
-interface MediaAttachmentRefMain {
-  token: string;
-  mediaType: 'image' | 'video' | 'audio';
-  index: number;
-  fileId: string;
-  fileName: string;
-  mimeType: string;
-  localPath?: string;
-  remoteUrl?: string;
-  dataUrl?: string;
-  role?: string;
-}
 const mediaReferencesBySession = new Map<string, MediaAttachmentRefMain[]>();
 const persistedGeneratedImageAssetsByUrl = new Map<string, PersistedGeneratedImageAsset>();
 const persistedGeneratedVideoAssetsByUrl = new Map<string, PersistedGeneratedImageAsset>();
@@ -3134,8 +3130,14 @@ if (!gotTheLock) {
     const resolvedModelFromSelection = tool === MediaGenerationTool.Image
       ? (selection?.imageModelId || selection?.modelId || '')
       : (selection?.videoModelId || selection?.modelId || '');
-    const selectedModel = explicitModel || resolvedModelFromSelection;
-    const selectedModelSource = explicitModel ? 'tool' : resolvedModelFromSelection ? 'selection' : 'none';
+    let selectedModel = explicitModel || resolvedModelFromSelection;
+    let selectedModelSource = explicitModel ? 'tool' : resolvedModelFromSelection ? 'selection' : 'none';
+
+    if (action === 'generate' && resolvedModelFromSelection && explicitModel && explicitModel !== resolvedModelFromSelection) {
+      console.warn(`[MediaGeneration] overriding LLM model choice "${explicitModel}" with user selection "${resolvedModelFromSelection}"`);
+      selectedModel = resolvedModelFromSelection;
+      selectedModelSource = 'selection-override';
+    }
     console.log('[MediaGeneration] received tool request:', serializeForLog({
       tool,
       action,
@@ -3179,7 +3181,7 @@ if (!gotTheLock) {
         }
         const models = body.data || [];
         console.log(`[MediaGeneration] server returned ${models.length} ${mediaType} models.`);
-        const text = models.length > 0
+        let text = models.length > 0
           ? `Available ${mediaType} models:\n\n${(models as Array<{ modelId: string; displayName: string; capabilities?: string; parameterSpec?: Record<string, unknown> }>).map(m => {
               let line = `### ${m.displayName} (model: "${m.modelId}")`;
               if (m.capabilities) line += `\n${m.capabilities}`;
@@ -3187,6 +3189,9 @@ if (!gotTheLock) {
               return line;
             }).join('\n\n')}`
           : `No ${mediaType} models available.`;
+        if (resolvedModelFromSelection) {
+          text += `\n\n---\n**Note:** The user has already selected model "${resolvedModelFromSelection}" for this session. You MUST use this model for the generate action. Do NOT choose a different model.`;
+        }
         return { content: [{ type: 'text', text }], details: { status: 'succeeded', models } };
       }
 
@@ -3334,7 +3339,7 @@ if (!gotTheLock) {
         }
       }
 
-      const params: Record<string, unknown> = {};
+      let params: Record<string, unknown> = {};
       if (args.image) {
         const existing = (args.images as string[]) || [];
         params.images = [args.image as string, ...existing];
@@ -3375,39 +3380,14 @@ if (!gotTheLock) {
         }
       }
 
-      // Merge @ media references into images/videos/imageRoles/videoRoles
       const refs = sessionId ? mediaReferencesBySession.get(sessionId) : undefined;
-      if (refs && refs.length > 0) {
-        const resolveReferencedMediaValue = (ref: MediaAttachmentRefMain): string | undefined => (
-          ref.localPath || ref.dataUrl || ref.remoteUrl
-        );
-        const imageRefs = refs.filter(r => r.mediaType === 'image' && resolveReferencedMediaValue(r));
-        const videoRefs = refs.filter(r => r.mediaType === 'video' && resolveReferencedMediaValue(r));
-        if (imageRefs.length > 0) {
-          const existing = (params.images as string[]) || [];
-          const imageRoles = (params.imageRoles as string[]) || [];
-          for (const ref of imageRefs) {
-            const mediaValue = resolveReferencedMediaValue(ref);
-            if (!mediaValue) continue;
-            existing.push(mediaValue);
-            imageRoles.push(ref.role || 'reference_image');
-          }
-          params.images = existing;
-          params.imageRoles = imageRoles;
-        }
-        if (videoRefs.length > 0) {
-          const existing = (params.videos as string[]) || [];
-          const videoRoles = (params.videoRoles as string[]) || [];
-          for (const ref of videoRefs) {
-            const mediaValue = resolveReferencedMediaValue(ref);
-            if (!mediaValue) continue;
-            existing.push(mediaValue);
-            videoRoles.push(ref.role || 'reference_video');
-          }
-          params.videos = existing;
-          params.videoRoles = videoRoles;
-        }
-      }
+      params = applyMediaReferencesToGenerationParams({
+        mediaType: mediaType === MediaGenerationRequestType.Video
+          ? MediaGenerationRequestType.Video
+          : MediaGenerationRequestType.Image,
+        params,
+        refs,
+      });
 
       // Convert local file paths to data URLs
       const MEDIA_MIME: Record<string, string> = {
@@ -3506,7 +3486,7 @@ if (!gotTheLock) {
         selectedModelSource,
         promptLength: prompt.length,
         promptPreview: prompt.slice(0, 120),
-        params,
+        params: summarizeMediaGenerationParamsForLog(params),
       }));
       const resp = await fetchWithAuth(`${serverBaseUrl}${endpoint}`, {
         method: 'POST',
@@ -3931,49 +3911,43 @@ if (!gotTheLock) {
     }
   };
 
+  const MEDIA_ENTITLEMENT_SYNC_REASON = 'media-entitlement-changed';
+
+  const getAuthQuotaGateState = () => ({
+    subscriptionStatus: cachedSubscriptionStatus,
+    mediaGenerationEntitled: cachedMediaGenerationEntitled,
+  });
+
+  const hasAuthQuotaGateStateChanged = (previous: ReturnType<typeof getAuthQuotaGateState>) => (
+    cachedSubscriptionStatus !== previous.subscriptionStatus
+    || cachedMediaGenerationEntitled !== previous.mediaGenerationEntitled
+  );
+
+  const syncOpenClawConfigIfAuthQuotaGateChanged = (previous: ReturnType<typeof getAuthQuotaGateState>) => {
+    if (hasAuthQuotaGateStateChanged(previous)) {
+      syncOpenClawConfig({ reason: MEDIA_ENTITLEMENT_SYNC_REASON, restartGatewayIfRunning: true }).catch(() => {});
+    }
+  };
+
+  const resetAuthQuotaGateState = () => {
+    const defaultGateState = createDefaultAuthQuotaGateState();
+    cachedSubscriptionStatus = defaultGateState.subscriptionStatus;
+    cachedMediaGenerationEntitled = defaultGateState.mediaGenerationEntitled;
+  };
+
   /**
    * Normalize quota data from various server response formats into a unified shape.
    */
   const normalizeQuota = (raw: Record<string, unknown>) => {
-    let creditsLimit = 0;
-    let creditsUsed = 0;
-    let planName = t('authPlanFree');
-    let subscriptionStatus = 'free';
-
-    if (typeof raw.freeCreditsTotal === 'number') {
-      // Free user format from /api/user/quota
-      creditsLimit = raw.freeCreditsTotal as number;
-      creditsUsed = (raw.freeCreditsUsed as number) || 0;
-      planName = (raw.planName as string) || t('authPlanFree');
-      subscriptionStatus = (raw.subscriptionStatus as string) || 'free';
-    } else if (typeof raw.monthlyCreditsLimit === 'number') {
-      // Paid user format from /api/user/quota
-      creditsLimit = raw.monthlyCreditsLimit as number;
-      creditsUsed = (raw.monthlyCreditsUsed as number) || 0;
-      planName = (raw.planName as string) || t('authPlanStandard');
-      subscriptionStatus = (raw.subscriptionStatus as string) || 'active';
-    } else if (typeof raw.dailyCreditsLimit === 'number') {
-      // Legacy exchange format
-      creditsLimit = raw.dailyCreditsLimit as number;
-      creditsUsed = (raw.dailyCreditsUsed as number) || 0;
-      planName = (raw.planName as string) || t('authPlanFree');
-      subscriptionStatus = (raw.subscriptionStatus as string) || 'free';
-    } else if (typeof raw.creditsLimit === 'number') {
-      // Already normalized
-      cachedSubscriptionStatus = (raw.subscriptionStatus as string) || cachedSubscriptionStatus;
-      return raw;
-    }
-
-    cachedSubscriptionStatus = subscriptionStatus;
-
-    return {
-      planName,
-      subscriptionStatus,
-      creditsLimit,
-      creditsUsed,
-      creditsRemaining: Math.max(0, creditsLimit - creditsUsed),
-      hasPaidCredits: raw.hasPaidCredits === true || subscriptionStatus === 'active',
-    };
+    const quota = normalizeAuthQuota(raw, {
+      freePlanName: t('authPlanFree'),
+      standardPlanName: t('authPlanStandard'),
+      fallbackSubscriptionStatus: cachedSubscriptionStatus,
+    });
+    const quotaGateState = authQuotaGateStateFromQuota(quota);
+    cachedSubscriptionStatus = quotaGateState.subscriptionStatus;
+    cachedMediaGenerationEntitled = quotaGateState.mediaGenerationEntitled;
+    return quota;
   };
 
   ipcMain.handle('auth:login', async (_event, { loginUrl }: { loginUrl?: string } = {}) => {
@@ -4020,11 +3994,9 @@ if (!gotTheLock) {
       saveAuthTokens(body.data.accessToken, body.data.refreshToken);
       saveAuthUser(body.data.user);
       console.log('[Auth] exchange user data:', JSON.stringify(body.data.user));
-      const prevStatus = cachedSubscriptionStatus;
+      const previousQuotaGateState = getAuthQuotaGateState();
       const quota = normalizeQuota(body.data.quota);
-      if (cachedSubscriptionStatus !== prevStatus) {
-        syncOpenClawConfig({ reason: 'subscription-status-changed', restartGatewayIfRunning: true }).catch(() => {});
-      }
+      syncOpenClawConfigIfAuthQuotaGateChanged(previousQuotaGateState);
       return { success: true, user: body.data.user, quota };
     } catch (error) {
       console.error('[Auth] exchange failed:', error);
@@ -4055,11 +4027,9 @@ if (!gotTheLock) {
           data: Record<string, unknown>;
         };
         if (quotaBody.code === 0 && quotaBody.data) {
-          const prevStatus = cachedSubscriptionStatus;
+          const previousQuotaGateState = getAuthQuotaGateState();
           quota = normalizeQuota(quotaBody.data);
-          if (cachedSubscriptionStatus !== prevStatus) {
-            syncOpenClawConfig({ reason: 'subscription-status-changed', restartGatewayIfRunning: true }).catch(() => {});
-          }
+          syncOpenClawConfigIfAuthQuotaGateChanged(previousQuotaGateState);
         }
       }
       console.log('[Auth] getUser profile data:', JSON.stringify(profileBody.data));
@@ -4078,11 +4048,9 @@ if (!gotTheLock) {
       if (!resp.ok) return { success: false };
       const body = (await resp.json()) as { code: number; data: Record<string, unknown> };
       if (body.code !== 0 || !body.data) return { success: false };
-      const prevStatus = cachedSubscriptionStatus;
+      const previousQuotaGateState = getAuthQuotaGateState();
       const quota = normalizeQuota(body.data);
-      if (cachedSubscriptionStatus !== prevStatus) {
-        syncOpenClawConfig({ reason: 'subscription-status-changed', restartGatewayIfRunning: true }).catch(() => {});
-      }
+      syncOpenClawConfigIfAuthQuotaGateChanged(previousQuotaGateState);
       return { success: true, quota };
     } catch {
       return { success: false };
@@ -4129,17 +4097,17 @@ if (!gotTheLock) {
       clearAuthTokens();
       clearAuthUser();
       clearServerModelMetadata();
-      const prevStatus = cachedSubscriptionStatus;
-      cachedSubscriptionStatus = 'free';
-      if (prevStatus !== 'free') {
-        syncOpenClawConfig({ reason: 'subscription-status-changed', restartGatewayIfRunning: true }).catch(() => {});
-      }
+      const previousQuotaGateState = getAuthQuotaGateState();
+      resetAuthQuotaGateState();
+      syncOpenClawConfigIfAuthQuotaGateChanged(previousQuotaGateState);
       return { success: true };
     } catch {
+      const previousQuotaGateState = getAuthQuotaGateState();
       clearAuthTokens();
       clearAuthUser();
       clearServerModelMetadata();
-      cachedSubscriptionStatus = 'free';
+      resetAuthQuotaGateState();
+      syncOpenClawConfigIfAuthQuotaGateChanged(previousQuotaGateState);
       return { success: true };
     }
   });
@@ -4974,7 +4942,8 @@ if (!gotTheLock) {
             imageAttachments: options.imageAttachments,
             agentId: options.agentId,
             mediaSelection: options.mediaSelection,
-          })
+            mediaReferences: options.mediaReferences,
+      })
           .catch(error => {
             console.error('[Cowork] session error:', error);
             try {
@@ -5072,7 +5041,8 @@ if (!gotTheLock) {
             skillIds: options.activeSkillIds,
             imageAttachments: options.imageAttachments,
             mediaSelection: options.mediaSelection,
-          })
+            mediaReferences: options.mediaReferences,
+      })
           .catch(error => {
             console.error('[Cowork] continue error:', error);
             try {

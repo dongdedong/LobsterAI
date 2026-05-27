@@ -53,7 +53,7 @@ const MediaModelPicker: React.FC<MediaModelPickerProps> = ({ draftKey, disabled 
 
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const authQuota = useSelector((state: RootState) => state.auth.quota);
-  const isSubscribed = isLoggedIn && (authQuota?.subscriptionStatus === 'active' || authQuota?.hasPaidCredits === true);
+  const canUseMediaGeneration = isLoggedIn && (authQuota?.subscriptionStatus === 'active' || authQuota?.hasPaidCredits === true);
 
   const mediaModels = useSelector((state: RootState) => state.cowork.mediaModels);
   const selection = useSelector((state: RootState) => state.cowork.mediaSelection[draftKey]);
@@ -119,10 +119,10 @@ const MediaModelPicker: React.FC<MediaModelPickerProps> = ({ draftKey, disabled 
   }, [dispatch, draftKey, mediaModels.image.length, mediaModels.video.length]);
 
   useEffect(() => {
-    if (isOpen && isSubscribed) {
+    if (isOpen && canUseMediaGeneration) {
       fetchModels();
     }
-  }, [isOpen, isSubscribed, fetchModels]);
+  }, [isOpen, canUseMediaGeneration, fetchModels]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -445,7 +445,7 @@ const MediaModelPicker: React.FC<MediaModelPickerProps> = ({ draftKey, disabled 
       );
     }
 
-    if (!isSubscribed) {
+    if (!canUseMediaGeneration) {
       return renderPromptPanel(
         i18nService.t('mediaSubscribeTitle'),
         i18nService.t('mediaSubscribeDesc'),
