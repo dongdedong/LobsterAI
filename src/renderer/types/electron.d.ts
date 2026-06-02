@@ -8,7 +8,11 @@ import type {
   CoworkContextUsageFailureReason,
   CoworkContextUsageSource,
 } from '../../shared/cowork/constants';
-import type { HtmlShareAccessMode, HtmlShareStatus } from '../../shared/htmlShare/constants';
+import type {
+  HtmlShareAccessMode,
+  HtmlShareConfigurableStatus,
+  HtmlShareStatus,
+} from '../../shared/htmlShare/constants';
 import type {
   InstalledKitRecord,
   KitReference,
@@ -339,8 +343,11 @@ interface HtmlShareResult {
   shareCode?: string;
   shareCodeUnavailable?: boolean;
   status?: HtmlShareStatus;
+  moderationStatus?: string;
   updatedAt?: string;
   contentUpdatedAt?: string;
+  disabledAt?: string | null;
+  disabledReason?: string | null;
   error?: string;
   code?: number;
   warnings?: string[];
@@ -850,7 +857,6 @@ interface IElectronAPI {
       artifactId: string;
       filePath: string;
       title: string;
-      accessMode: HtmlShareAccessMode;
     }) => Promise<HtmlShareResult>;
     updateFromHtmlFile: (options: {
       shareId: string;
@@ -858,12 +864,16 @@ interface IElectronAPI {
       artifactId: string;
       filePath: string;
       title: string;
-      accessMode: HtmlShareAccessMode;
+      currentStatus?: HtmlShareStatus;
     }) => Promise<HtmlShareResult>;
     getByHtmlFile: (options: {
       filePath: string;
     }) => Promise<{ success: boolean; share?: HtmlShareResult | null; error?: string; code?: number }>;
-    disable: (shareId: string) => Promise<{ success: boolean; error?: string }>;
+    updateStatus: (options: {
+      shareId: string;
+      status: HtmlShareConfigurableStatus;
+    }) => Promise<HtmlShareResult>;
+    disable: (shareId: string) => Promise<HtmlShareResult>;
     get: (shareId: string) => Promise<{ success: boolean; share?: unknown; error?: string }>;
   };
   voice: {

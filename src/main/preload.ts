@@ -8,7 +8,11 @@ import { BrowserIpc, type BrowserRuntimeProfile } from '../shared/browserWebAcce
 import { ClipboardIpc } from '../shared/clipboard/constants';
 import { CoworkIpcChannel } from '../shared/cowork/constants';
 import { DialogIpc } from '../shared/dialog/constants';
-import { type HtmlShareAccessMode, HtmlShareIpc } from '../shared/htmlShare/constants';
+import {
+  type HtmlShareConfigurableStatus,
+  HtmlShareIpc,
+  type HtmlShareStatus,
+} from '../shared/htmlShare/constants';
 import type {
   KitReference,
   KitSkillMetadata,
@@ -559,7 +563,6 @@ contextBridge.exposeInMainWorld('electron', {
       artifactId: string;
       filePath: string;
       title: string;
-      accessMode: HtmlShareAccessMode;
     }) => ipcRenderer.invoke(HtmlShareIpc.CreateFromHtmlFile, options),
     updateFromHtmlFile: (options: {
       shareId: string;
@@ -567,10 +570,12 @@ contextBridge.exposeInMainWorld('electron', {
       artifactId: string;
       filePath: string;
       title: string;
-      accessMode: HtmlShareAccessMode;
+      currentStatus?: HtmlShareStatus;
     }) => ipcRenderer.invoke(HtmlShareIpc.UpdateFromHtmlFile, options),
     getByHtmlFile: (options: { filePath: string }) =>
       ipcRenderer.invoke(HtmlShareIpc.GetByHtmlFile, options),
+    updateStatus: (options: { shareId: string; status: HtmlShareConfigurableStatus }) =>
+      ipcRenderer.invoke(HtmlShareIpc.UpdateStatus, options),
     disable: (shareId: string) => ipcRenderer.invoke(HtmlShareIpc.Disable, shareId),
     get: (shareId: string) => ipcRenderer.invoke(HtmlShareIpc.Get, shareId),
   },
