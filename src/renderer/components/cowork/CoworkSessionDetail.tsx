@@ -1006,6 +1006,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
   const [activeSpecialPreviewTab, setActiveSpecialPreviewTab] = useState<ArtifactSpecialTab>(ArtifactSpecialTab.FileList);
   const [browserPreviewAddress, setBrowserPreviewAddress] = useState('');
   const [browserPreviewUrl, setBrowserPreviewUrl] = useState('');
+  const [browserPreviewTitle, setBrowserPreviewTitle] = useState('');
   const [browserHtmlPreviewArtifactId, setBrowserHtmlPreviewArtifactId] = useState<string | null>(null);
   const [showArtifactAddMenu, setShowArtifactAddMenu] = useState(false);
   const [artifactAddMenuPosition, setArtifactAddMenuPosition] = useState<{ left: number; top: number } | null>(null);
@@ -1025,6 +1026,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
   const activeSpecialPreviewTabBySessionRef = useRef<Record<string, ArtifactSpecialTab>>({});
   const browserPreviewAddressBySessionRef = useRef<Record<string, string>>({});
   const browserPreviewUrlBySessionRef = useRef<Record<string, string>>({});
+  const browserPreviewTitleBySessionRef = useRef<Record<string, string>>({});
   const browserHtmlPreviewArtifactIdBySessionRef = useRef<Record<string, string>>({});
   const browserHtmlPreviewSessionIdBySessionRef = useRef<Record<string, string>>({});
   const browserHtmlPreviewUrlBySessionRef = useRef<Record<string, string>>({});
@@ -1054,6 +1056,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
       .filter((item): item is { tab: typeof artifactPreviewTabs[number]; artifact: Artifact } => Boolean(item.artifact));
   }, [artifactPreviewTabs, sessionArtifacts]);
   const shouldPinArtifactAddTab = artifactTabsIsOverflowing || artifactTabsCanScrollLeft || artifactTabsCanScrollRight;
+  const browserPreviewTabTitle = browserPreviewTitle.trim() || i18nService.t('artifactBrowserTab');
 
   const loadedFileIdsRef = useRef<Set<string>>(new Set());
 
@@ -1168,6 +1171,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
       : ArtifactSpecialTab.FileList);
     setBrowserPreviewAddress(sessionId ? browserPreviewAddressBySessionRef.current[sessionId] ?? '' : '');
     setBrowserPreviewUrl(sessionId ? browserPreviewUrlBySessionRef.current[sessionId] ?? '' : '');
+    setBrowserPreviewTitle(sessionId ? browserPreviewTitleBySessionRef.current[sessionId] ?? '' : '');
     setBrowserHtmlPreviewArtifactId(sessionId ? browserHtmlPreviewArtifactIdBySessionRef.current[sessionId] ?? null : null);
     setIsArtifactPanelExpanded(false);
     setIsExpandedPromptInputHidden(false);
@@ -1240,12 +1244,26 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
     }
   }, [clearBrowserHtmlPreviewState, sessionId]);
 
+  const handleBrowserPreviewTitleChange = useCallback((value: string) => {
+    const nextTitle = value.trim();
+    setBrowserPreviewTitle(nextTitle);
+    if (sessionId) {
+      if (nextTitle) {
+        browserPreviewTitleBySessionRef.current[sessionId] = nextTitle;
+      } else {
+        delete browserPreviewTitleBySessionRef.current[sessionId];
+      }
+    }
+  }, [sessionId]);
+
   const clearBrowserPreviewState = useCallback(() => {
     setBrowserPreviewAddress('');
     setBrowserPreviewUrl('');
+    setBrowserPreviewTitle('');
     if (sessionId) {
       delete browserPreviewAddressBySessionRef.current[sessionId];
       delete browserPreviewUrlBySessionRef.current[sessionId];
+      delete browserPreviewTitleBySessionRef.current[sessionId];
       clearBrowserHtmlPreviewState(sessionId);
     }
   }, [clearBrowserHtmlPreviewState, sessionId]);
@@ -1328,6 +1346,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
       setBrowserHtmlPreviewArtifactId(artifact.id);
       handleBrowserPreviewAddressChange(artifact.filePath);
       handleBrowserPreviewUrlChange(result.url);
+      handleBrowserPreviewTitleChange('');
     } catch (error) {
       if (!previousPreviewSessionId) {
         clearBrowserHtmlPreviewState(sessionId);
@@ -1341,6 +1360,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
     currentSession?.id,
     dispatch,
     handleBrowserPreviewAddressChange,
+    handleBrowserPreviewTitleChange,
     handleBrowserPreviewUrlChange,
     sessionId,
     setSessionActiveSpecialPreviewTab,
@@ -1353,7 +1373,13 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
     handleOpenArtifactBrowserTab();
     handleBrowserPreviewAddressChange(url);
     handleBrowserPreviewUrlChange(url);
-  }, [handleBrowserPreviewAddressChange, handleBrowserPreviewUrlChange, handleOpenArtifactBrowserTab]);
+    handleBrowserPreviewTitleChange('');
+  }, [
+    handleBrowserPreviewAddressChange,
+    handleBrowserPreviewTitleChange,
+    handleBrowserPreviewUrlChange,
+    handleOpenArtifactBrowserTab,
+  ]);
 
   const handleOpenArtifactFileListFromMenu = useCallback(() => {
     setShowArtifactAddMenu(false);
@@ -1639,55 +1665,54 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
     try {
       const messages = currentSession.messages;
       const detected: Artifact[] = [];
-      const seenFilePaths = new Set<string>();
-      const seenLocalServiceUrls = new Set<string>();
-      const rememberArtifactFilePaths = (artifacts: Artifact[]) => {
-        for (const artifact of artifacts) {
-          if (artifact.filePath) {
-            seenFilePaths.add(normalizeFilePathForDedup(artifact.filePath));
-          }
-        }
+      const pushFileArtifactIfNew = (artifact: Artifact, seenFilePaths: Set<string>) => {
+        const normalized = artifact.filePath ? normalizeFilePathForDedup(artifact.filePath) : '';
+        if (!artifact.filePath || seenFilePaths.has(normalized)) return;
+        seenFilePaths.add(normalized);
+        detected.push(artifact);
+      };
+      const pushLocalServiceArtifactIfNew = (artifact: Artifact, seenLocalServiceUrls: Set<string>) => {
+        const url = artifact.url || artifact.content;
+        const normalized = normalizeLocalServiceUrlForDedup(url);
+        if (!url || seenLocalServiceUrls.has(normalized)) return;
+        seenLocalServiceUrls.add(normalized);
+        detected.push(artifact);
       };
 
       for (const msg of messages) {
         if (msg.type === 'assistant' && !msg.metadata?.isThinking && msg.content) {
+          const seenFilePaths = new Set<string>();
+          const seenLocalServiceUrls = new Set<string>();
           const localServiceArtifacts = parseLocalServiceUrlsFromText(msg.content, msg.id, sessionId);
           for (const serviceArtifact of localServiceArtifacts) {
-            const url = serviceArtifact.url || serviceArtifact.content;
-            const normalized = normalizeLocalServiceUrlForDedup(url);
-            if (url && !seenLocalServiceUrls.has(normalized)) {
-              seenLocalServiceUrls.add(normalized);
-              detected.push(serviceArtifact);
-            }
+            pushLocalServiceArtifactIfNew(serviceArtifact, seenLocalServiceUrls);
           }
 
           const fileLinks = parseFileLinksFromMessage(msg.content, msg.id, sessionId);
           for (const fl of fileLinks) {
-            const normalized = fl.filePath ? normalizeFilePathForDedup(fl.filePath) : '';
-            if (fl.filePath && !seenFilePaths.has(normalized)) {
-              seenFilePaths.add(normalized);
-              detected.push(fl);
-            }
+            pushFileArtifactIfNew(fl, seenFilePaths);
           }
 
           const contentWithoutFileLinks = stripFileLinksFromText(msg.content);
           const pathArtifacts = parseFilePathsFromText(contentWithoutFileLinks, msg.id, sessionId);
           for (const pa of pathArtifacts) {
-            const normalized = pa.filePath ? normalizeFilePathForDedup(pa.filePath) : '';
-            if (pa.filePath && !seenFilePaths.has(normalized)) {
-              seenFilePaths.add(normalized);
-              detected.push(pa);
-            }
+            pushFileArtifactIfNew(pa, seenFilePaths);
           }
 
           detected.push(...parseRemoteImageArtifactsFromText(msg.content, msg.id, sessionId, 'artifact-remote-assistant'));
         }
 
         if (msg.type === 'tool_result') {
+          const seenFilePaths = new Set<string>();
           const toolMediaArtifacts = parseToolResultMediaArtifacts(msg, sessionId);
           if (toolMediaArtifacts.length > 0) {
-            detected.push(...toolMediaArtifacts);
-            rememberArtifactFilePaths(toolMediaArtifacts);
+            for (const mediaArtifact of toolMediaArtifacts) {
+              if (mediaArtifact.filePath) {
+                pushFileArtifactIfNew(mediaArtifact, seenFilePaths);
+              } else {
+                detected.push(mediaArtifact);
+              }
+            }
             continue;
           }
 
@@ -1695,11 +1720,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
 
           const mediaArtifacts = parseMediaTokensFromText(msg.content, msg.id, sessionId);
           for (const ma of mediaArtifacts) {
-            const normalized = ma.filePath ? normalizeFilePathForDedup(ma.filePath) : '';
-            if (ma.filePath && !seenFilePaths.has(normalized)) {
-              seenFilePaths.add(normalized);
-              detected.push(ma);
-            }
+            pushFileArtifactIfNew(ma, seenFilePaths);
           }
 
           // Only parse bare file paths from tool results of image generation tools.
@@ -1715,21 +1736,23 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
           if (shouldParseFilePathsFromToolResult(toolName)) {
             const pathArtifacts = parseFilePathsFromText(msg.content, msg.id, sessionId, 'artifact-toolresult');
             for (const pa of pathArtifacts) {
-              const normalized = pa.filePath ? normalizeFilePathForDedup(pa.filePath) : '';
-              if (pa.filePath && !seenFilePaths.has(normalized)) {
-                seenFilePaths.add(normalized);
-                detected.push(pa);
-              }
+              pushFileArtifactIfNew(pa, seenFilePaths);
             }
           }
           detected.push(...parseRemoteImageArtifactsFromText(msg.content, msg.id, sessionId, 'artifact-remote-toolresult'));
         }
 
         if (msg.type === 'system') {
+          const seenFilePaths = new Set<string>();
           const toolMediaArtifacts = parseToolResultMediaArtifacts(msg, sessionId);
           if (toolMediaArtifacts.length > 0) {
-            detected.push(...toolMediaArtifacts);
-            rememberArtifactFilePaths(toolMediaArtifacts);
+            for (const mediaArtifact of toolMediaArtifacts) {
+              if (mediaArtifact.filePath) {
+                pushFileArtifactIfNew(mediaArtifact, seenFilePaths);
+              } else {
+                detected.push(mediaArtifact);
+              }
+            }
             continue;
           }
 
@@ -1737,21 +1760,13 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
 
           const fileLinks = parseFileLinksFromMessage(msg.content, msg.id, sessionId);
           for (const fl of fileLinks) {
-            const normalized = fl.filePath ? normalizeFilePathForDedup(fl.filePath) : '';
-            if (fl.filePath && !seenFilePaths.has(normalized)) {
-              seenFilePaths.add(normalized);
-              detected.push(fl);
-            }
+            pushFileArtifactIfNew(fl, seenFilePaths);
           }
 
           const contentWithoutFileLinks = stripFileLinksFromText(msg.content);
           const pathArtifacts = parseFilePathsFromText(contentWithoutFileLinks, msg.id, sessionId, 'artifact-system-path');
           for (const pa of pathArtifacts) {
-            const normalized = pa.filePath ? normalizeFilePathForDedup(pa.filePath) : '';
-            if (pa.filePath && !seenFilePaths.has(normalized)) {
-              seenFilePaths.add(normalized);
-              detected.push(pa);
-            }
+            pushFileArtifactIfNew(pa, seenFilePaths);
           }
 
           detected.push(...parseRemoteImageArtifactsFromText(msg.content, msg.id, sessionId, 'artifact-remote-system'));
@@ -1767,11 +1782,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
             : messages[i + 1]?.type === 'tool_result' ? messages[i + 1] : undefined;
           const toolArtifact = parseToolArtifact(msg, toolResult, sessionId);
           if (toolArtifact && toolArtifact.filePath) {
-            const normalized = normalizeFilePathForDedup(toolArtifact.filePath);
-            if (!seenFilePaths.has(normalized)) {
-              seenFilePaths.add(normalized);
-              detected.push(toolArtifact);
-            }
+            detected.push(toolArtifact);
           }
         }
       }
@@ -1872,7 +1883,6 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
       const messages = currentSession.messages;
       const cwd = currentSession.cwd;
       const toLoad: Artifact[] = [];
-      const seenFilePaths = new Set<string>();
 
       for (const msg of messages) {
         if (msg.type !== 'tool_result' || !msg.content || !msg.metadata?.isFinal) continue;
@@ -1880,6 +1890,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
 
         // Only detect explicit MEDIA: tokens in tool results — do NOT parse bare file paths
         // here, because tool output (e.g. `ls`) may contain many irrelevant file paths.
+        const seenFilePaths = new Set<string>();
         const mediaArtifacts = parseMediaTokensFromText(msg.content, msg.id, sessionId);
         for (const ma of mediaArtifacts) {
           const normalized = ma.filePath ? normalizeFilePathForDedup(ma.filePath) : '';
@@ -2627,7 +2638,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
           }
         }
       }
-      const turnArtifacts = sessionArtifacts.filter(
+      const turnArtifacts = rawSessionArtifacts.filter(
         a => turnMessageIds.has(a.messageId) && PREVIEWABLE_ARTIFACT_TYPES.has(a.type)
       );
 
@@ -2775,10 +2786,10 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
                         type="button"
                         onClick={handleActivateArtifactBrowserTab}
                         className="flex min-w-0 items-center gap-1.5 px-2 text-left"
-                        title={i18nService.t('artifactBrowserTab')}
+                        title={browserPreviewTabTitle}
                       >
                         <ArtifactBrowserTabIcon className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">{i18nService.t('artifactBrowserTab')}</span>
+                        <span className="truncate">{browserPreviewTabTitle}</span>
                       </button>
                       <button
                         type="button"
@@ -3468,6 +3479,7 @@ const CoworkSessionDetail: React.FC<CoworkSessionDetailProps> = ({
               browserHtmlArtifactId={browserHtmlPreviewArtifactId}
               onBrowserAddressChange={handleBrowserPreviewAddressChange}
               onBrowserUrlChange={handleBrowserPreviewUrlChange}
+              onBrowserTitleChange={handleBrowserPreviewTitleChange}
               onOpenFileListTab={handleOpenArtifactFileListTab}
               onOpenBrowserTab={handleOpenArtifactBrowserTab}
               onOpenHtmlFileInBrowser={handleOpenHtmlFileInBrowser}
