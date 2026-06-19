@@ -1,0 +1,2540 @@
+{
+  "sourceUrl": "https://lobsterai.youdao.com/#/docs/lobsterai_user_manual",
+  "assetBase": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/",
+  "crawledAt": "2026-06-19T13:40:48.963Z",
+  "defaultDoc": "lobsterai_user_manual",
+  "languages": {
+    "zh-CN": [
+      {
+        "order": 1,
+        "id": "lobsterai_user_manual",
+        "title": "快速开始",
+        "routePath": "/docs/lobsterai_user_manual",
+        "type": "markdown",
+        "sourceFile": "LobsterAI用户手册.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C-CJ4uyLhA.js",
+        "output": "zh-CN/01_快速开始/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI 用户手册"
+          },
+          {
+            "level": 2,
+            "title": "快速开始"
+          },
+          {
+            "level": 3,
+            "title": "什么是 LobsterAI?"
+          },
+          {
+            "level": 3,
+            "title": "核心优势"
+          },
+          {
+            "level": 3,
+            "title": "首次启动"
+          },
+          {
+            "level": 2,
+            "title": "核心功能"
+          },
+          {
+            "level": 3,
+            "title": "智能对话"
+          },
+          {
+            "level": 3,
+            "title": "任务管理"
+          },
+          {
+            "level": 3,
+            "title": "技能系统"
+          },
+          {
+            "level": 3,
+            "title": "多模型支持"
+          },
+          {
+            "level": 2,
+            "title": "典型工作流"
+          },
+          {
+            "level": 3,
+            "title": "场景 1:数据分析报告生成"
+          },
+          {
+            "level": 3,
+            "title": "场景 2:快速开发前端组件"
+          },
+          {
+            "level": 3,
+            "title": "场景 3:自动化测试脚本编写"
+          },
+          {
+            "level": 3,
+            "title": "场景 4:多格式文档转换"
+          },
+          {
+            "level": 2,
+            "title": "技能详解"
+          },
+          {
+            "level": 3,
+            "title": "文档处理"
+          },
+          {
+            "level": 4,
+            "title": "docx - Word 文档处理"
+          },
+          {
+            "level": 4,
+            "title": "xlsx - Excel 表格处理"
+          },
+          {
+            "level": 4,
+            "title": "pptx - PowerPoint 演示文稿"
+          },
+          {
+            "level": 4,
+            "title": "pdf - PDF 文档处理"
+          },
+          {
+            "level": 3,
+            "title": "开发工具"
+          },
+          {
+            "level": 4,
+            "title": "develop-web-game - 网页游戏开发"
+          },
+          {
+            "level": 4,
+            "title": "remotion-best-practices - Remotion 视频开发"
+          },
+          {
+            "level": 4,
+            "title": "playwright - 浏览器自动化"
+          },
+          {
+            "level": 3,
+            "title": "设计工具"
+          },
+          {
+            "level": 4,
+            "title": "canvas-design - Canvas 设计"
+          },
+          {
+            "level": 4,
+            "title": "frontend-design - 前端设计"
+          },
+          {
+            "level": 3,
+            "title": "实用工具"
+          },
+          {
+            "level": 4,
+            "title": "web-search - 网络搜索"
+          },
+          {
+            "level": 4,
+            "title": "create-plan - 创建计划"
+          },
+          {
+            "level": 4,
+            "title": "skill-creator - 技能创建器"
+          },
+          {
+            "level": 2,
+            "title": "进阶使用"
+          },
+          {
+            "level": 3,
+            "title": "自定义技能"
+          },
+          {
+            "level": 3,
+            "title": "快捷键"
+          },
+          {
+            "level": 2,
+            "title": "Q&A 常见问题"
+          },
+          {
+            "level": 3,
+            "title": "基础使用"
+          },
+          {
+            "level": 3,
+            "title": "模型配置"
+          },
+          {
+            "level": 3,
+            "title": "使用技巧"
+          },
+          {
+            "level": 3,
+            "title": "故障排查"
+          },
+          {
+            "level": 2,
+            "title": "联系与反馈"
+          }
+        ],
+        "assets": []
+      },
+      {
+        "order": 2,
+        "id": "lobsterai_model_config_guide",
+        "title": "模型配置指南",
+        "routePath": "/docs/lobsterai_model_config_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI-国内各模型配置指南.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-%E5%9B%BD%E5%86%85%E5%90%84%E6%A8%A1%E5%9E%8B%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-Cyw6YAtO.js",
+        "output": "zh-CN/02_模型配置指南/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI 模型配置操作指南"
+          },
+          {
+            "level": 2,
+            "title": "📖 什么是API Key?"
+          },
+          {
+            "level": 3,
+            "title": "基本概念"
+          },
+          {
+            "level": 3,
+            "title": "使用流程"
+          },
+          {
+            "level": 3,
+            "title": "费用说明"
+          },
+          {
+            "level": 2,
+            "title": "🎯 支持的国内模型"
+          },
+          {
+            "level": 2,
+            "title": "📋 配置流程概览"
+          },
+          {
+            "level": 3,
+            "title": "⚡ 快速跳转(适合已注册用户)"
+          },
+          {
+            "level": 4,
+            "title": "情况一:已有账号和API Key,账户有余额"
+          },
+          {
+            "level": 4,
+            "title": "情况二:已有账号,但没有API Key"
+          },
+          {
+            "level": 4,
+            "title": "情况三:已有账号和API Key,但余额不足"
+          },
+          {
+            "level": 4,
+            "title": "情况四:完全新用户"
+          },
+          {
+            "level": 2,
+            "title": "🔧 DeepSeek 配置教程"
+          },
+          {
+            "level": 3,
+            "title": "第一步:注册DeepSeek账号"
+          },
+          {
+            "level": 3,
+            "title": "第二步:实名认证"
+          },
+          {
+            "level": 3,
+            "title": "第三步:获取API Key"
+          },
+          {
+            "level": 3,
+            "title": "第四步:账户充值"
+          },
+          {
+            "level": 3,
+            "title": "第五步:在LobsterAI中配置"
+          },
+          {
+            "level": 3,
+            "title": "开始使用"
+          },
+          {
+            "level": 2,
+            "title": "🎓 智谱AI (GLM) 配置教程"
+          },
+          {
+            "level": 3,
+            "title": "第一步:注册智谱AI账号"
+          },
+          {
+            "level": 3,
+            "title": "第二步:获取API Key"
+          },
+          {
+            "level": 3,
+            "title": "第三步:实名认证"
+          },
+          {
+            "level": 3,
+            "title": "第四步:查看账户余额"
+          },
+          {
+            "level": 3,
+            "title": "第五步:账户充值"
+          },
+          {
+            "level": 3,
+            "title": "第六步:在LobsterAI中配置"
+          },
+          {
+            "level": 2,
+            "title": "☁️ 阿里通义千问 配置教程"
+          },
+          {
+            "level": 3,
+            "title": "第一步:注册阿里云账号"
+          },
+          {
+            "level": 3,
+            "title": "第二步:完成实名认证"
+          },
+          {
+            "level": 3,
+            "title": "第三步:开通阿里云百炼服务"
+          },
+          {
+            "level": 3,
+            "title": "第四步:创建API Key"
+          },
+          {
+            "level": 3,
+            "title": "第五步:查看免费额度(新用户专享)"
+          },
+          {
+            "level": 3,
+            "title": "第六步:账户充值"
+          },
+          {
+            "level": 3,
+            "title": "第七步:在LobsterAI中配置"
+          },
+          {
+            "level": 3,
+            "title": "开始使用"
+          },
+          {
+            "level": 2,
+            "title": "🌙 Moonshot (Kimi) 配置教程"
+          },
+          {
+            "level": 3,
+            "title": "第一步:注册Moonshot账号"
+          },
+          {
+            "level": 3,
+            "title": "第二步:实名认证"
+          },
+          {
+            "level": 3,
+            "title": "第三步:获取API Key"
+          },
+          {
+            "level": 3,
+            "title": "第四步:账户充值"
+          },
+          {
+            "level": 3,
+            "title": "第五步:在LobsterAI中配置"
+          },
+          {
+            "level": 2,
+            "title": "🎨 MiniMax 配置教程"
+          },
+          {
+            "level": 3,
+            "title": "第一步:注册MiniMax"
+          },
+          {
+            "level": 3,
+            "title": "第二步:实名认证"
+          },
+          {
+            "level": 3,
+            "title": "第三步:创建密钥"
+          },
+          {
+            "level": 3,
+            "title": "第四步:账户充值"
+          },
+          {
+            "level": 3,
+            "title": "第五步:在LobsterAI中配置"
+          },
+          {
+            "level": 2,
+            "title": "❓ 常见问题"
+          },
+          {
+            "level": 3,
+            "title": "1. 我已经有账号了,怎么快速配置?"
+          },
+          {
+            "level": 3,
+            "title": "2. API Key提示无效怎么办?"
+          },
+          {
+            "level": 3,
+            "title": "3. 测试连接失败怎么办?"
+          },
+          {
+            "level": 3,
+            "title": "4. 如何查看消费记录?"
+          },
+          {
+            "level": 3,
+            "title": "5. 多个模型可以同时配置吗?"
+          },
+          {
+            "level": 3,
+            "title": "6. API Key丢失怎么办?"
+          },
+          {
+            "level": 3,
+            "title": "7. 不同服务商如何选择?"
+          },
+          {
+            "level": 3,
+            "title": "8. 遇到其他问题怎么办?"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177087610033217b665be00699074e54f5a57d412faf5.png",
+            "output": "zh-CN/02_模型配置指南/assets/001_05f1e0d5e8.png",
+            "bytes": 29297
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770887505225846e9d64c9c85cad3c4aadf577781c10.png",
+            "output": "zh-CN/02_模型配置指南/assets/002_5332ff5a91.png",
+            "bytes": 35929
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770876947022289da35c06f7cf97c984eaf0d8255c2f.png",
+            "output": "zh-CN/02_模型配置指南/assets/003_a10ee181a1.png",
+            "bytes": 25611
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770877460454937a913ca23e91953ebf49cb3258312d.png",
+            "output": "zh-CN/02_模型配置指南/assets/004_6a96d93467.png",
+            "bytes": 27380
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770877542982147b14a4ec7fcc10eb3b6b773157da31.png",
+            "output": "zh-CN/02_模型配置指南/assets/005_4807b0ecd6.png",
+            "bytes": 27384
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708776677571b6218179bf322b62bfdcc9fc2ba79fb.png",
+            "output": "zh-CN/02_模型配置指南/assets/006_e2e741154d.png",
+            "bytes": 63265
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770877900700e00f136ce324ced48b4dd47609a2f080.png",
+            "output": "zh-CN/02_模型配置指南/assets/007_dd1d35cf94.png",
+            "bytes": 24471
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708780310575674eadfc938de3629ca9b0364b714f7.png",
+            "output": "zh-CN/02_模型配置指南/assets/008_278c1e76ce.png",
+            "bytes": 35468
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177087805899228c7bc098334bc87dd17266b707fa26b.png",
+            "output": "zh-CN/02_模型配置指南/assets/009_1f420176ec.png",
+            "bytes": 72395
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770878252265b86c05c75dc3c7b5356bff0b5c231eb7.png",
+            "output": "zh-CN/02_模型配置指南/assets/010_5bc6fba901.png",
+            "bytes": 74362
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770878415979f9ac9202605e6f5166ae6fd4589e2e64.png",
+            "output": "zh-CN/02_模型配置指南/assets/011_a8b7d7c0ae.png",
+            "bytes": 27600
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770878709383f4c5daa4dad8ea3bc7fa19a79db9920d.png",
+            "output": "zh-CN/02_模型配置指南/assets/012_9dd643f4da.png",
+            "bytes": 30275
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177087913737895cf536fd83387a5af3ef4fe42d285d0.png",
+            "output": "zh-CN/02_模型配置指南/assets/013_94f0c7a3d0.png",
+            "bytes": 54235
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770879579687a15f40d097b070a4caabf960c895d1df.png",
+            "output": "zh-CN/02_模型配置指南/assets/014_e6dd88d470.png",
+            "bytes": 24337
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708796336658e0fc4fde0442e658aeaad3a0840f6f4.png",
+            "output": "zh-CN/02_模型配置指南/assets/015_8f53d5ee5c.png",
+            "bytes": 29446
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708891382800a925652c28e377af2b2744943fdfcc9.png",
+            "output": "zh-CN/02_模型配置指南/assets/016_963053812d.png",
+            "bytes": 41933
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708801766500e255c22fc44bee8a4d55b5e5c1ce4cd.png",
+            "output": "zh-CN/02_模型配置指南/assets/017_e5c5bbb77e.png",
+            "bytes": 38965
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088026526102d8d0be0d72919301354a468a6a21a8.png",
+            "output": "zh-CN/02_模型配置指南/assets/018_6ed9fc2fa0.png",
+            "bytes": 38819
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770880940228c4d41cc171fff11e4fbe6814db9acc8c.png",
+            "output": "zh-CN/02_模型配置指南/assets/019_6fbb688e30.png",
+            "bytes": 23297
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708811376107442dd2bc7ef10b185286d444d22980c.png",
+            "output": "zh-CN/02_模型配置指南/assets/020_6d3e1463dd.png",
+            "bytes": 66123
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770881298713654379ff60cb41b4106573d81cb95102.png",
+            "output": "zh-CN/02_模型配置指南/assets/021_bdcf30f018.png",
+            "bytes": 65968
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708814864116900b56d72d749e34291bb5af522b7cc.png",
+            "output": "zh-CN/02_模型配置指南/assets/022_9a05c550a2.png",
+            "bytes": 77221
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770881663722acc8130f951e14fb64f522d9603a3ffd.png",
+            "output": "zh-CN/02_模型配置指南/assets/023_ac9938e05a.png",
+            "bytes": 194974
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088191115338586d4eed611162ac42cf99bc0aee78.png",
+            "output": "zh-CN/02_模型配置指南/assets/024_c28656259d.png",
+            "bytes": 31981
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088199072699c8e194b5275dc6b93165f16c6c7d05.png",
+            "output": "zh-CN/02_模型配置指南/assets/025_7e3b4284e1.png",
+            "bytes": 37173
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088214018474492bf001641c734d66fbafcde3707c.png",
+            "output": "zh-CN/02_模型配置指南/assets/026_9d0242e3f3.png",
+            "bytes": 39928
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882272763acf35d51906e93257a39faa6a478d5c0.png",
+            "output": "zh-CN/02_模型配置指南/assets/027_b188ce514a.png",
+            "bytes": 34652
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882523738be9dc894b61284d545ecf96dbc614e2a.png",
+            "output": "zh-CN/02_模型配置指南/assets/028_83646e93e8.png",
+            "bytes": 37846
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882963026e70a779c90b4da90b904b176bccdcbb3.png",
+            "output": "zh-CN/02_模型配置指南/assets/029_0c574e2cee.png",
+            "bytes": 241258
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708831085965e878f16c031c117b895f9e901d54eb5.png",
+            "output": "zh-CN/02_模型配置指南/assets/030_5107dc447b.png",
+            "bytes": 90509
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088939215766d528686fdd2865dcfa2724d5c2e741.png",
+            "output": "zh-CN/02_模型配置指南/assets/031_1f2a827bf3.png",
+            "bytes": 165540
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088945935728762d908c585e1b30c3c7356e37e364.png",
+            "output": "zh-CN/02_模型配置指南/assets/032_c40fc31aec.png",
+            "bytes": 145746
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177089042049392d6845dd5f7051f9741058e500c075c.png",
+            "output": "zh-CN/02_模型配置指南/assets/033_e08b7bc944.png",
+            "bytes": 53938
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770890496320b344a02ca3c12650fd8fcc7049678b09.png",
+            "output": "zh-CN/02_模型配置指南/assets/034_4a8a6f937e.png",
+            "bytes": 50012
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770890553411b7a7667beec0f6f69e1e371e4e38b53e.png",
+            "output": "zh-CN/02_模型配置指南/assets/035_2dadcc7947.png",
+            "bytes": 48645
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708907021020d3b5923b94232cfb3841794a2455a53.png",
+            "output": "zh-CN/02_模型配置指南/assets/036_05f3080eef.png",
+            "bytes": 95840
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708908435725e13bef55747ab738f3af85f5f179a4d.png",
+            "output": "zh-CN/02_模型配置指南/assets/037_d9b53dc4d3.png",
+            "bytes": 92652
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708909745615700d5fd8a81a479ffc4ade607fb9f62.png",
+            "output": "zh-CN/02_模型配置指南/assets/038_2d7d0fae14.png",
+            "bytes": 46469
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177089105167140a823ea1c8e00538fbe7b2547dccafe.png",
+            "output": "zh-CN/02_模型配置指南/assets/039_c0838fb7ef.png",
+            "bytes": 57057
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770891121807c07e065693125ec72073e4733952b354.png",
+            "output": "zh-CN/02_模型配置指南/assets/040_83d7111aff.png",
+            "bytes": 25568
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177089117264960d0f14d27611bd8fafdf17d150a7056.png",
+            "output": "zh-CN/02_模型配置指南/assets/041_1f97e3864f.png",
+            "bytes": 41834
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770891490144a5080754e0a99bc51a7796290f694463.png",
+            "output": "zh-CN/02_模型配置指南/assets/042_6cd4ea5a7c.png",
+            "bytes": 40425
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770891559725049d2904de533755bf9c67c325f79c8b.png",
+            "output": "zh-CN/02_模型配置指南/assets/043_4333f510e4.png",
+            "bytes": 46130
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770891657073c05b86c59f408fbb1d603a0141123218.png",
+            "output": "zh-CN/02_模型配置指南/assets/044_c3bb171363.png",
+            "bytes": 31186
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770885258665afdf2bd699fc54be538074a8d798b950.png",
+            "output": "zh-CN/02_模型配置指南/assets/045_148543d855.png",
+            "bytes": 120932
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770885335023de4bffe1e587b54e71b30a7232dec371.png",
+            "output": "zh-CN/02_模型配置指南/assets/046_3039416f41.png",
+            "bytes": 30621
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088548402731fc5020f096a22cbed0118f74e0d816.png",
+            "output": "zh-CN/02_模型配置指南/assets/047_2c564e789f.png",
+            "bytes": 37994
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770885529269b816d0c79027ecdd38968adeab6073d4.png",
+            "output": "zh-CN/02_模型配置指南/assets/048_a8711f3dc4.png",
+            "bytes": 41424
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708856006854750871af4a2ef3a37b17da13f89a52f.png",
+            "output": "zh-CN/02_模型配置指南/assets/049_3e6c5abf32.png",
+            "bytes": 41382
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770885753398b355095a2c79e2ef5a6a5817d68ce957.png",
+            "output": "zh-CN/02_模型配置指南/assets/050_5dca325161.png",
+            "bytes": 43982
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770886001977523de4ce4b74d2ff1e5708fb3983317a.png",
+            "output": "zh-CN/02_模型配置指南/assets/051_e5533ebf66.png",
+            "bytes": 41641
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708862164916be411a962209c66e64a2ffaf1387271.png",
+            "output": "zh-CN/02_模型配置指南/assets/052_4ce188b94e.png",
+            "bytes": 83324
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770886283505e92896b650286463a7f358fbc8f8b06a.png",
+            "output": "zh-CN/02_模型配置指南/assets/053_f23b4240c5.png",
+            "bytes": 44531
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770888335221035fa3da7e91bca73084cdca6af859cf.png",
+            "output": "zh-CN/02_模型配置指南/assets/054_75a043debf.png",
+            "bytes": 44124
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708868366520a2c27bbce5ff9ddb17fb03d0c376e50.png",
+            "output": "zh-CN/02_模型配置指南/assets/055_e274f2b11b.png",
+            "bytes": 44949
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088692987239f9fbf3992a67d13f2a73de9bc89a14.png",
+            "output": "zh-CN/02_模型配置指南/assets/056_8276547f6a.png",
+            "bytes": 42404
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "id": "lobsterai_im_bot_config_guide",
+        "title": "IM机器人配置指南",
+        "routePath": "/docs/lobsterai_im_bot_config_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI-IM机器人配置指南.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-IM%E6%9C%BA%E5%99%A8%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-CnmssoVE.js",
+        "output": "zh-CN/03_IM机器人配置指南/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI 机器人配置指南"
+          },
+          {
+            "level": 2,
+            "title": "IM 机器人 vs Webhook 机器人"
+          },
+          {
+            "level": 3,
+            "title": "核心区别"
+          },
+          {
+            "level": 2,
+            "title": "微信 IM 机器人配置"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1: 打开有道龙虾的微信的 IM 配置界面"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2: 打开微信连接二维码"
+          },
+          {
+            "level": 4,
+            "title": "步骤3：使用微信进行扫码"
+          },
+          {
+            "level": 4,
+            "title": "步骤4：等待龙虾端页面刷新，并保存"
+          },
+          {
+            "level": 4,
+            "title": "步骤5：开始在微信指挥你的龙虾帮你干活"
+          },
+          {
+            "level": 2,
+            "title": "钉钉 IM 机器人配置"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1: 进入钉钉开放平台"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2: 创建企业内部应用"
+          },
+          {
+            "level": 4,
+            "title": "步骤 3: 添加机器人能力"
+          },
+          {
+            "level": 4,
+            "title": "步骤 4: 配置权限管理"
+          },
+          {
+            "level": 4,
+            "title": "步骤 5: 发布应用版本"
+          },
+          {
+            "level": 4,
+            "title": "步骤 6: 获取凭证信息"
+          },
+          {
+            "level": 4,
+            "title": "步骤 7: 在 LobsterAI 中配置"
+          },
+          {
+            "level": 4,
+            "title": "步骤 8: 测试机器人"
+          },
+          {
+            "level": 3,
+            "title": "钉钉 IM 配置要点"
+          },
+          {
+            "level": 2,
+            "title": "飞书 IM 机器人配置"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1: 进入飞书开放平台"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2: 创建企业自建应用"
+          },
+          {
+            "level": 4,
+            "title": "步骤 3: 添加机器人能力"
+          },
+          {
+            "level": 4,
+            "title": "步骤 4: 配置权限管理"
+          },
+          {
+            "level": 4,
+            "title": "步骤 5: 获取凭证信息"
+          },
+          {
+            "level": 4,
+            "title": "步骤 6: 在 LobsterAI 中配置"
+          },
+          {
+            "level": 4,
+            "title": "步骤 7: 配置事件与回调"
+          },
+          {
+            "level": 4,
+            "title": "步骤 8: 发布应用版本"
+          },
+          {
+            "level": 4,
+            "title": "步骤 9: 测试机器人"
+          },
+          {
+            "level": 2,
+            "title": "钉钉 Webhook 机器人配置"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1: 创建群聊(如果还没有)"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2: 添加群机器人"
+          },
+          {
+            "level": 4,
+            "title": "步骤 3: 配置机器人信息"
+          },
+          {
+            "level": 4,
+            "title": "步骤 4: 配置安全设置"
+          },
+          {
+            "level": 4,
+            "title": "步骤 5: 获取 Webhook URL"
+          },
+          {
+            "level": 4,
+            "title": "步骤 6: 保存 Webhook 信息(推荐)"
+          },
+          {
+            "level": 4,
+            "title": "步骤 7: 测试机器人"
+          },
+          {
+            "level": 3,
+            "title": "钉钉 Webhook 配置要点"
+          },
+          {
+            "level": 2,
+            "title": "飞书 Webhook 机器人配置"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1: 创建群聊(如果还没有)"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2: 添加群机器人"
+          },
+          {
+            "level": 4,
+            "title": "步骤 3: 配置机器人信息"
+          },
+          {
+            "level": 4,
+            "title": "步骤 4: 获取 Webhook URL"
+          },
+          {
+            "level": 4,
+            "title": "步骤 5: 保存 Webhook 信息(推荐)"
+          },
+          {
+            "level": 4,
+            "title": "步骤 6: 测试机器人"
+          },
+          {
+            "level": 3,
+            "title": "飞书 Webhook 配置要点"
+          },
+          {
+            "level": 2,
+            "title": "企业微信机器人配置"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1：进入企业微信开放平台"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2：创建智能机器人"
+          },
+          {
+            "level": 4,
+            "title": "步骤 3：在 LobsterAI 中配置"
+          },
+          {
+            "level": 3,
+            "title": "测试机器人"
+          },
+          {
+            "level": 2,
+            "title": "QQ（QQ-BOT）"
+          },
+          {
+            "level": 3,
+            "title": "准备工作"
+          },
+          {
+            "level": 3,
+            "title": "配置步骤"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1：进入 QQ 开放平台"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2：创建智能机器人"
+          },
+          {
+            "level": 4,
+            "title": "步骤 3：在 LobsterAI 中配置"
+          },
+          {
+            "level": 3,
+            "title": "测试机器人"
+          },
+          {
+            "level": 2,
+            "title": "常见问题与故障排查"
+          },
+          {
+            "level": 3,
+            "title": "钉钉 IM 机器人相关问题"
+          },
+          {
+            "level": 3,
+            "title": "飞书 IM 机器人相关问题"
+          },
+          {
+            "level": 3,
+            "title": "钉钉 Webhook 机器人相关问题"
+          },
+          {
+            "level": 3,
+            "title": "飞书 Webhook 机器人相关问题"
+          },
+          {
+            "level": 3,
+            "title": "Webhook 机器人通用问题"
+          },
+          {
+            "level": 2,
+            "title": "使用场景和技巧"
+          },
+          {
+            "level": 3,
+            "title": "Webhook 机器人典型使用场景"
+          },
+          {
+            "level": 4,
+            "title": "定时信息推送"
+          },
+          {
+            "level": 3,
+            "title": "最佳实践"
+          },
+          {
+            "level": 3,
+            "title": "官方文档"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/f875283bcbc1e92ea7811b7d6a11ef5d.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/001_86fd318d25.png",
+            "bytes": 337744
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/d8d57fbd4e0358cf5d2bab14cc702d66.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/002_706277d408.png",
+            "bytes": 335694
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/81bfedf71332427724ed4fdd0d76ecf8.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/003_f8ba0bbc77.png",
+            "bytes": 127025
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/aa8691a4600f3bae2d76bd2ca945c129.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/004_41fca0cae4.png",
+            "bytes": 301732
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/dec040dfde2b35fe4eede1529dbe8ddf.jpg",
+            "output": "zh-CN/03_IM机器人配置指南/assets/005_498cd79abe.jpg",
+            "bytes": 277104
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177087808174253872c3898fd9d50b80d0f32e73984aa.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/006_bc585e41d9.png",
+            "bytes": 201227
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708790952746ba7e834fa9789c70d40593eb5fc35b6.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/007_1ce9bda9f0.png",
+            "bytes": 93080
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708791808142c181168a780dc6a8a2393928ed99a44.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/008_eaf2240da6.png",
+            "bytes": 54436
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770879813574a06c73516d675803a5c2dbfa97260348.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/009_b52fa9465c.png",
+            "bytes": 63803
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177087995379424799b80cce6ce8223eb7532f1ea4d84.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/010_cbc3434344.png",
+            "bytes": 78421
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708800163784d7e5822be29f9c71e35248fab5618eb.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/011_270a5953f2.png",
+            "bytes": 95110
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770880061274c6d75ca777a03021c3298b97765426a2.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/012_568d1207a8.png",
+            "bytes": 103168
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088033126130436da8847a56773c35f3e000c22758.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/013_4b650af3ab.png",
+            "bytes": 93279
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770880502589f51b58345e88fe7bc0749c0f26992d50.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/014_4ce58f31d3.png",
+            "bytes": 85584
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770880580095e145f754efbaebd332a4b60750125168.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/015_42c584c3b0.png",
+            "bytes": 122312
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770881100133d72792ea1e4764d9e2dda09d76ce731d.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/016_6b3f4f6471.png",
+            "bytes": 88469
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770881227476c3565b2d1a40a0a3cbe5f13dbfdc98b4.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/017_cf06f4ea53.png",
+            "bytes": 124559
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770881362220602caa76521049fafa8f6077a92b1ff9.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/018_d6f16787bb.png",
+            "bytes": 67925
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708816607242a9ba4b1f8549cce14692fd66fe38a98.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/019_1f669d2606.png",
+            "bytes": 73181
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770881767766883d5e52f721753992edac5eca5ee511.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/020_e9a80df76c.png",
+            "bytes": 86235
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1771134585913%E6%88%AA%E5%B1%8F2026-02-15+13.49.31.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/021_f8edca8be7.png",
+            "bytes": 73957
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770885588882bccb6cf5756e6d4b188f46316ad04524.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/022_00c2af9d87.png",
+            "bytes": 75378
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708880604134cff126a4f0c7261557f73c38f124c79.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/023_03d75dcc94.png",
+            "bytes": 138885
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882173767aa46ad58da73e4a4615dadb53aa8b70f.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/024_7be4189cec.png",
+            "bytes": 282833
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708823990215bec2a7800ad265f2cdecce95e6fd37e.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/025_16ee9939b0.png",
+            "bytes": 59745
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882480062e08bbceb71b2e763338321fb9b4cebfb.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/026_075d7d806a.png",
+            "bytes": 60958
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088259264194f76b8ae2c1de28e0a2ae8360e8b860.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/027_a1f5819997.png",
+            "bytes": 59534
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708827002087f6691ddc1b99fddff603114cdd03786.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/028_da4ddc0417.png",
+            "bytes": 125811
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882879544ef5f38b8e99f496d93899be2a0255f75.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/029_56a5f1ff71.png",
+            "bytes": 119620
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770882920805542a6659530880c01310f5411bfa6e1a.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/030_9b89479208.png",
+            "bytes": 119380
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708832694769321f058616faacf5c503750ac150346.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/031_85868ee762.png",
+            "bytes": 107173
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708833279610900bcaff2898d79257ce0efba16d5a1.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/032_db53768aa3.png",
+            "bytes": 94079
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708836006731acb753a9836e7e6aa367a063b7c4117.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/033_dac7cd83bf.png",
+            "bytes": 131154
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1770884790716f7abd754707cb3ffc748974366561869.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/034_64b6d5296c.png",
+            "bytes": 121684
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708918670325e2cf904da34fb3321bd756b09d8d9b5.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/035_e0fc6a0c2c.png",
+            "bytes": 96353
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708850376246513c22ed0b72aa83f711ab1796bcccc.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/036_95095580b2.png",
+            "bytes": 76852
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177089010606732d62f2b128c2142949501593190a6a3.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/037_88fb2a5205.png",
+            "bytes": 77077
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1771136065159%E6%88%AA%E5%B1%8F2026-02-15+14.12.45.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/038_bf5803697f.png",
+            "bytes": 102805
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177088490490631c8e0f46804d63255b126ae40ee506e.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/039_01ba88e9ab.png",
+            "bytes": 66996
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708882667828f932a4d6250d3600d0ca5b1c1d2170d.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/040_a69e468787.png",
+            "bytes": 214951
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/177089190308936a171042a28f3ed94fe1db34a21fe49.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/041_581b64995c.png",
+            "bytes": 32401
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772875305223591923a009e4e159ed610ee64cac5221.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/042_f46ade9b4b.png",
+            "bytes": 15304
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772875630573a19385b073f32550b4d091879ab8b088.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/043_85a28650c6.png",
+            "bytes": 17062
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772875907807e7f783bfcbca2ebaa1b16a095901690c.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/044_b5cea74d1f.png",
+            "bytes": 21654
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772877244689d8bfeee8508cc43ce03836db91c2d10d.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/045_bfa9a14bdf.png",
+            "bytes": 21526
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772877300201d86fc5e140386b59ee39646733870a30.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/046_bcd18fb4d1.png",
+            "bytes": 13207
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/4741122af4ff655bdb1e4a9d9f5075b2.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/047_fd28e9f0a8.png",
+            "bytes": 134720
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/d14c9949832ef51c77a583a58cb7d447.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/048_9b38700a38.png",
+            "bytes": 200798
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/619c0bbc826419af541859c27758e550.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/049_21ec6f100f.png",
+            "bytes": 299791
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/42d426a6cee89cea96c555e766d85688.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/050_6956375fcf.png",
+            "bytes": 273693
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/29aa11ecfb49121358d47d261ea3a75f.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/051_62486690c7.png",
+            "bytes": 238447
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/0192f69873571e8fb50d08c9c3db39ee.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/052_9f038762d3.png",
+            "bytes": 150351
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/0108744618c47f4e82d8ed5adeb04d97.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/053_001fe99bdf.png",
+            "bytes": 289549
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/1fb0c4a13e073b6be07b2fce66170f48.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/054_fdc9a6aba1.png",
+            "bytes": 97841
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/6e2d7f0692d4915aeaac8bbaf0c1dde0.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/055_eea9b2998c.png",
+            "bytes": 50699
+          },
+          {
+            "sourceUrl": "https://ydhardwarecommon.nosdn.127.net/fe5a587e6e89086929481d477399f656.jpg",
+            "output": "zh-CN/03_IM机器人配置指南/assets/056_79c29e402c.jpg",
+            "bytes": 245539
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772959316989qq-bot.jpg",
+            "output": "zh-CN/03_IM机器人配置指南/assets/057_79e7b8bb53.jpg",
+            "bytes": 69061
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772959671905qq-bot-1.jpg",
+            "output": "zh-CN/03_IM机器人配置指南/assets/058_c80a4057e1.jpg",
+            "bytes": 34450
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772960551179qq-bot-4.jpg",
+            "output": "zh-CN/03_IM机器人配置指南/assets/059_5bb834318b.jpg",
+            "bytes": 27367
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1772960293063qq-bot-3.jpg",
+            "output": "zh-CN/03_IM机器人配置指南/assets/060_f804f40077.jpg",
+            "bytes": 132868
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17708915985286fc10fc3d6e2c869382b84b0234591d0.png",
+            "output": "zh-CN/03_IM机器人配置指南/assets/061_06708b6d9d.png",
+            "bytes": 101329
+          }
+        ]
+      },
+      {
+        "order": 4,
+        "id": "email_config_guide",
+        "title": "邮箱配置指南",
+        "routePath": "/docs/email_config_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI-邮箱配置指南.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-%E9%82%AE%E7%AE%B1%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-DWCWXXfT.js",
+        "output": "zh-CN/04_邮箱配置指南/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI 邮箱配置指南"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1771412814441eamil1.png",
+            "output": "zh-CN/04_邮箱配置指南/assets/001_f592284dd6.png",
+            "bytes": 66519
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1771412813556email2.png",
+            "output": "zh-CN/04_邮箱配置指南/assets/002_1b4c5759d5.png",
+            "bytes": 90479
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1771412819372email3.png",
+            "output": "zh-CN/04_邮箱配置指南/assets/003_f4ec56bf17.png",
+            "bytes": 197366
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/1771412819367email4.png",
+            "output": "zh-CN/04_邮箱配置指南/assets/004_3999e0b5e8.png",
+            "bytes": 184573
+          }
+        ]
+      },
+      {
+        "order": 5,
+        "id": "lobsterai_multi_agent_guide",
+        "title": "多Agent使用指南",
+        "routePath": "/docs/lobsterai_multi_agent_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI-多Agent使用指南.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-%E5%A4%9AAgent%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-CkfYaJML.js",
+        "output": "zh-CN/05_多Agent使用指南/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI 多 Agent 使用指南"
+          },
+          {
+            "level": 2,
+            "title": "准备工作"
+          },
+          {
+            "level": 2,
+            "title": "进入 Agent 管理页面"
+          },
+          {
+            "level": 3,
+            "title": "方式一：侧边栏入口"
+          },
+          {
+            "level": 2,
+            "title": "使用预设 Agent"
+          },
+          {
+            "level": 3,
+            "title": "查看预设 Agent"
+          },
+          {
+            "level": 3,
+            "title": "添加预设 Agent"
+          },
+          {
+            "level": 4,
+            "title": "步骤 1：选择预设模板"
+          },
+          {
+            "level": 4,
+            "title": "步骤 2：Agent 已就绪"
+          },
+          {
+            "level": 2,
+            "title": "创建自定义 Agent"
+          },
+          {
+            "level": 3,
+            "title": "步骤 1：打开创建对话框"
+          },
+          {
+            "level": 3,
+            "title": "步骤 2：填写基本信息"
+          },
+          {
+            "level": 3,
+            "title": "步骤 3：确认创建"
+          },
+          {
+            "level": 2,
+            "title": "配置和管理 Agent"
+          },
+          {
+            "level": 3,
+            "title": "进入 Agent 设置"
+          },
+          {
+            "level": 3,
+            "title": "标签页一：基础信息"
+          },
+          {
+            "level": 3,
+            "title": "标签页二：技能配置"
+          },
+          {
+            "level": 3,
+            "title": "标签页三：IM 渠道绑定"
+          },
+          {
+            "level": 3,
+            "title": "保存设置"
+          },
+          {
+            "level": 3,
+            "title": "删除 Agent"
+          },
+          {
+            "level": 2,
+            "title": "切换 Agent"
+          },
+          {
+            "level": 3,
+            "title": "方式一：侧边栏快捷切换"
+          },
+          {
+            "level": 3,
+            "title": "方式二：Agent 管理页面"
+          },
+          {
+            "level": 2,
+            "title": "对话与 Agent 的关系"
+          },
+          {
+            "level": 2,
+            "title": "主 Agent（Main Agent）"
+          },
+          {
+            "level": 2,
+            "title": "完整使用示例"
+          },
+          {
+            "level": 3,
+            "title": "场景：为不同用途配置专属助手"
+          },
+          {
+            "level": 4,
+            "title": "1. 添加「股票助手」预设"
+          },
+          {
+            "level": 4,
+            "title": "2. 添加「内容创作」预设"
+          },
+          {
+            "level": 4,
+            "title": "3. 绑定 IM 渠道"
+          },
+          {
+            "level": 4,
+            "title": "4. 测试效果"
+          },
+          {
+            "level": 2,
+            "title": "常见问题"
+          },
+          {
+            "level": 2,
+            "title": "最佳实践"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/223f1909d7427b3e2875c6441dd6ea1f.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/001_4549184a84.png",
+            "bytes": 995000
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/48700182e06f2b88aa8e53b7dd0d72c5.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/002_522ee4ac35.png",
+            "bytes": 1054798
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/bcd924c75a85d85708ddfeb0fc2f8060.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/003_0c36b1a94a.png",
+            "bytes": 1115115
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/f529cd0c1591ef48a5405221cd9bfb16.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/004_a0e918eea2.png",
+            "bytes": 91645
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/4fb054162f5a8f73c7d2544dd0613ae5.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/005_4be8f3a957.png",
+            "bytes": 998983
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/8389211c66422184cfd4fae0b9c79363.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/006_338987ba7e.png",
+            "bytes": 87137
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/ebbd7b95871d49df89845bc8aae11bcb.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/007_e784479403.png",
+            "bytes": 785837
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/e4f40d56a71dac2e87b505db24acd8fa.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/008_4af89a493d.png",
+            "bytes": 785837
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/d8eca2595da5c439136ac6986cfb18a2.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/009_a486969f8e.png",
+            "bytes": 127634
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/058e0a0b893969b8d87fb875b2ce98d0.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/010_7ff502994a.png",
+            "bytes": 100482
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/46dad8cb3b8aa2c320ee06609ae699a3.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/011_ce5dcd0e0b.png",
+            "bytes": 930433
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/bf61714cf4e88621632dea169ded95ed.png",
+            "output": "zh-CN/05_多Agent使用指南/assets/012_e1c1c6e4cf.png",
+            "bytes": 1086315
+          }
+        ]
+      },
+      {
+        "order": 6,
+        "id": "lobsterai_dev_doc",
+        "title": "开发者文档",
+        "routePath": "/docs/lobsterai_dev_doc",
+        "type": "markdown",
+        "sourceFile": "LobsterAI开发者文档.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI%E5%BC%80%E5%8F%91%E8%80%85%E6%96%87%E6%A1%A3-CBl2_5UH.js",
+        "output": "zh-CN/06_开发者文档/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI 开发者文档"
+          },
+          {
+            "level": 2,
+            "title": "开源协议"
+          },
+          {
+            "level": 2,
+            "title": "去哪里看开发者文档"
+          },
+          {
+            "level": 2,
+            "title": "欢迎参与"
+          }
+        ],
+        "assets": []
+      },
+      {
+        "order": 7,
+        "id": "contact_us",
+        "title": "联系我们",
+        "routePath": "/docs/contact_us",
+        "type": "about",
+        "sourceFile": null,
+        "sourceChunk": null,
+        "output": "zh-CN/07_联系我们/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "联系我们"
+          },
+          {
+            "level": 2,
+            "title": "用户社群"
+          },
+          {
+            "level": 2,
+            "title": "联系邮箱"
+          },
+          {
+            "level": 2,
+            "title": "网易北京"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/wechat_group-B34qRm1G.png",
+            "output": "zh-CN/07_联系我们/assets/001_cdd3e2fec5.png",
+            "bytes": 4690
+          }
+        ]
+      }
+    ],
+    "en-US": [
+      {
+        "order": 1,
+        "id": "lobsterai_user_manual",
+        "title": "Quick Start",
+        "routePath": "/en/docs/lobsterai_user_manual",
+        "type": "markdown",
+        "sourceFile": "LobsterAI_User_Manual.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_User_Manual-F1CkTqAc.js",
+        "output": "en-US/01_Quick_Start/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI User Manual"
+          },
+          {
+            "level": 2,
+            "title": "Quick Start"
+          },
+          {
+            "level": 3,
+            "title": "What is LobsterAI?"
+          },
+          {
+            "level": 3,
+            "title": "Core Advantages"
+          },
+          {
+            "level": 3,
+            "title": "First Launch"
+          },
+          {
+            "level": 2,
+            "title": "Core Functions"
+          },
+          {
+            "level": 3,
+            "title": "Smart Dialogue"
+          },
+          {
+            "level": 3,
+            "title": "Task Management"
+          },
+          {
+            "level": 3,
+            "title": "Skill System"
+          },
+          {
+            "level": 3,
+            "title": "Multi-Model Support"
+          },
+          {
+            "level": 2,
+            "title": "Typical Workflows"
+          },
+          {
+            "level": 3,
+            "title": "Scenario 1: Data Analysis Report Generation"
+          },
+          {
+            "level": 3,
+            "title": "Scenario 2: Rapid Frontend Component Development"
+          },
+          {
+            "level": 3,
+            "title": "Scenario 3: Automated Test Script Writing"
+          },
+          {
+            "level": 3,
+            "title": "Scenario 4: Multi-format Document Conversion"
+          },
+          {
+            "level": 2,
+            "title": "Skill Details"
+          },
+          {
+            "level": 3,
+            "title": "Document Processing"
+          },
+          {
+            "level": 4,
+            "title": "docx - Word Document Processing"
+          },
+          {
+            "level": 4,
+            "title": "xlsx - Excel Spreadsheet Processing"
+          },
+          {
+            "level": 4,
+            "title": "pptx - PowerPoint Presentation"
+          },
+          {
+            "level": 4,
+            "title": "pdf - PDF Document Processing"
+          },
+          {
+            "level": 3,
+            "title": "Development Tools"
+          },
+          {
+            "level": 4,
+            "title": "develop-web-game - Web Game Development"
+          },
+          {
+            "level": 4,
+            "title": "remotion-best-practices - Remotion Video Development"
+          },
+          {
+            "level": 4,
+            "title": "playwright - Browser Automation"
+          },
+          {
+            "level": 3,
+            "title": "Design Tools"
+          },
+          {
+            "level": 4,
+            "title": "canvas-design - Canvas Design"
+          },
+          {
+            "level": 4,
+            "title": "frontend-design - Frontend Design"
+          },
+          {
+            "level": 3,
+            "title": "Utility Tools"
+          },
+          {
+            "level": 4,
+            "title": "web-search - Web Search"
+          },
+          {
+            "level": 4,
+            "title": "create-plan - Create Plan"
+          },
+          {
+            "level": 4,
+            "title": "skill-creator - Skill Creator"
+          },
+          {
+            "level": 2,
+            "title": "Advanced Use"
+          },
+          {
+            "level": 3,
+            "title": "Custom Skills"
+          },
+          {
+            "level": 3,
+            "title": "Shortcuts"
+          },
+          {
+            "level": 3,
+            "title": "Sandbox Mode"
+          },
+          {
+            "level": 2,
+            "title": "Q&A Common Questions"
+          },
+          {
+            "level": 3,
+            "title": "Basic Usage"
+          },
+          {
+            "level": 3,
+            "title": "Model Configuration"
+          },
+          {
+            "level": 3,
+            "title": "Usage Tips"
+          },
+          {
+            "level": 3,
+            "title": "Troubleshooting"
+          },
+          {
+            "level": 2,
+            "title": "Contact & Feedback"
+          }
+        ],
+        "assets": []
+      },
+      {
+        "order": 2,
+        "id": "lobsterai_model_config_guide",
+        "title": "Model Configuration Guide",
+        "routePath": "/en/docs/lobsterai_model_config_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI_Model_Configuration_Guide.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_Model_Configuration_Guide-DaZ-4T1P.js",
+        "output": "en-US/02_Model_Configuration_Guide/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI Model Configuration Guide"
+          },
+          {
+            "level": 2,
+            "title": "📖 What is an API Key?"
+          },
+          {
+            "level": 3,
+            "title": "Basic Concept"
+          },
+          {
+            "level": 3,
+            "title": "Usage Workflow"
+          },
+          {
+            "level": 3,
+            "title": "Cost Explanation"
+          },
+          {
+            "level": 2,
+            "title": "🎯 Supported Domestic Models"
+          },
+          {
+            "level": 2,
+            "title": "📋 Configuration Overview"
+          },
+          {
+            "level": 3,
+            "title": "⚡ Quick Jump (For Registered Users)"
+          },
+          {
+            "level": 4,
+            "title": "Scenario 1: Have Account, API Key, and Balance"
+          },
+          {
+            "level": 4,
+            "title": "Scenario 2: Have Account, but NO API Key"
+          },
+          {
+            "level": 4,
+            "title": "Scenario 3: Have Account and API Key, but Insufficient Balance"
+          },
+          {
+            "level": 4,
+            "title": "Scenario 4: Completely New User"
+          },
+          {
+            "level": 2,
+            "title": "🔧 DeepSeek Configuration Tutorial"
+          },
+          {
+            "level": 3,
+            "title": "Step 1: Register DeepSeek Account"
+          },
+          {
+            "level": 3,
+            "title": "Step 2: Real-name Verification"
+          },
+          {
+            "level": 3,
+            "title": "Step 3: Get API Key"
+          },
+          {
+            "level": 3,
+            "title": "Step 4: Account Top Up"
+          },
+          {
+            "level": 3,
+            "title": "Step 5: Configure in LobsterAI"
+          },
+          {
+            "level": 3,
+            "title": "Start Using"
+          },
+          {
+            "level": 2,
+            "title": "🎓 Zhipu AI (GLM) Configuration Tutorial"
+          },
+          {
+            "level": 3,
+            "title": "Step 1: Register Zhipu AI Account"
+          },
+          {
+            "level": 3,
+            "title": "Step 2: Get API Key"
+          },
+          {
+            "level": 3,
+            "title": "Step 3: Real-name Verification"
+          },
+          {
+            "level": 3,
+            "title": "Step 4: Check Account Balance"
+          },
+          {
+            "level": 3,
+            "title": "Step 5: Account Top Up"
+          },
+          {
+            "level": 3,
+            "title": "Step 6: Configure in LobsterAI"
+          },
+          {
+            "level": 2,
+            "title": "☁️ Alibaba Qwen (Tongyi Qianwen) Configuration Tutorial"
+          },
+          {
+            "level": 3,
+            "title": "Step 1: Register Alibaba Cloud Account"
+          },
+          {
+            "level": 3,
+            "title": "Step 2: Complete Real-name Verification"
+          },
+          {
+            "level": 3,
+            "title": "Step 3: Activate Alibaba Cloud Bailian Service"
+          },
+          {
+            "level": 3,
+            "title": "Step 4: Create API Key"
+          },
+          {
+            "level": 3,
+            "title": "Step 5: Check Free Quota (New Users)"
+          },
+          {
+            "level": 3,
+            "title": "Step 6: Account Top Up"
+          },
+          {
+            "level": 3,
+            "title": "Step 7: Configure in LobsterAI"
+          },
+          {
+            "level": 3,
+            "title": "Start Using"
+          },
+          {
+            "level": 2,
+            "title": "🌙 Moonshot (Kimi) Configuration Tutorial"
+          },
+          {
+            "level": 3,
+            "title": "Step 1: Register Moonshot"
+          },
+          {
+            "level": 3,
+            "title": "Step 2: Real-name Verification"
+          },
+          {
+            "level": 3,
+            "title": "Step 3: Get API Key"
+          },
+          {
+            "level": 3,
+            "title": "Step 4: Top Up"
+          },
+          {
+            "level": 3,
+            "title": "Step 5: Configure in LobsterAI"
+          },
+          {
+            "level": 2,
+            "title": "🎨 MiniMax Configuration Tutorial"
+          },
+          {
+            "level": 3,
+            "title": "Step 1: Register MiniMax"
+          },
+          {
+            "level": 3,
+            "title": "Step 2: Real-name Verification"
+          },
+          {
+            "level": 3,
+            "title": "Step 3: Create Key"
+          },
+          {
+            "level": 3,
+            "title": "Step 4: Top Up"
+          },
+          {
+            "level": 3,
+            "title": "Step 5: Configure in LobsterAI"
+          },
+          {
+            "level": 2,
+            "title": "❓ FAQ"
+          },
+          {
+            "level": 3,
+            "title": "1. I already have an account, how to configure quickly?"
+          },
+          {
+            "level": 3,
+            "title": "2. API Key says Invalid?"
+          },
+          {
+            "level": 3,
+            "title": "3. Connection Failed?"
+          },
+          {
+            "level": 3,
+            "title": "4. How to view billing?"
+          },
+          {
+            "level": 3,
+            "title": "5. Can I configure multiple models?"
+          },
+          {
+            "level": 3,
+            "title": "6. Lost API Key?"
+          },
+          {
+            "level": 3,
+            "title": "7. Which provider to choose?"
+          }
+        ],
+        "assets": []
+      },
+      {
+        "order": 3,
+        "id": "lobsterai_im_bot_config_guide",
+        "title": "IM Bot Configuration Guide",
+        "routePath": "/en/docs/lobsterai_im_bot_config_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI_IM_Bot_Configuration_Guide.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_IM_Bot_Configuration_Guide-C4_b_iWV.js",
+        "output": "en-US/03_IM_Bot_Configuration_Guide/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI IM Bot Configuration Guide"
+          },
+          {
+            "level": 2,
+            "title": "Telegram Bot Configuration"
+          },
+          {
+            "level": 3,
+            "title": "Preparation"
+          },
+          {
+            "level": 3,
+            "title": "Configuration Steps"
+          },
+          {
+            "level": 4,
+            "title": "Step 1: Search and find @BotFather"
+          },
+          {
+            "level": 4,
+            "title": "Step 2: Send the /newbot command to start creating a bot"
+          },
+          {
+            "level": 4,
+            "title": "Step 3: Set Bot Name and Username"
+          },
+          {
+            "level": 4,
+            "title": "Step 4: Enter the Token into the LobsterAI Client"
+          },
+          {
+            "level": 4,
+            "title": "Step 5: Search for your bot in Telegram"
+          },
+          {
+            "level": 4,
+            "title": "Step 6: Send the /start command to begin the conversation"
+          },
+          {
+            "level": 4,
+            "title": "Step 7: (Optional) Customize Bot Appearance"
+          },
+          {
+            "level": 3,
+            "title": "⚠️ Important Notes"
+          },
+          {
+            "level": 2,
+            "title": "Discord Bot Configuration"
+          },
+          {
+            "level": 3,
+            "title": "Preparation"
+          },
+          {
+            "level": 3,
+            "title": "Configuration Steps"
+          },
+          {
+            "level": 4,
+            "title": "Step 1: Create a Bot Application"
+          },
+          {
+            "level": 4,
+            "title": "Step 2: Configure Bot Information"
+          },
+          {
+            "level": 4,
+            "title": "Step 3: Obtain Bot Token"
+          },
+          {
+            "level": 4,
+            "title": "Step 4: Enter the Token into the LobsterAI Client"
+          },
+          {
+            "level": 4,
+            "title": "Step 5: Configure Bot Permissions"
+          },
+          {
+            "level": 4,
+            "title": "Step 6: Generate Invitation Link and Invite Bot"
+          },
+          {
+            "level": 4,
+            "title": "Step 7: Test the Bot"
+          },
+          {
+            "level": 3,
+            "title": "⚠️ Important Notes"
+          },
+          {
+            "level": 2,
+            "title": "FAQ"
+          },
+          {
+            "level": 3,
+            "title": "Telegram"
+          },
+          {
+            "level": 3,
+            "title": "Discord"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717412762071.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/001_1cb9a5da0a.png",
+            "bytes": 31363
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717418746862.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/002_f69732694a.png",
+            "bytes": 50420
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717420359163.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/003_e5bd00a6d4.png",
+            "bytes": 57829
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717440810574.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/004_ec3180620b.png",
+            "bytes": 101018
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717446127966.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/005_fb1086d1a4.png",
+            "bytes": 28047
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717445645605.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/006_68b4b519d8.png",
+            "bytes": 95237
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717463907751.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/007_d0280d880b.png",
+            "bytes": 66801
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717465153102.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/008_f8c9b729c5.png",
+            "bytes": 113951
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717466245013.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/009_63f1695ce8.png",
+            "bytes": 102592
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717467932884.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/010_ae37df0e54.png",
+            "bytes": 85263
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717468866155.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/011_e9ded12bdc.png",
+            "bytes": 128869
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717470558586.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/012_d65ac37e92.png",
+            "bytes": 105393
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717472288387.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/013_ab78013e7d.png",
+            "bytes": 128841
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717473841008.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/014_1233252307.png",
+            "bytes": 132994
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717481293511.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/015_cb72ab926b.png",
+            "bytes": 65694
+          },
+          {
+            "sourceUrl": "https://ydschool-video.nosdn.127.net/17717508011531.png",
+            "output": "en-US/03_IM_Bot_Configuration_Guide/assets/016_016c6816f3.png",
+            "bytes": 72874
+          }
+        ]
+      },
+      {
+        "order": 4,
+        "id": "lobsterai_multi_agent_guide",
+        "title": "Multi-Agent User Guide",
+        "routePath": "/en/docs/lobsterai_multi_agent_guide",
+        "type": "markdown",
+        "sourceFile": "LobsterAI-Multi-Agent-User-Guide.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-Multi-Agent-User-Guide-BSV5wQ7V.js",
+        "output": "en-US/04_Multi-Agent_User_Guide/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI Multi-Agent User Guide"
+          },
+          {
+            "level": 2,
+            "title": "Prerequisites"
+          },
+          {
+            "level": 2,
+            "title": "Entering the Agent Management Page"
+          },
+          {
+            "level": 3,
+            "title": "Method 1: Sidebar Entry"
+          },
+          {
+            "level": 2,
+            "title": "Using Preset Agents"
+          },
+          {
+            "level": 3,
+            "title": "Viewing Preset Agents"
+          },
+          {
+            "level": 3,
+            "title": "Adding a Preset Agent"
+          },
+          {
+            "level": 4,
+            "title": "Step 1: Select a Preset Template"
+          },
+          {
+            "level": 4,
+            "title": "Step 2: Agent Ready"
+          },
+          {
+            "level": 2,
+            "title": "Creating a Custom Agent"
+          },
+          {
+            "level": 3,
+            "title": "Step 1: Open the Create Dialog"
+          },
+          {
+            "level": 3,
+            "title": "Step 2: Fill in Basic Information"
+          },
+          {
+            "level": 3,
+            "title": "Step 3: Confirm Creation"
+          },
+          {
+            "level": 2,
+            "title": "Configuring and Managing Agents"
+          },
+          {
+            "level": 3,
+            "title": "Entering Agent Settings"
+          },
+          {
+            "level": 3,
+            "title": "Tab 1: Basic Information"
+          },
+          {
+            "level": 3,
+            "title": "Tab 2: Skill Configuration"
+          },
+          {
+            "level": 3,
+            "title": "Tab 3: IM Channel Binding"
+          },
+          {
+            "level": 3,
+            "title": "Saving Settings"
+          },
+          {
+            "level": 3,
+            "title": "Deleting an Agent"
+          },
+          {
+            "level": 2,
+            "title": "Switching Agents"
+          },
+          {
+            "level": 3,
+            "title": "Method 1: Sidebar Quick Switch"
+          },
+          {
+            "level": 3,
+            "title": "Method 2: Agent Management Page"
+          },
+          {
+            "level": 2,
+            "title": "Conversation and Agent Relationship"
+          },
+          {
+            "level": 2,
+            "title": "Main Agent"
+          },
+          {
+            "level": 2,
+            "title": "Complete Usage Example"
+          },
+          {
+            "level": 3,
+            "title": "Scenario: Configuring dedicated assistants for different purposes"
+          },
+          {
+            "level": 4,
+            "title": "1. Add \"Stock Assistant\" Preset"
+          },
+          {
+            "level": 4,
+            "title": "2. Add \"Content Creator\" Preset"
+          },
+          {
+            "level": 4,
+            "title": "3. Bind IM Channels"
+          },
+          {
+            "level": 4,
+            "title": "4. Test Results"
+          },
+          {
+            "level": 2,
+            "title": "FAQ"
+          },
+          {
+            "level": 2,
+            "title": "Best Practices"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/223f1909d7427b3e2875c6441dd6ea1f.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/001_4549184a84.png",
+            "bytes": 995000
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/48700182e06f2b88aa8e53b7dd0d72c5.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/002_522ee4ac35.png",
+            "bytes": 1054798
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/bcd924c75a85d85708ddfeb0fc2f8060.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/003_0c36b1a94a.png",
+            "bytes": 1115115
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/f529cd0c1591ef48a5405221cd9bfb16.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/004_a0e918eea2.png",
+            "bytes": 91645
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/4fb054162f5a8f73c7d2544dd0613ae5.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/005_4be8f3a957.png",
+            "bytes": 998983
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/8389211c66422184cfd4fae0b9c79363.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/006_338987ba7e.png",
+            "bytes": 87137
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/ebbd7b95871d49df89845bc8aae11bcb.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/007_e784479403.png",
+            "bytes": 785837
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/e4f40d56a71dac2e87b505db24acd8fa.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/008_4af89a493d.png",
+            "bytes": 785837
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/d8eca2595da5c439136ac6986cfb18a2.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/009_a486969f8e.png",
+            "bytes": 127634
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/058e0a0b893969b8d87fb875b2ce98d0.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/010_7ff502994a.png",
+            "bytes": 100482
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/46dad8cb3b8aa2c320ee06609ae699a3.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/011_ce5dcd0e0b.png",
+            "bytes": 930433
+          },
+          {
+            "sourceUrl": "https://ydhardwarebusiness.nosdn.127.net/bf61714cf4e88621632dea169ded95ed.png",
+            "output": "en-US/04_Multi-Agent_User_Guide/assets/012_e1c1c6e4cf.png",
+            "bytes": 1086315
+          }
+        ]
+      },
+      {
+        "order": 5,
+        "id": "lobsterai_dev_doc",
+        "title": "Developer Documentation",
+        "routePath": "/en/docs/lobsterai_dev_doc",
+        "type": "markdown",
+        "sourceFile": "LobsterAI_Developer_Documentation.md",
+        "sourceChunk": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_Developer_Documentation-CZ8UlkLx.js",
+        "output": "en-US/05_Developer_Documentation/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "LobsterAI Developer Documentation"
+          },
+          {
+            "level": 2,
+            "title": "License"
+          },
+          {
+            "level": 2,
+            "title": "Where To Read The Developer Docs"
+          },
+          {
+            "level": 2,
+            "title": "Get Involved"
+          }
+        ],
+        "assets": []
+      },
+      {
+        "order": 6,
+        "id": "contact_us",
+        "title": "Contact Us",
+        "routePath": "/en/docs/contact_us",
+        "type": "about",
+        "sourceFile": null,
+        "sourceChunk": null,
+        "output": "en-US/06_Contact_Us/index.md",
+        "headings": [
+          {
+            "level": 1,
+            "title": "Contact Us"
+          },
+          {
+            "level": 2,
+            "title": "User Community"
+          },
+          {
+            "level": 2,
+            "title": "Contact Email"
+          },
+          {
+            "level": 2,
+            "title": "NetEase Beijing"
+          }
+        ],
+        "assets": [
+          {
+            "sourceUrl": "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/wechat_group-B34qRm1G.png",
+            "output": "en-US/06_Contact_Us/assets/001_cdd3e2fec5.png",
+            "bytes": 4690
+          }
+        ]
+      }
+    ]
+  }
+}

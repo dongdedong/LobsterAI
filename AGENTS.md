@@ -2,6 +2,73 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Current Project Context for Future Agents
+
+This repository has been deeply reviewed in `docs_mine/`. Before making broad architectural changes, read the relevant document there first:
+
+- `docs_mine/00_文档索引.md` - navigation for the analysis docs.
+- `docs_mine/01_核心技术全景分析.md` - product positioning and technical overview.
+- `docs_mine/02_架构与数据流深度拆解.md` - process model, IPC, SQLite, OpenClaw event flow.
+- `docs_mine/03_核心模块代码地图.md` - key files by subsystem.
+- `docs_mine/04_二次开发入手指南.md` - recommended entry points for secondary development.
+- `docs_mine/05_有道服务端依赖清单与切断方案.md` - authoritative current goal context: identifying and removing Youdao/NetEase server dependencies.
+
+### Current User Goal
+
+The current strategic secondary-development goal is to cut the project off from Youdao server-side services and make the codebase suitable for independent/custom deployment. Treat this as a high-level product direction when analyzing new work. Do not assume `lobsterai-server`, Youdao Portal, Overmind marketplace, Youdao CDN, or NetEase IM services are acceptable long-term dependencies unless the user explicitly says to keep them.
+
+Important server-side dependency clusters already identified:
+
+- Main LobsterAI server: `lobsterai-server.youdao.com` / `lobsterai-server.inner.youdao.com`.
+- Login and account Portal: `lobsterai.youdao.com/portal#` / `lobsterai.inner.youdao.com/portal#`.
+- Server model proxy and quota APIs: `/api/proxy/*`, `/api/models/available`, `/api/models/pricing-catalog`, `/api/user/quota`, `/api/user/profile`.
+- Media generation and ASR: `/api/media/*`, `/api/asr/realtime/sessions`.
+- HTML share service: `/api/html-shares/*` and public `/s/{shareId}/` links.
+- Overmind remote config: `api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/...` for update, login URL, Skill store, Kit store, and MCP marketplace.
+- Optional Youdao provider: `openapi.youdao.com/llmgateway/api/v1/chat/completions`.
+- NetEase-family dependencies to review separately: `lbs.netease.im`, `open.popo.netease.com`, `claw.163.com`, `npm.nie.netease.com`, `ydhardwarebusiness.nosdn.127.net`, `ydhardwarecommon.nosdn.127.net`.
+
+The minimal de-Youdao path is:
+
+1. Stop default fallback to `lobsterai-server` models.
+2. Make Cowork use user-configured third-party/self-hosted model providers by default.
+3. Add local/no-login mode or replace `/api/auth/*` with a self-owned auth backend.
+4. Disable or replace media generation, ASR, HTML sharing, online stores, and update checks.
+5. Localize Computer Use runtime/kit downloads instead of pulling Youdao NOS assets.
+6. Replace Portal, docs, privacy, pricing, and community links with self-owned/local pages.
+
+### OpenClaw Integration Facts
+
+OpenClaw is not a floating dependency. It is pinned in `package.json` under `openclaw.version` and is currently built through the scripts in `scripts/openclaw:*`.
+
+- `npm run electron:dev:openclaw` runs the OpenClaw runtime build path before starting Electron.
+- `scripts/ensure-openclaw-version.cjs` clones/checks out the exact pinned tag.
+- `scripts/apply-openclaw-patches.cjs` applies version-specific patches from `scripts/patches/<version>/`.
+- Updating OpenClaw requires changing `package.json` `openclaw.version`, checking patches, rebuilding, and validating Cowork behavior.
+- `OPENCLAW_SKIP_ENSURE=1` is only for local OpenClaw source development; it bypasses the pinned-version safety net.
+
+The hardest second-development area is not React UI; it is the OpenClaw runtime boundary:
+
+- `src/main/libs/agentEngine/openclawRuntimeAdapter.ts`
+- `src/main/libs/openclawConfigSync.ts`
+- `src/main/libs/openclawEngineManager.ts`
+- `src/main/libs/openclawTokenProxy.ts`
+- `src/main/libs/claudeSettings.ts`
+- `src/main/libs/coworkOpenAICompatProxy.ts`
+
+When changing Agent behavior, model routing, tool permissions, media tools, scheduled tasks, or IM bindings, expect changes to cross Main process, Preload, Renderer services, Redux state, SQLite persistence, and OpenClaw config/runtime behavior.
+
+### Verified Source Truths and Drift Warnings
+
+- `CoworkAgentEngine` is currently only `'openclaw'`; old docs mentioning `yd_cowork`, `ClaudeRuntimeAdapter`, or a real multi-engine runtime are stale or historical.
+- Current Artifact source support should be verified in `src/renderer/types/artifact.ts`, `src/renderer/services/artifactParser.ts`, and `src/renderer/components/artifacts/ArtifactRenderer.tsx`. Earlier docs may overstate React/JSX Artifact support; current parser maps `.jsx`/`.tsx` to code rather than a first-class `react` artifact type.
+- Skill entry files are `SKILL.md`, not `skill.json`; see `src/main/skillManager.ts`.
+- `docs_mine` files are high-value orientation material, but source code is the final authority when docs and implementation disagree.
+
+### Windows / PowerShell Baseline
+
+This repo is worked on primarily from Windows PowerShell. Prefer `rg` for search, use `Get-Content -Encoding UTF8` or Node/Python explicit UTF-8 reads for Chinese files, and avoid Bash-only idioms such as `&&`, `||`, and `python - <<'PY'`. When piping inline Node/Python from a PowerShell here-string, avoid raw Chinese string literals in the script; pass paths by enumeration or use ASCII/Unicode escapes, because stdin-piped scripts can receive Chinese as `????`.
+
 ## Build and Development Commands
 
 ```bash
@@ -177,7 +244,6 @@ The Artifacts feature provides rich preview of code outputs similar to Claude's 
 - `html` - Full HTML pages rendered in sandboxed iframe
 - `svg` - SVG graphics with DOMPurify sanitization and zoom controls
 - `mermaid` - Flowcharts, sequence diagrams, class diagrams via Mermaid.js
-- `react` - React/JSX components compiled with Babel in isolated iframe
 - `code` - Syntax highlighted code with line numbers
 
 **Detection Methods**:
