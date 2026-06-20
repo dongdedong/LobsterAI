@@ -10,6 +10,12 @@ function commandExists(command) {
   return result.status === 0;
 }
 
+function isWslBashPath(candidate) {
+  const normalized = candidate.toLowerCase().replace(/\//g, '\\');
+  return normalized.endsWith('\\windowsapps\\bash.exe')
+    || normalized.endsWith('\\system32\\bash.exe');
+}
+
 function resolveBashExecutable(rootDir) {
   if (process.platform !== 'win32') {
     return commandExists('bash') ? 'bash' : null;
@@ -27,7 +33,7 @@ function resolveBashExecutable(rootDir) {
     });
     if (result.status === 0 && result.stdout) {
       const paths = result.stdout.trim().split(/\r?\n/).map(p => p.trim()).filter(Boolean);
-      const gitBash = paths.find(p => !p.toLowerCase().includes('windowsapps'));
+      const gitBash = paths.find(p => !isWslBashPath(p));
       if (gitBash) return gitBash;
     }
   } catch {}

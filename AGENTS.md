@@ -71,6 +71,10 @@ This repo is worked on primarily from Windows PowerShell. Prefer `rg` for search
 
 When using `rg` with glob filters in this repo, put `-g` filters before the search paths, for example `rg -n -F -g "*.ts" -- "pattern" src vendor`. In Windows PowerShell/ripgrep invocations, placing paths before later `-g` filters such as `rg pattern src vendor -g "*.ts"` can cause the later `-g` arguments to be parsed as paths and produce noisy `系统找不到指定的文件` / invalid path errors.
 
+When building the OpenClaw runtime on Windows, use Git Bash / MSYS bash, not WSL bash. `where bash` may return `C:\Windows\System32\bash.exe` or `WindowsApps\bash.exe` before Git Bash; both are WSL launchers and can break `npm run dist:win` with garbled WSL diagnostics. `scripts/run-build-openclaw-runtime.cjs` must skip those paths and resolve `bash.exe` from Git or bundled MinGit.
+
+For internal unsigned Windows MVP packages, keep `CSC_IDENTITY_AUTO_DISCOVERY=false` and set Windows `signAndEditExecutable=false` unless an explicit signing certificate is provided. Otherwise electron-builder may download `winCodeSign` and fail to extract its Darwin symlinks on Windows accounts without symlink privileges (`Cannot create symbolic link: 客户端没有所需的特权`). Formal external releases should configure `CSC_LINK`/`WIN_CSC_LINK` or a certificate store identity deliberately, then re-enable executable signing/editing and verify file metadata.
+
 ## Build and Development Commands
 
 ```bash

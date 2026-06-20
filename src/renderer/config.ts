@@ -146,11 +146,9 @@ export const defaultConfig: AppConfig = {
   app: {
     port: 3000,
     isDevelopment: process.env.NODE_ENV === 'development',
-    // Default to production (official) services. Source-launched dev builds run
-    // with NODE_ENV=development, but must not auto-target the internal-only test
-    // endpoints (*.inner.youdao.com) — external/open-source users can't reach
-    // them. Flip test mode via the hidden switch in Settings → About when the
-    // internal endpoints are actually needed.
+    // Default to the backend-free Local BYOK MVP. Official or self-hosted
+    // services must be selected explicitly so a fresh install never falls back
+    // to upstream model proxy, login, catalog, or update endpoints.
     testMode: false,
     remoteServices: {
       mode: RemoteServicesMode.LocalByok,

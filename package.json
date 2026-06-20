@@ -63,6 +63,7 @@
     "dev": "vite",
     "prebuild": "node scripts/generate-keyfrom-build-info.cjs",
     "build": "tsc && vite build",
+    "mvp:preflight": "node scripts/mvp-release-preflight.cjs",
     "lint": "eslint src/",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

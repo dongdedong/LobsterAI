@@ -67,8 +67,28 @@ function mergeExtraResources(platformName) {
 
 const keyfrom = readBuildKeyfrom();
 
+const hasExplicitWindowsSigningConfig = Boolean(
+  process.env.CSC_LINK
+  || process.env.WIN_CSC_LINK
+  || process.env.CSC_NAME
+  || process.env.WIN_CSC_NAME
+);
+
+if (!hasExplicitWindowsSigningConfig && process.env.CSC_IDENTITY_AUTO_DISCOVERY === undefined) {
+  process.env.CSC_IDENTITY_AUTO_DISCOVERY = 'false';
+  console.log('[CodeSign] disabled Windows certificate auto-discovery for unsigned MVP packaging');
+}
+
 for (const platformName of ['mac', 'win', 'linux']) {
   mergeExtraResources(platformName);
+}
+
+if (!hasExplicitWindowsSigningConfig) {
+  config.win = {
+    ...(config.win || {}),
+    signAndEditExecutable: false,
+  };
+  console.log('[CodeSign] disabled Windows executable signing/editing for unsigned MVP packaging');
 }
 
 delete config.extraResources;
