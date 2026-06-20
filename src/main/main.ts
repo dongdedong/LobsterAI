@@ -1281,6 +1281,11 @@ const isWindows = process.platform === 'win32';
 const DEV_SERVER_URL = process.env.ELECTRON_START_URL || 'http://localhost:5175';
 const enableVerboseLogging =
   process.env.ELECTRON_ENABLE_LOGGING === '1' || process.env.ELECTRON_ENABLE_LOGGING === 'true';
+const autoOpenDevTools =
+  process.env.LOBSTERAI_OPEN_DEVTOOLS === '1' ||
+  process.env.LOBSTERAI_OPEN_DEVTOOLS === 'true' ||
+  process.env.ELECTRON_OPEN_DEVTOOLS === '1' ||
+  process.env.ELECTRON_OPEN_DEVTOOLS === 'true';
 const disableGpu =
   process.env.LOBSTERAI_DISABLE_GPU === '1' ||
   process.env.LOBSTERAI_DISABLE_GPU === 'true' ||
@@ -9587,6 +9592,23 @@ if (!gotTheLock) {
       scheduleReload('webContents-crashed');
     });
 
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+      if (!isDev) return;
+      const key = input.key.toLowerCase();
+      const isDevToolsShortcut =
+        input.key === 'F12' ||
+        (input.shift && (input.control || input.meta) && key === 'i') ||
+        (input.meta && input.alt && key === 'i');
+      if (!isDevToolsShortcut) return;
+
+      event.preventDefault();
+      if (mainWindow.webContents.isDevToolsOpened()) {
+        mainWindow.webContents.closeDevTools();
+      } else {
+        mainWindow.webContents.openDevTools();
+      }
+    });
+
     if (isDev) {
       // 开发环境
       const maxRetries = 3;
@@ -9611,8 +9633,9 @@ if (!gotTheLock) {
 
       tryLoadURL();
 
-      // 打开开发者工具
-      mainWindow.webContents.openDevTools();
+      if (autoOpenDevTools) {
+        mainWindow.webContents.openDevTools();
+      }
     } else {
       // 生产环境
       mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
