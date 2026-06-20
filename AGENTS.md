@@ -398,14 +398,19 @@ When adding or modifying log statements, verify:
 
 ## Commit & Pull Request Guidelines
 
-**All commit messages must follow the [Conventional Commits](https://www.conventionalcommits.org/) spec and be written in English.**
+This repository is now maintained as an internal fork and is not expected to be
+submitted back to the upstream project. Commit messages should follow the
+[Conventional Commits](https://www.conventionalcommits.org/) structure, but the
+human-readable subject and body should be written in Simplified Chinese by
+default.
 
 ### Commit Message Format
 
 ```
-type(scope): short imperative summary
+type(scope): 简短中文摘要
 
-Optional body in English markdown explaining *why* (not what).
+Optional body in Simplified Chinese markdown explaining *why* and the main
+behavioral impact.
 
 Optional footer: BREAKING CHANGE: ..., Closes #123, etc.
 ```
@@ -413,16 +418,17 @@ Optional footer: BREAKING CHANGE: ..., Closes #123, etc.
 **Types**: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `style`, `ci`, `build`, `revert`
 
 **Rules**:
-- Subject line: lowercase, imperative mood, no trailing period, ≤72 chars
+- Type and scope stay in lowercase English, for example `feat(cowork):`
+- Subject line uses Simplified Chinese by default, no trailing punctuation, ≤72 chars
 - Scope (optional): the affected area, e.g. `feat(cowork):`, `fix(im):`
-- Body and footer must be in English markdown
+- Body should be written in Simplified Chinese markdown unless the user explicitly asks for English
 - Breaking changes: add `!` after type/scope (`feat!:`) **and** a `BREAKING CHANGE:` footer
 
 **Examples**:
 ```
-feat(cowork): add streaming progress indicator
-fix(sqlite): prevent duplicate session insert on retry
-chore: bump version to 2026.3.18
+feat(cowork): 增加流式进度提示
+fix(sqlite): 避免重试时重复写入会话
+docs(mvp): 补充无后端商业化开发计划
 ```
 
 - PRs should include a concise description, linked issue if applicable, and screenshots for UI changes.
