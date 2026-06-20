@@ -1,7 +1,7 @@
 import React from 'react';
-import { i18nService } from '@/services/i18n';
 
-const PRIVACY_URL = 'https://c.youdao.com/dict/hardware/lobsterai/lobsterai_service.html';
+import { getServiceTermsUrl } from '@/services/endpoints';
+import { i18nService } from '@/services/i18n';
 
 interface PrivacyDialogProps {
   onAccept: () => void;
@@ -9,9 +9,10 @@ interface PrivacyDialogProps {
 }
 
 const PrivacyDialog: React.FC<PrivacyDialogProps> = ({ onAccept, onReject }) => {
+  const privacyUrl = getServiceTermsUrl();
   const handleLinkClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await window.electron.shell.openExternal(PRIVACY_URL);
+    await window.electron.shell.openExternal(privacyUrl);
   };
 
   const desc = i18nService.t('privacyDialogDesc');
@@ -33,7 +34,7 @@ const PrivacyDialog: React.FC<PrivacyDialogProps> = ({ onAccept, onReject }) => 
           <p className="text-sm text-secondary text-center leading-relaxed">
             {parts[0]}
             <a
-              href={PRIVACY_URL}
+              href={privacyUrl}
               onClick={handleLinkClick}
               className="text-primary hover:text-primary-hover underline"
             >

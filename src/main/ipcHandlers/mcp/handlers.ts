@@ -1,5 +1,4 @@
-import { app, ipcMain } from 'electron';
-import https from 'https';
+import { ipcMain } from 'electron';
 
 import { McpIpcChannel } from '../../../shared/mcp/constants';
 import { normalizeMcpServerUrlInput } from '../../../shared/mcp/url';
@@ -9,6 +8,7 @@ import type { McpServerFormData } from '../../mcp/mcpStore';
 
 export interface McpHandlerDeps {
   getMcpRuntime: () => McpRuntime;
+  getMcpMarketplaceUrl: () => string;
   syncOpenClawConfig: (options: {
     reason: string;
     restartGatewayIfRunning?: boolean;
@@ -16,28 +16,22 @@ export interface McpHandlerDeps {
   }) => Promise<{ success: boolean; changed: boolean }>;
 }
 
-function fetchText(url: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const req = https.get(url, { timeout: 10000 }, res => {
-      if (res.statusCode !== 200) {
-        reject(new Error(`HTTP ${res.statusCode}`));
-        res.resume();
-        return;
-      }
-      let body = '';
-      res.setEncoding('utf8');
-      res.on('data', (chunk: string) => {
-        body += chunk;
-      });
-      res.on('end', () => resolve(body));
-      res.on('error', reject);
+async function fetchText(url: string): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
     });
-    req.on('error', reject);
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
-  });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return await response.text();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function syncMcpConfig(
@@ -67,7 +61,7 @@ function normalizeMcpServerInput(data: Partial<McpServerFormData>): Partial<McpS
 }
 
 export function registerMcpHandlers(deps: McpHandlerDeps): void {
-  const { getMcpRuntime, syncOpenClawConfig } = deps;
+  const { getMcpRuntime, getMcpMarketplaceUrl, syncOpenClawConfig } = deps;
 
   ipcMain.handle(McpIpcChannel.List, () => {
     try {
@@ -199,9 +193,7 @@ export function registerMcpHandlers(deps: McpHandlerDeps): void {
   });
 
   ipcMain.handle(McpIpcChannel.FetchMarketplace, async () => {
-    const url = app.isPackaged
-      ? 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/prod/mcp-marketplace'
-      : 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/test/mcp-marketplace';
+    const url = getMcpMarketplaceUrl();
     try {
       const data = await fetchText(url);
       const json = JSON.parse(data);

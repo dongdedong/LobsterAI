@@ -38,12 +38,14 @@ const getSafeWebSocketEndpoint = (wsUrl: string): string => {
 
 export interface AsrHandlerDeps {
   getAuthTokens: () => AuthTokens | null;
+  canUseCloudRemoteFeatures: () => boolean;
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>;
   getServerApiBaseUrl: () => string;
 }
 
 export function registerAsrIpcHandlers({
   getAuthTokens,
+  canUseCloudRemoteFeatures,
   fetchWithAuth,
   getServerApiBaseUrl,
 }: AsrHandlerDeps): void {
@@ -51,6 +53,14 @@ export function registerAsrIpcHandlers({
     AsrIpcChannel.CreateRealtimeSession,
     async (_event, options?: AsrRealtimeSessionRequest): Promise<AsrRealtimeSessionResult> => {
       try {
+        if (!canUseCloudRemoteFeatures()) {
+          console.warn('[ASR] realtime session request was rejected because cloud remote features are disabled.');
+          return {
+            success: false,
+            code: AsrApiCode.Disabled,
+            error: 'Realtime ASR is disabled in local BYOK mode.',
+          };
+        }
         const tokens = getAuthTokens();
         if (!tokens) {
           console.warn('[ASR] realtime session request was rejected because no auth tokens are available');

@@ -1,6 +1,7 @@
 import { ProviderName } from '@shared/providers';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
+import { RemoteServicesMode, ServerModelMode } from '../../shared/remoteServices/constants';
 import { type AppConfig, CONFIG_KEYS, defaultConfig, ShortcutAction } from '../config';
 
 const makeLegacyConfigWithoutMiniMaxAddedModels = (): AppConfig => ({
@@ -207,6 +208,32 @@ describe('configService shortcut migrations', () => {
 });
 
 describe('configService provider migrations', () => {
+  test('preserves self-hosted remote services when saving partial config updates', async () => {
+    const storedConfig: AppConfig = {
+      ...defaultConfig,
+      app: {
+        ...defaultConfig.app,
+        remoteServices: {
+          mode: RemoteServicesMode.LocalByok,
+          serverApiBaseUrl: 'http://127.0.0.1:8787',
+          serverModelMode: ServerModelMode.Disabled,
+        },
+      },
+    };
+    const { configService, storeData } = await loadConfigServiceWithStoredConfig(storedConfig);
+
+    await configService.updateConfig({
+      theme: 'dark',
+    });
+
+    const savedConfig = storeData[CONFIG_KEYS.APP_CONFIG] as AppConfig;
+    expect(savedConfig.app?.remoteServices).toMatchObject({
+      mode: RemoteServicesMode.LocalByok,
+      serverApiBaseUrl: 'http://127.0.0.1:8787',
+      serverModelMode: ServerModelMode.Disabled,
+    });
+  });
+
   test('persists injected provider models during init', async () => {
     const { configService, storeData, setItem } = await loadConfigServiceWithStoredConfig(
       makeLegacyConfigWithoutMiniMaxAddedModels()

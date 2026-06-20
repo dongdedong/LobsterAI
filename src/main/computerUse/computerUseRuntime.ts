@@ -12,7 +12,7 @@ export const ComputerUseRuntime = {
   Platform: 'win32',
   Arch: 'x64',
   ArchiveName: 'lobsterai-computer-use-runtime-win-x64-1.0.7.zip',
-  DownloadUrl: 'https://ydhardwarebusiness.nosdn.127.net/806b908f1ba20905cc5c99495bccc69c.zip',
+  DownloadUrl: 'http://127.0.0.1:8787/downloads/lobsterai-computer-use-runtime-win-x64-1.0.7.zip',
   Sha256: 'd43c15cd69e10f0fbffe62f6c5ec947b4e61c5df84efbce46b6f73e28c9de30e',
   SizeBytes: 540139,
 } as const;

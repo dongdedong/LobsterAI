@@ -1,4 +1,5 @@
 import { type ApiFormat,type ProviderConfig, ProviderName, ProviderRegistry, resolveCodingPlanBaseUrl } from '../../shared/providers';
+import { isServerModelModeEnabled, type RemoteServicesConfig } from '../../shared/remoteServices/constants';
 import type { SqliteStore } from '../sqliteStore';
 import type { CoworkApiConfig } from './coworkConfigStore';
 import { type AnthropicApiFormat,normalizeProviderApiFormat } from './coworkFormatTransform';
@@ -23,6 +24,9 @@ const gwDiagTs = (): string => {
 };
 
 type AppConfig = {
+  app?: {
+    remoteServices?: RemoteServicesConfig;
+  };
   model?: {
     defaultModel?: string;
     defaultModelProvider?: string;
@@ -211,7 +215,10 @@ function shouldUseOpenAICodexOAuth(providerName: string, providerConfig: LocalPr
   return readOpenAICodexAuthFile() !== null;
 }
 
-function tryLobsteraiServerFallback(modelId?: string): MatchedProvider | null {
+function tryLobsteraiServerFallback(appConfig: AppConfig, modelId?: string): MatchedProvider | null {
+  if (!isServerModelModeEnabled(appConfig.app?.remoteServices)) {
+    return null;
+  }
   const tokens = authTokensGetter?.();
   const serverBaseUrl = serverBaseUrlGetter?.();
   if (!tokens?.accessToken || !serverBaseUrl) return null;
@@ -260,7 +267,7 @@ function resolveMatchedProvider(appConfig: AppConfig): { matched: MatchedProvide
   if (!modelId) {
     const fallback = resolveFallbackModel();
     if (!fallback) {
-      const serverFallback = tryLobsteraiServerFallback(configuredModelId);
+      const serverFallback = tryLobsteraiServerFallback(appConfig, configuredModelId);
       if (serverFallback) return { matched: serverFallback };
       return { matched: null, error: 'No available model configured in enabled providers.' };
     }
@@ -272,7 +279,7 @@ function resolveMatchedProvider(appConfig: AppConfig): { matched: MatchedProvide
 
   // Handle lobsterai-server provider: dynamically construct from auth tokens
   if (preferredProviderName === ProviderName.LobsteraiServer) {
-    const serverMatch = tryLobsteraiServerFallback(modelId);
+    const serverMatch = tryLobsteraiServerFallback(appConfig, modelId);
     if (serverMatch) {
       return { matched: serverMatch };
     }
@@ -303,7 +310,7 @@ function resolveMatchedProvider(appConfig: AppConfig): { matched: MatchedProvide
       modelId = fallback.modelId;
       providerEntry = [fallback.providerName, fallback.providerConfig];
     } else {
-      const serverFallback = tryLobsteraiServerFallback(modelId);
+      const serverFallback = tryLobsteraiServerFallback(appConfig, modelId);
       if (serverFallback) return { matched: serverFallback };
       return { matched: null, error: `No enabled provider found for model: ${modelId}` };
     }
@@ -318,7 +325,7 @@ function resolveMatchedProvider(appConfig: AppConfig): { matched: MatchedProvide
   // MiniMax OAuth mode guard: if OAuth is selected but login has not been completed
   // (no access token), do not use the stale API key as an OAuth token.
   if (providerName === ProviderName.Minimax && (providerConfig as any).authType === 'oauth' && !(providerConfig as any).oauthAccessToken) {
-    const serverFallback = tryLobsteraiServerFallback(modelId);
+    const serverFallback = tryLobsteraiServerFallback(appConfig, modelId);
     if (serverFallback) return { matched: serverFallback };
     return { matched: null, error: 'MiniMax OAuth mode selected but login not completed.' };
   }
@@ -333,7 +340,7 @@ function resolveMatchedProvider(appConfig: AppConfig): { matched: MatchedProvide
   }
 
   if (!baseURL) {
-    const serverFallback = tryLobsteraiServerFallback(modelId);
+    const serverFallback = tryLobsteraiServerFallback(appConfig, modelId);
     if (serverFallback) return { matched: serverFallback };
     return { matched: null, error: `Provider ${providerName} is missing base URL.` };
   }
@@ -344,7 +351,7 @@ function resolveMatchedProvider(appConfig: AppConfig): { matched: MatchedProvide
     (providerName === ProviderName.Minimax && (providerConfig as any).authType === 'oauth' && !!(providerConfig as any).oauthAccessToken?.trim())
     || shouldUseOpenAICodexOAuth(providerName, providerConfig);
   if (apiFormat === 'anthropic' && providerRequiresApiKey(providerName) && !providerConfig.apiKey?.trim() && !hasApiKey && !hasOAuthCreds) {
-    const serverFallback = tryLobsteraiServerFallback(modelId);
+    const serverFallback = tryLobsteraiServerFallback(appConfig, modelId);
     if (serverFallback) return { matched: serverFallback };
     return { matched: null, error: `Provider ${providerName} requires API key for Anthropic-compatible mode.` };
   }

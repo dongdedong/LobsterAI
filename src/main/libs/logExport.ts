@@ -5,6 +5,7 @@ import yazl from 'yazl';
 export type LogArchiveEntry = {
   archiveName: string;
   filePath: string;
+  optional?: boolean;
 };
 
 export type ExportLogsZipInput = {
@@ -14,6 +15,7 @@ export type ExportLogsZipInput = {
 
 export type ExportLogsZipResult = {
   missingEntries: string[];
+  optionalMissingEntries: string[];
 };
 
 const EXPORT_TIMEOUT_MS = 30_000;
@@ -21,6 +23,7 @@ const EXPORT_TIMEOUT_MS = 30_000;
 export async function exportLogsZip(input: ExportLogsZipInput): Promise<ExportLogsZipResult> {
   const zipFile = new yazl.ZipFile();
   const missingEntries: string[] = [];
+  const optionalMissingEntries: string[] = [];
 
   // Defensive: propagate ZipFile-level errors into the output stream so
   // pipeline() can reject immediately instead of hanging until timeout.
@@ -54,7 +57,11 @@ export async function exportLogsZip(input: ExportLogsZipInput): Promise<ExportLo
     } catch {
       // File does not exist or became inaccessible — treat as missing
     }
-    missingEntries.push(entry.archiveName);
+    if (entry.optional) {
+      optionalMissingEntries.push(entry.archiveName);
+    } else {
+      missingEntries.push(entry.archiveName);
+    }
     zipFile.addBuffer(Buffer.alloc(0), entry.archiveName);
   }
 
@@ -83,5 +90,5 @@ export async function exportLogsZip(input: ExportLogsZipInput): Promise<ExportLo
     clearTimeout(timer);
   }
 
-  return { missingEntries };
+  return { missingEntries, optionalMissingEntries };
 }

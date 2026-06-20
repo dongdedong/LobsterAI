@@ -1360,7 +1360,7 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
         const serverModels = getAllServerModelMetadata();
         const providerId = OpenClawProviderId.LobsteraiServer;
 
-        if (serverModels.length > 0 || !allProvidersMap[providerId]) {
+        if (serverModels.length > 0) {
           const firstServerModelId = serverModels[0]?.modelId || modelId;
           const firstServerSel = buildProviderSelection({
             apiKey: 'proxy-managed',
@@ -1485,7 +1485,7 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
       && bindingsJson !== this.previousBindingsJson;
     this.previousBindingsJson = bindingsJson;
 
-    this.canUseMediaGeneration();
+    const mediaGenerationEnabled = this.canUseMediaGeneration();
 
     const managedConfig: Record<string, unknown> = {
       gateway: {
@@ -1644,7 +1644,7 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
             ? { feishu: { enabled: false } }
             : {}),
           ...(hasAskUserPlugin ? { 'ask-user-question': { enabled: true } } : {}),
-          ...(hasMediaGenPlugin ? { 'lobster-media-generation': { enabled: true } } : {}),
+          ...(hasMediaGenPlugin ? { 'lobster-media-generation': { enabled: mediaGenerationEnabled } } : {}),
           // Some OpenClaw versions auto-inject qwen-portal-auth for
           // Qwen/DashScope URLs. Declare it only when the plugin actually
           // exists, otherwise it becomes a stale entry on every startup.
@@ -1718,7 +1718,7 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
 
     // Sync LobsterMediaGeneration plugin config — uses media callback endpoint
     const mediaCallbackUrl = this.getMediaCallbackUrl?.();
-    if (hasMediaGenPlugin && mediaCallbackUrl && managedConfig.plugins) {
+    if (hasMediaGenPlugin && mediaGenerationEnabled && mediaCallbackUrl && managedConfig.plugins) {
       const plugins = managedConfig.plugins as Record<string, unknown>;
       const entries = plugins.entries as Record<string, Record<string, unknown>>;
       entries['lobster-media-generation'] = {

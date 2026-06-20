@@ -94,6 +94,11 @@ import {
 } from '../shared/openclawEngine/constants';
 import { PlatformRegistry } from '../shared/platform';
 import { OpenClawProviderId, ProviderName } from '../shared/providers';
+import {
+  areCloudRemoteFeaturesEnabled,
+  isServerModelModeEnabled,
+  type RemoteServicesConfig,
+} from '../shared/remoteServices/constants';
 import type { ShellOpenFailureReason as ShellOpenFailureReasonType } from '../shared/shell/constants';
 import { ShellOpenFailureReason } from '../shared/shell/constants';
 import { AgentManager } from './agentManager';
@@ -191,6 +196,7 @@ import {
 import {
   getHtmlSharePublicBaseUrl,
   getKitStoreUrl,
+  getMcpMarketplaceUrl,
   getPortalTasksUrl,
   getServerApiBaseUrl,
   getSkillStoreUrl,
@@ -1803,7 +1809,10 @@ const getOpenClawConfigSync = (): OpenClawConfigSync => {
           .listUserPlugins()
           .filter(p => !isHiddenUserPluginId(p.pluginId))
           .map(p => ({ pluginId: p.pluginId, enabled: p.enabled, config: p.config })),
-      canUseMediaGeneration: () => cachedMediaGenerationEntitled,
+      canUseMediaGeneration: () => (
+        cachedMediaGenerationEntitled &&
+        areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))
+      ),
     });
   }
   return openClawConfigSync;
@@ -2964,7 +2973,9 @@ let lastReloadAt = 0;
 const MIN_RELOAD_INTERVAL_MS = 5000;
 type AppConfigSettings = {
   api?: unknown;
-  app?: Record<string, unknown>;
+  app?: Record<string, unknown> & {
+    remoteServices?: RemoteServicesConfig;
+  };
   model?: unknown;
   providers?: Record<string, unknown>;
   shortcuts?: Record<string, unknown>;
@@ -2979,6 +2990,20 @@ type AppConfigSettings = {
 const getUseSystemProxyFromConfig = (config?: { useSystemProxy?: boolean }): boolean => {
   return config?.useSystemProxy === true;
 };
+
+const isServerModelModeEnabledFromConfig = (config?: AppConfigSettings): boolean => (
+  isServerModelModeEnabled(config?.app?.remoteServices)
+);
+
+const areCloudRemoteFeaturesEnabledFromConfig = (config?: AppConfigSettings): boolean => (
+  areCloudRemoteFeaturesEnabled(config?.app?.remoteServices)
+);
+
+const cloudFeatureDisabledResult = (feature: string): { success: false; error: string; code: string } => ({
+  success: false,
+  error: `${feature} is disabled in local BYOK mode.`,
+  code: 'LOCAL_BYOK_CLOUD_FEATURE_DISABLED',
+});
 
 const hasBrowserWebAccessConfigChanged = (
   previousConfig?: AppConfigSettings,
@@ -3245,6 +3270,9 @@ if (!gotTheLock) {
       const systemProxyChanged = getUseSystemProxyFromConfig(previousAppConfig) !==
         getUseSystemProxyFromConfig(nextAppConfig);
       refreshEndpointsTestMode(getStore());
+      if (!areCloudRemoteFeaturesEnabledFromConfig(nextAppConfig)) {
+        cachedMediaGenerationEntitled = false;
+      }
       const impactDecision = classifyAppConfigChange(previousAppConfig, value);
       const proxyChanged = impactDecision.reasons.includes(OpenClawConfigImpactReason.AppUseSystemProxy);
       const actionDecision = removeImpactDecisionReasons(impactDecision, [
@@ -3347,6 +3375,7 @@ if (!gotTheLock) {
                 {
                   archiveName: 'install-timing.log',
                   filePath: path.join(app.getPath('appData'), 'LobsterAI', 'install-timing.log'),
+                  optional: true,
                 },
               ]
             : []),
@@ -3358,6 +3387,7 @@ if (!gotTheLock) {
         canceled: false,
         path: outputPath,
         missingEntries: archiveResult.missingEntries,
+        optionalMissingEntries: archiveResult.optionalMissingEntries,
       };
     } catch (error) {
       console.error('[LogExport] export failed:', error);
@@ -3632,6 +3662,14 @@ if (!gotTheLock) {
     args: Record<string, unknown>;
     context: { sessionKey: string; toolCallId: string };
   }): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean; details?: Record<string, unknown> }> => {
+    if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      console.warn('[MediaGeneration] blocked tool request because cloud remote features are disabled.');
+      return {
+        content: [{ type: 'text', text: 'Media generation is disabled in local BYOK mode.' }],
+        isError: true,
+        details: { status: 'failed', warnings: ['LOCAL_BYOK_CLOUD_FEATURE_DISABLED'] },
+      };
+    }
     const { tool, args } = request;
     const action = (args.action as string) || 'generate';
     const serverBaseUrl = getServerApiBaseUrl();
@@ -4718,6 +4756,10 @@ if (!gotTheLock) {
 
   ipcMain.handle(AuthIpcChannel.GetPricingCatalog, async () => {
     try {
+      if (!isServerModelModeEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        console.log('[Auth:getPricingCatalog] skipped because server model mode is disabled.');
+        return { success: true, textModels: [] };
+      }
       const serverBaseUrl = getServerApiBaseUrl();
       const url = `${serverBaseUrl}/api/models/pricing-catalog`;
       console.log(`[Auth:getPricingCatalog] requesting public pricing catalog at ${url}`);
@@ -4759,6 +4801,10 @@ if (!gotTheLock) {
 
   ipcMain.handle('auth:getModels', async () => {
     try {
+      if (!isServerModelModeEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        console.log('[Auth:getModels] skipped because server model mode is disabled.');
+        return { success: true, models: [] };
+      }
       const tokens = getAuthTokens();
       if (!tokens) {
         console.log('[Auth:getModels] No auth tokens available');
@@ -4819,6 +4865,9 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.CreateFromHtmlFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeCreateFromHtmlFileInput(input);
       console.debug(
         `[HtmlShare] received HTML file share request for session ${options.sessionId} and artifact ${options.artifactId}`,
@@ -4876,6 +4925,9 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.GetByHtmlFile, async (_event, input: unknown) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeGetByHtmlFileInput(input);
       const clientSourceKey = buildHtmlShareClientSourceKey(options.filePath);
       return await getHtmlShareBySource(
@@ -4897,6 +4949,9 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.UpdateFromHtmlFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeUpdateFromHtmlFileInput(input);
       const clientSourceKey = buildHtmlShareClientSourceKey(options.filePath);
       const packaged = await packageHtmlFile(options.filePath);
@@ -4944,6 +4999,9 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.CreateFromArtifactFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeCreateFromArtifactFileInput(input);
       console.debug(
         `[HtmlShare] received ${options.sourceType} share request for session ${options.sessionId} and artifact ${options.artifactId}`,
@@ -5001,6 +5059,9 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.GetByArtifactFile, async (_event, input: unknown) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeGetByArtifactFileInput(input);
       const clientSourceKey = buildArtifactShareClientSourceKey(options);
       return await getHtmlShareBySource(
@@ -5022,6 +5083,9 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.UpdateFromArtifactFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeUpdateFromArtifactFileInput(input);
       const clientSourceKey = buildArtifactShareClientSourceKey(options);
       const packaged = await packageArtifactFile({
@@ -5074,6 +5138,9 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.UpdateStatus, async (_event, input: unknown) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeUpdateHtmlShareStatusInput(input);
       return await updateHtmlShareStatus(
         getServerApiBaseUrl(),
@@ -5093,6 +5160,9 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.UpdateAccessMode, async (_event, input: unknown) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const options = sanitizeUpdateHtmlShareAccessModeInput(input);
       return await updateHtmlShareAccessMode(
         getServerApiBaseUrl(),
@@ -5112,6 +5182,9 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.Get, async (_event, shareId: unknown) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const id = sanitizeHtmlShareString(shareId, 'shareId', 64);
       const resp = await fetchWithAuth(
         `${getServerApiBaseUrl()}/api/html-shares/${encodeURIComponent(id)}`,
@@ -5135,6 +5208,9 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.Disable, async (_event, shareId: unknown) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        return cloudFeatureDisabledResult('HTML sharing');
+      }
       const id = sanitizeHtmlShareString(shareId, 'shareId', 64);
       return await updateHtmlShareStatus(
         getServerApiBaseUrl(),
@@ -5154,6 +5230,10 @@ if (!gotTheLock) {
   // Media generation IPC handlers
   ipcMain.handle('media:getModels', async (_event, type: 'image' | 'video') => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        console.warn('[Media:getModels] skipped because cloud remote features are disabled.');
+        return { success: true, models: [] };
+      }
       const tokens = getAuthTokens();
       if (!tokens) {
         console.warn('[Media:getModels] No auth tokens, skipping');
@@ -5183,6 +5263,10 @@ if (!gotTheLock) {
 
   ipcMain.handle('media:getTaskStatus', async (_event, taskId: number, type: 'image' | 'video') => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        console.warn('[Media:getTaskStatus] skipped because cloud remote features are disabled.');
+        return cloudFeatureDisabledResult('Media generation');
+      }
       const tokens = getAuthTokens();
       if (!tokens) return { success: false, error: 'Not logged in' };
       const serverBaseUrl = getServerApiBaseUrl();
@@ -5640,7 +5724,7 @@ if (!gotTheLock) {
     }
   });
 
-  registerMcpHandlers({ getMcpRuntime, syncOpenClawConfig });
+  registerMcpHandlers({ getMcpRuntime, syncOpenClawConfig, getMcpMarketplaceUrl });
 
   // Cowork IPC handlers
   ipcMain.handle(
@@ -6630,6 +6714,10 @@ if (!gotTheLock) {
 
   ipcMain.handle('cowork:media:cancel', async (_event, taskId: string) => {
     try {
+      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+        console.warn('[Media:cancel] skipped because cloud remote features are disabled.');
+        return { success: false, message: 'Media generation is disabled in local BYOK mode.' };
+      }
       const serverBaseUrl = getServerApiBaseUrl();
       const resp = await fetchWithAuth(`${serverBaseUrl}/api/media/videos/tasks/${taskId}/cancel`, { method: 'POST' });
       const body = await resp.json() as { code: number; message?: string };
@@ -8869,6 +8957,9 @@ if (!gotTheLock) {
 
   registerAsrIpcHandlers({
     getAuthTokens,
+    canUseCloudRemoteFeatures: () => (
+      areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))
+    ),
     fetchWithAuth,
     getServerApiBaseUrl,
   });
@@ -10155,7 +10246,7 @@ if (!gotTheLock) {
 
     // ── Pre-warm quota & model caches so provider resolution and config sync
     // see real server data instead of empty defaults ──
-    if (getAuthTokens()) {
+    if (getAuthTokens() && isServerModelModeEnabledFromConfig(appConfig)) {
       profiler.mark('startupCacheWarmup');
       const warmupResult = await runStartupCacheWarmup({
         serverBaseUrl: getServerApiBaseUrl(),
@@ -10167,6 +10258,8 @@ if (!gotTheLock) {
       cachedSubscriptionStatus = warmupResult.subscriptionStatus;
       cachedMediaGenerationEntitled = warmupResult.mediaGenerationEntitled;
       profiler.measure('startupCacheWarmup');
+    } else if (getAuthTokens()) {
+      console.log('[Startup] skipped server cache warmup because server model mode is disabled.');
     }
 
     // Agent model migration — runs after cache warmup so resolveMatchedProvider
@@ -10286,7 +10379,8 @@ if (!gotTheLock) {
         try {
           const runtimeResult = await ensurePythonRuntimeReady();
           if (!runtimeResult.success) {
-            console.error('[Main] initApp: ensurePythonRuntimeReady failed:', runtimeResult.error);
+            const log = app.isPackaged ? console.error : console.warn;
+            log('[Main] initApp: ensurePythonRuntimeReady failed:', runtimeResult.error);
           } else {
             console.log('[Main] initApp: ensurePythonRuntimeReady done');
           }

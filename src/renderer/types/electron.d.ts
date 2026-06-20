@@ -1001,6 +1001,7 @@ interface IElectronAPI {
       canceled?: boolean;
       path?: string;
       missingEntries?: string[];
+      optionalMissingEntries?: string[];
       error?: string;
     }>;
     fromRenderer: (level: string, tag: string, message: string) => void;

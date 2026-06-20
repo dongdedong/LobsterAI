@@ -11,7 +11,7 @@ export const ComputerUseSkillId = {
 export type ComputerUseSkillId = typeof ComputerUseSkillId[keyof typeof ComputerUseSkillId];
 
 export const ComputerUseKitBundle = {
-  BuiltIn: 'https://ydhardwarebusiness.nosdn.127.net/2fa564627a3f1a0f3acedbc771d15f12.zip',
+  BuiltIn: 'http://127.0.0.1:8787/downloads/computer-use-kit.zip',
 } as const;
 export type ComputerUseKitBundle =
   typeof ComputerUseKitBundle[keyof typeof ComputerUseKitBundle];

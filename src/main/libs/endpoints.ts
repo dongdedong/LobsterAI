@@ -1,9 +1,14 @@
 import { app } from 'electron';
 
 import { HtmlSharePublicRoute } from '../../shared/htmlShare/constants';
+import {
+  type RemoteServicesConfig,
+  resolveRemoteServicesConfig,
+} from '../../shared/remoteServices/constants';
 import type { SqliteStore } from '../sqliteStore';
 
 let cachedTestMode: boolean | null = null;
+let cachedRemoteServices: RemoteServicesConfig | undefined;
 
 /**
  * Read testMode from store and cache it.
@@ -12,6 +17,7 @@ let cachedTestMode: boolean | null = null;
 export function refreshEndpointsTestMode(store: SqliteStore): void {
   const appConfig = store.get<any>('app_config');
   cachedTestMode = appConfig?.app?.testMode === true;
+  cachedRemoteServices = appConfig?.app?.remoteServices;
 }
 
 /**
@@ -27,49 +33,56 @@ export const isTestModeEnabled = (): boolean => {
  * Used for auth exchange/refresh, models, proxy, etc.
  */
 export const getServerApiBaseUrl = (): string => {
-  return isTestModeEnabled()
-    ? 'https://lobsterai-server.inner.youdao.com'
-    : 'https://lobsterai-server.youdao.com';
+  return resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).serverApiBaseUrl;
 };
 
 export const getHtmlSharePublicBaseUrl = (): string => {
-  return `${getServerApiBaseUrl()}${HtmlSharePublicRoute.Root}`;
+  const remoteServices = resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  });
+  return remoteServices.htmlSharePublicBaseUrl || `${getServerApiBaseUrl()}${HtmlSharePublicRoute.Root}`;
 };
 
 export const getUpdateCheckUrl = (): string => (
-  isTestModeEnabled()
-    ? 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/test/update'
-    : 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/prod/update'
+  resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).updateCheckUrl
 );
 
 export const getManualUpdateCheckUrl = (): string => (
-  isTestModeEnabled()
-    ? 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/test/update-manual'
-    : 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/prod/update-manual'
+  resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).manualUpdateCheckUrl
 );
 
 export const getFallbackDownloadUrl = (): string => (
-  isTestModeEnabled()
-    ? 'https://lobsterai.inner.youdao.com/#/download-list'
-    : 'https://lobsterai.youdao.com/#/download-list'
+  resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).downloadBaseUrl
 );
 
 export const getSkillStoreUrl = (): string => (
-  isTestModeEnabled()
-    ? 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/test/skill-store'
-    : 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/prod/skill-store'
+  resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).skillStoreUrl
 );
 
-// Portal 页面
-const PORTAL_BASE_TEST = 'https://lobsterai.inner.youdao.com/portal#';
-const PORTAL_BASE_PROD = 'https://lobsterai.youdao.com/portal#';
-
-const getPortalBase = (): string => isTestModeEnabled() ? PORTAL_BASE_TEST : PORTAL_BASE_PROD;
+const getPortalBase = (): string => resolveRemoteServicesConfig(cachedRemoteServices, {
+  testMode: isTestModeEnabled(),
+}).portalBaseUrl;
 
 export const getPortalTasksUrl = (): string => `${getPortalBase()}/profile/detail?tab=tasks`;
 
 export const getKitStoreUrl = (): string => (
-  isTestModeEnabled()
-    ? 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/test/kit-store'
-    : 'https://api-overmind.youdao.com/openapi/get/luna/hardware/lobsterai/prod/kit-store'
+  resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).kitStoreUrl
+);
+
+export const getMcpMarketplaceUrl = (): string => (
+  resolveRemoteServicesConfig(cachedRemoteServices, {
+    testMode: isTestModeEnabled(),
+  }).mcpMarketplaceUrl
 );

@@ -1,5 +1,6 @@
 import { ProviderName } from '@shared/providers';
 
+import { RemoteServicesMode, resolveRemoteServicesConfig } from '../../shared/remoteServices/constants';
 import { store } from '../store';
 import {
   setAuthLoading,
@@ -15,12 +16,45 @@ import {
   clearServerModels,
   setServerModels,
 } from '../store/slices/modelSlice';
+import { configService } from './config';
 
 interface AuthStateRefreshResult {
   isLoggedIn: boolean;
   user: UserProfile | null;
   quota: UserQuota | null;
 }
+
+const LOCAL_BYOK_USER: UserProfile = {
+  yid: 'local-byok-user',
+  nickname: 'Local BYOK User',
+  avatarUrl: null,
+  userId: 'local-byok-user',
+  status: 1,
+};
+
+const LOCAL_BYOK_QUOTA: UserQuota = {
+  planName: 'Local BYOK',
+  subscriptionStatus: 'local',
+  creditsLimit: 0,
+  creditsUsed: 0,
+  creditsRemaining: 0,
+  hasPaidCredits: false,
+};
+
+const LOCAL_BYOK_PROFILE_SUMMARY = {
+  id: 0,
+  nickname: LOCAL_BYOK_USER.nickname,
+  avatarUrl: null,
+  totalCreditsRemaining: 0,
+  creditItems: [],
+};
+
+const isLocalByokAuthMode = (): boolean => {
+  const config = configService.getConfig();
+  return resolveRemoteServicesConfig(config.app?.remoteServices, {
+    testMode: config.app?.testMode === true,
+  }).mode === RemoteServicesMode.LocalByok;
+};
 
 export interface PricingCatalogTextModel {
   modelId?: string;
@@ -92,7 +126,14 @@ class AuthService {
   private unsubCallback: (() => void) | null = null;
   private unsubQuotaChanged: (() => void) | null = null;
   private unsubWindowState: (() => void) | null = null;
+  private configUpdatedListener: (() => void) | null = null;
   private lastRefreshTime = 0;
+
+  private applyLocalByokAuthState() {
+    store.dispatch(setLoggedIn({ user: LOCAL_BYOK_USER, quota: LOCAL_BYOK_QUOTA }));
+    store.dispatch(setProfileSummary(LOCAL_BYOK_PROFILE_SUMMARY));
+    store.dispatch(clearServerModels());
+  }
 
   /**
    * Initialize: try to restore login state from persisted token.
@@ -108,29 +149,53 @@ class AuthService {
       await this.handleCallback(code);
     });
 
-    try {
-      const pendingCode = await window.electron.auth.getPendingCallback();
-      let handledPendingCode = false;
-      if (pendingCode) {
-        handledPendingCode = await this.handleCallback(pendingCode);
+    this.configUpdatedListener = () => {
+      if (isLocalByokAuthMode()) {
+        this.applyLocalByokAuthState();
+        return;
       }
-      if (!handledPendingCode) {
-        await this.refreshAuthState({ clearOnFailure: true });
+      void this.refreshAuthState({ clearOnFailure: true });
+    };
+    window.addEventListener('config-updated', this.configUpdatedListener);
+
+    try {
+      if (isLocalByokAuthMode()) {
+        this.applyLocalByokAuthState();
+      } else {
+        const pendingCode = await window.electron.auth.getPendingCallback();
+        let handledPendingCode = false;
+        if (pendingCode) {
+          handledPendingCode = await this.handleCallback(pendingCode);
+        }
+        if (!handledPendingCode) {
+          await this.refreshAuthState({ clearOnFailure: true });
+        }
       }
     } catch {
-      store.dispatch(setLoggedOut());
-      store.dispatch(clearServerModels());
-      await this.loadPublicPricingCatalogModels();
+      if (isLocalByokAuthMode()) {
+        this.applyLocalByokAuthState();
+      } else {
+        store.dispatch(setLoggedOut());
+        store.dispatch(clearServerModels());
+        await this.loadPublicPricingCatalogModels();
+      }
     }
 
     // Listen for quota changes (e.g. after cowork session using server model)
     this.unsubQuotaChanged = window.electron.auth.onQuotaChanged(() => {
+      if (isLocalByokAuthMode()) {
+        this.applyLocalByokAuthState();
+        return;
+      }
       this.refreshQuota();
       this.loadServerModels();
     });
 
     // Refresh quota and models when Electron window gains focus — user may have purchased on portal
     this.unsubWindowState = window.electron.window.onStateChanged((state) => {
+      if (isLocalByokAuthMode()) {
+        return;
+      }
       if (state.isFocused && store.getState().auth.isLoggedIn) {
         const now = Date.now();
         if (now - this.lastRefreshTime > 30_000) {
@@ -146,6 +211,10 @@ class AuthService {
    * Initiate login (opens system browser).
    */
   async login() {
+    if (isLocalByokAuthMode()) {
+      this.applyLocalByokAuthState();
+      return;
+    }
     const loginUrl = await this.fetchLoginUrl();
     await window.electron.auth.login(loginUrl);
   }
@@ -202,6 +271,15 @@ class AuthService {
   async refreshAuthState(
     options: { clearOnFailure?: boolean } = {},
   ): Promise<AuthStateRefreshResult> {
+    if (isLocalByokAuthMode()) {
+      this.applyLocalByokAuthState();
+      return {
+        isLoggedIn: true,
+        user: LOCAL_BYOK_USER,
+        quota: LOCAL_BYOK_QUOTA,
+      };
+    }
+
     try {
       const result = await window.electron.auth.getUser();
       if (result.success && result.user) {
@@ -231,6 +309,10 @@ class AuthService {
    * Logout.
    */
   async logout() {
+    if (isLocalByokAuthMode()) {
+      this.applyLocalByokAuthState();
+      return;
+    }
     await window.electron.auth.logout();
     store.dispatch(setLoggedOut());
     store.dispatch(clearServerModels());
@@ -241,6 +323,10 @@ class AuthService {
    * Refresh quota information.
    */
   async refreshQuota() {
+    if (isLocalByokAuthMode()) {
+      store.dispatch(updateQuota(LOCAL_BYOK_QUOTA));
+      return;
+    }
     try {
       const result = await window.electron.auth.getQuota();
       if (result.success) {
@@ -255,6 +341,10 @@ class AuthService {
    * Fetch profile summary (credits breakdown).
    */
   async fetchProfileSummary() {
+    if (isLocalByokAuthMode()) {
+      store.dispatch(setProfileSummary(LOCAL_BYOK_PROFILE_SUMMARY));
+      return;
+    }
     try {
       const result = await window.electron.auth.getProfileSummary();
       if (result.success && result.data) {
@@ -269,6 +359,9 @@ class AuthService {
    * Get current access token (for proxy API calls).
    */
   async getAccessToken(): Promise<string | null> {
+    if (isLocalByokAuthMode()) {
+      return null;
+    }
     try {
       return await window.electron.auth.getAccessToken();
     } catch {
@@ -283,12 +376,20 @@ class AuthService {
     this.unsubQuotaChanged = null;
     this.unsubWindowState?.();
     this.unsubWindowState = null;
+    if (this.configUpdatedListener) {
+      window.removeEventListener('config-updated', this.configUpdatedListener);
+      this.configUpdatedListener = null;
+    }
   }
 
   /**
    * Load available models from server and dispatch to store.
    */
   private async loadServerModels() {
+    if (isLocalByokAuthMode()) {
+      store.dispatch(clearServerModels());
+      return;
+    }
     try {
       const modelsResult = await window.electron.auth.getModels();
       if (modelsResult.success && modelsResult.models) {
@@ -320,6 +421,10 @@ class AuthService {
    * Load public pricing catalog models for unauthenticated read-only display.
    */
   private async loadPublicPricingCatalogModels() {
+    if (isLocalByokAuthMode()) {
+      store.dispatch(clearServerModels());
+      return;
+    }
     try {
       const catalogResult = await window.electron.auth.getPricingCatalog();
       if (!catalogResult.success || !catalogResult.textModels) {

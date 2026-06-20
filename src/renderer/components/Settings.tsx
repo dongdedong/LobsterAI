@@ -12,12 +12,20 @@ import { DataMigrationRestoreStatus } from '../../shared/dataMigration/constants
 import { normalizeNotificationSettings } from '../../shared/notifications/constants';
 import { OpenClawEnginePhase, OpenClawGatewayRepairErrorCode } from '../../shared/openclawEngine/constants';
 import { ProviderAuthType, ProviderName, ProviderRegistry, resolveCodingPlanBaseUrl } from '../../shared/providers';
+import {
+  LOCAL_BYOK_REMOTE_SERVICES,
+  type RemoteServicesConfig,
+  RemoteServicesMode,
+  resolveRemoteServicesConfig,
+  ServerModelMode,
+} from '../../shared/remoteServices/constants';
 import { type AppConfig, defaultConfig, getProviderDisplayName, getVisibleProviders, ShortcutAction, type ShortcutConfig } from '../config';
 import { APP_ID, EXPORT_FORMAT_TYPE, EXPORT_PASSWORD } from '../constants/app';
 import { apiService } from '../services/api';
 import { configService } from '../services/config';
 import { coworkService } from '../services/cowork';
 import { decryptSecret, decryptWithPassword, EncryptedPayload, encryptWithPassword, PasswordEncryptedPayload } from '../services/encryption';
+import { getDocsBaseUrl, getServiceTermsUrl, getUserCommunityUrl } from '../services/endpoints';
 import { i18nService, LanguageType } from '../services/i18n';
 import { imService } from '../services/im';
 import { formatShortcutForDisplay, getShortcutConflictSignature, matchesShortcut } from '../services/shortcuts';
@@ -111,6 +119,35 @@ const normalizeProvidersForSettingsSave = (providers: ProvidersConfig): Provider
     })
   ) as ProvidersConfig
 );
+
+const normalizeRemoteServerApiBaseUrl = (value: string): string => value.trim().replace(/\/+$/, '');
+
+const buildRemoteServicesForSettingsSave = (
+  mode: RemoteServicesMode,
+  serverApiBaseUrl: string,
+  serverModelMode: ServerModelMode,
+): RemoteServicesConfig => {
+  const normalizedBaseUrl = normalizeRemoteServerApiBaseUrl(serverApiBaseUrl);
+  if (mode !== RemoteServicesMode.Official) {
+    if (!normalizedBaseUrl) {
+      throw new Error(i18nService.t('remoteServicesBaseUrlRequired'));
+    }
+    let parsed: URL;
+    try {
+      parsed = new URL(normalizedBaseUrl);
+    } catch {
+      throw new Error(i18nService.t('remoteServicesBaseUrlInvalid'));
+    }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      throw new Error(i18nService.t('remoteServicesBaseUrlInvalid'));
+    }
+  }
+  return {
+    mode,
+    serverModelMode,
+    ...(mode === RemoteServicesMode.Official ? {} : { serverApiBaseUrl: normalizedBaseUrl }),
+  };
+};
 
 const resolvePrimaryProviderForSettingsSave = (
   providers: ProvidersConfig,
@@ -356,9 +393,6 @@ interface ProvidersImportPayload {
 }
 
 const ABOUT_CONTACT_EMAIL = 'lobsterai.project@rd.netease.com';
-const ABOUT_USER_MANUAL_URL = 'https://lobsterai.youdao.com/#/docs/lobsterai_user_manual';
-const ABOUT_USER_COMMUNITY_URL = 'https://lobsterai.youdao.com/#/about';
-const ABOUT_SERVICE_TERMS_URL = 'https://c.youdao.com/dict/hardware/lobsterai/lobsterai_service.html';
 
 // MiniMax Portal OAuth constants
 const MINIMAX_OAUTH_CLIENT_ID = '78257093-7e40-4613-99e0-527b14b39113';
@@ -724,6 +758,9 @@ const Settings: React.FC<SettingsProps> = ({
   const [useSystemProxy, setUseSystemProxy] = useState(false);
   const [sqliteAutoBackupEnabled, setSqliteAutoBackupEnabled] = useState(false);
   const [taskCompletionNotificationsEnabled, setTaskCompletionNotificationsEnabled] = useState(true);
+  const [remoteServicesMode, setRemoteServicesMode] = useState<RemoteServicesMode>(RemoteServicesMode.Official);
+  const [remoteServerApiBaseUrl, setRemoteServerApiBaseUrl] = useState(LOCAL_BYOK_REMOTE_SERVICES.serverApiBaseUrl);
+  const [remoteServerModelMode, setRemoteServerModelMode] = useState<ServerModelMode>(ServerModelMode.Official);
   const [browserWebAccess, setBrowserWebAccess] = useState<BrowserWebAccessConfig>(() => ({
     ...defaultBrowserWebAccessConfig,
     webFetch: { ...defaultBrowserWebAccessConfig.webFetch },
@@ -949,15 +986,15 @@ const Settings: React.FC<SettingsProps> = ({
   }, [appUpdateState?.progress?.percent, updateCheckStatus]);
 
   const handleOpenUserManual = useCallback(() => {
-    void window.electron.shell.openExternal(ABOUT_USER_MANUAL_URL);
+    void window.electron.shell.openExternal(`${getDocsBaseUrl()}/lobsterai_user_manual`);
   }, []);
 
   const handleOpenUserCommunity = useCallback(() => {
-    void window.electron.shell.openExternal(ABOUT_USER_COMMUNITY_URL);
+    void window.electron.shell.openExternal(getUserCommunityUrl());
   }, []);
 
   const handleOpenServiceTerms = useCallback(() => {
-    void window.electron.shell.openExternal(ABOUT_SERVICE_TERMS_URL);
+    void window.electron.shell.openExternal(getServiceTermsUrl());
   }, []);
 
   const handleExportLogs = useCallback(async () => {
@@ -1132,6 +1169,12 @@ const Settings: React.FC<SettingsProps> = ({
       setTaskCompletionNotificationsEnabled(
         normalizeNotificationSettings(config.notificationSettings).taskCompletionNotificationsEnabled,
       );
+      const remoteServices = resolveRemoteServicesConfig(config.app?.remoteServices, {
+        testMode: config.app?.testMode === true,
+      });
+      setRemoteServicesMode(remoteServices.mode);
+      setRemoteServerApiBaseUrl(remoteServices.serverApiBaseUrl);
+      setRemoteServerModelMode(remoteServices.serverModelMode);
       setBrowserWebAccess(normalizeBrowserWebAccessConfig(config.browserWebAccess));
       const savedTestMode = config.app?.testMode ?? false;
       setTestMode(savedTestMode);
@@ -2294,6 +2337,11 @@ const Settings: React.FC<SettingsProps> = ({
     try {
       const normalizedProviders = normalizeProvidersForSettingsSave(providers);
       const primaryProvider = resolvePrimaryProviderForSettingsSave(normalizedProviders, activeProvider);
+      const remoteServices = buildRemoteServicesForSettingsSave(
+        remoteServicesMode,
+        remoteServerApiBaseUrl,
+        remoteServerModelMode,
+      );
       const normalizedBrowserWebAccess = normalizeBrowserWebAccessConfig({
         ...browserWebAccess,
         browserEnabled: true,
@@ -2327,6 +2375,7 @@ const Settings: React.FC<SettingsProps> = ({
         app: {
           ...configService.getConfig().app,
           testMode,
+          remoteServices,
         },
       });
 
@@ -3359,11 +3408,103 @@ const Settings: React.FC<SettingsProps> = ({
     </div>
   );
 
+  const renderRemoteServicesSettings = () => {
+    const showServerBaseUrl = remoteServicesMode !== RemoteServicesMode.Official;
+    const showServerModelMode = remoteServicesMode !== RemoteServicesMode.LocalByok;
+
+    return (
+      <div className="rounded-xl border border-border bg-surface-raised/40 p-4">
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-foreground">
+            {i18nService.t('remoteServicesTitle')}
+          </h4>
+          <p className="mt-1 text-sm text-secondary">
+            {i18nService.t('remoteServicesDescription')}
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-secondary">
+              {i18nService.t('remoteServicesMode')}
+            </label>
+            <ThemedSelect
+              id="remote-services-mode"
+              value={remoteServicesMode}
+              onChange={(value) => {
+                const nextMode = value as RemoteServicesMode;
+                setRemoteServicesMode(nextMode);
+                if (nextMode === RemoteServicesMode.LocalByok) {
+                  setRemoteServerApiBaseUrl(LOCAL_BYOK_REMOTE_SERVICES.serverApiBaseUrl);
+                  setRemoteServerModelMode(ServerModelMode.Disabled);
+                } else if (nextMode === RemoteServicesMode.SelfHosted) {
+                  setRemoteServerModelMode(ServerModelMode.ManagedProxy);
+                } else {
+                  setRemoteServerModelMode(ServerModelMode.Official);
+                }
+              }}
+              options={[
+                { value: RemoteServicesMode.Official, label: i18nService.t('remoteServicesModeOfficial') },
+                { value: RemoteServicesMode.LocalByok, label: i18nService.t('remoteServicesModeLocalByok') },
+                { value: RemoteServicesMode.SelfHosted, label: i18nService.t('remoteServicesModeSelfHosted') },
+              ]}
+            />
+          </div>
+
+          {showServerBaseUrl && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-secondary" htmlFor="remote-server-base-url">
+                {i18nService.t('remoteServicesServerBaseUrl')}
+              </label>
+              <input
+                id="remote-server-base-url"
+                type="url"
+                value={remoteServerApiBaseUrl}
+                onChange={(event) => setRemoteServerApiBaseUrl(event.target.value)}
+                placeholder={LOCAL_BYOK_REMOTE_SERVICES.serverApiBaseUrl}
+                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-secondary/70 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30"
+              />
+            </div>
+          )}
+
+          {showServerModelMode && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-secondary">
+                {i18nService.t('remoteServicesServerModelMode')}
+              </label>
+              <ThemedSelect
+                id="remote-server-model-mode"
+                value={remoteServerModelMode}
+                onChange={(value) => setRemoteServerModelMode(value as ServerModelMode)}
+                options={[
+                  { value: ServerModelMode.Official, label: i18nService.t('remoteServicesServerModelOfficial') },
+                  { value: ServerModelMode.ManagedProxy, label: i18nService.t('remoteServicesServerModelManagedProxy') },
+                  { value: ServerModelMode.Disabled, label: i18nService.t('remoteServicesServerModelDisabled') },
+                ]}
+              />
+            </div>
+          )}
+
+          {remoteServicesMode === RemoteServicesMode.LocalByok && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">
+              {i18nService.t('remoteServicesLocalByokHint')}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderTabContent = () => {
+    const aboutUserManualUrl = `${getDocsBaseUrl()}/lobsterai_user_manual`;
+    const aboutUserCommunityUrl = getUserCommunityUrl();
+
     switch(activeTab) {
       case 'general':
         return (
           <div className="space-y-8">
+            {renderRemoteServicesSettings()}
+
             {/* Language Section */}
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium text-foreground">
@@ -4104,7 +4245,7 @@ const Settings: React.FC<SettingsProps> = ({
                   }}
                   className="min-w-0 break-all text-right text-sm text-secondary hover:text-primary dark:hover:text-primary bg-transparent border-none appearance-none px-1.5 py-0.5 -mx-1.5 -my-0.5 rounded-md cursor-pointer focus:outline-none hover:bg-surface-raised transition-colors"
                 >
-                  {ABOUT_USER_COMMUNITY_URL}
+                  {aboutUserCommunityUrl}
                 </button>
               </div>
               <div className={`flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3${testModeUnlocked ? ' border-b border-border' : ''}`}>
@@ -4117,7 +4258,7 @@ const Settings: React.FC<SettingsProps> = ({
                   }}
                   className="min-w-0 break-all text-right text-sm text-secondary hover:text-primary dark:hover:text-primary bg-transparent border-none appearance-none px-1.5 py-0.5 -mx-1.5 -my-0.5 rounded-md cursor-pointer focus:outline-none hover:bg-surface-raised transition-colors"
                 >
-                  {ABOUT_USER_MANUAL_URL}
+                  {aboutUserManualUrl}
                 </button>
               </div>
               {testModeUnlocked && (
@@ -4173,7 +4314,7 @@ const Settings: React.FC<SettingsProps> = ({
                 {i18nService.t('copyrightHolder')}
               </p>
               <p className="mt-1 text-center text-xs text-secondary">
-                Copyright &copy; {new Date().getFullYear()} NetEase Youdao. All Rights Reserved.
+                {i18nService.t('copyrightStatement').replace('{year}', String(new Date().getFullYear()))}
               </p>
             </div>
           </div>

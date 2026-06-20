@@ -8,6 +8,11 @@ import {
   defaultNotificationSettings,
   type NotificationSettings,
 } from '../shared/notifications/constants';
+import {
+  type RemoteServicesConfig,
+  RemoteServicesMode,
+  ServerModelMode,
+} from '../shared/remoteServices/constants';
 
 export const ShortcutAction = {
   NewChat: 'newChat',
@@ -94,6 +99,7 @@ export interface AppConfig {
     port: number;
     isDevelopment: boolean;
     testMode?: boolean;
+    remoteServices?: RemoteServicesConfig;
   };
   // 快捷键配置
   shortcuts?: ShortcutConfig;
@@ -146,6 +152,10 @@ export const defaultConfig: AppConfig = {
     // them. Flip test mode via the hidden switch in Settings → About when the
     // internal endpoints are actually needed.
     testMode: false,
+    remoteServices: {
+      mode: RemoteServicesMode.LocalByok,
+      serverModelMode: ServerModelMode.Disabled,
+    },
   },
   shortcuts: {
     [ShortcutAction.NewChat]: 'CommandOrControl+N',

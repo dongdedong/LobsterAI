@@ -445,6 +445,48 @@ describe('OpenClawConfigSync runtime config output', () => {
     expect(config.agents.defaults.models).toBeUndefined();
   });
 
+  test('does not add lobsterai provider when proxy is running but server models are disabled', async () => {
+    const { ProviderName } = await import('../../shared/providers');
+
+    mockRuntimeState.proxyPort = 56646;
+    mockRuntimeState.serverModels = [];
+    mockRuntimeState.rawApiConfig = {
+      config: {
+        baseURL: 'https://api.deepseek.com',
+        apiKey: 'sk-deepseek',
+        model: 'deepseek-v4-flash',
+        apiType: 'openai',
+      },
+      providerMetadata: {
+        providerName: ProviderName.DeepSeek,
+        codingPlanEnabled: false,
+        supportsImage: false,
+        modelName: 'DeepSeek V4 Flash',
+      },
+    };
+    mockRuntimeState.enabledProviders = [
+      {
+        providerName: ProviderName.DeepSeek,
+        baseURL: 'https://api.deepseek.com',
+        apiKey: 'sk-deepseek',
+        apiType: 'openai',
+        codingPlanEnabled: false,
+        models: [
+          { id: 'deepseek-v4-flash', name: 'DeepSeek V4 Flash' },
+        ],
+      },
+    ];
+
+    const sync = await createSync();
+
+    const result = sync.sync('server-models-disabled');
+    expect(result.ok).toBe(true);
+
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    expect(config.models.providers.deepseek).toBeDefined();
+    expect(config.models.providers['lobsterai-server']).toBeUndefined();
+  });
+
   test('writes a complete agent model allowlist when any model has custom params', async () => {
     const { ProviderName } = await import('../../shared/providers');
 
@@ -570,7 +612,7 @@ describe('OpenClawConfigSync runtime config output', () => {
     expect(config.tools.deny).not.toContain('video_generate');
   });
 
-  test('keeps media generation plugin configured without media entitlement', async () => {
+  test('disables media generation plugin without cloud media access', async () => {
     const sync = await createSync({
       canUseMediaGeneration: () => false,
       getMediaCallbackUrl: () => 'http://127.0.0.1:5175/media-callback',
@@ -581,15 +623,8 @@ describe('OpenClawConfigSync runtime config output', () => {
 
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     expect(config.plugins.entries['lobster-media-generation']).toEqual({
-      enabled: true,
-      config: {
-        callbackUrl: 'http://127.0.0.1:5175/media-callback',
-        secret: '${LOBSTER_MCP_BRIDGE_SECRET}',
-        requestTimeoutMs: 120000,
-      },
+      enabled: false,
     });
-    expect(config.tools.deny).not.toContain('image_generate');
-    expect(config.tools.deny).not.toContain('video_generate');
   });
 
   test('maps OpenAI OAuth mode to the OpenAI Codex provider', async () => {

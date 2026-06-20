@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>A 24/7 all-scenario office assistant Agent that gets real work done — built by NetEase Youdao</strong>
+  <strong>A 24/7 all-scenario office assistant Agent that gets real work done — built by TopVan</strong>
 </p>
 
 <p align="center">
@@ -34,7 +34,7 @@
 
 ---
 
-**LobsterAI** is an all-scenario office assistant Agent built by [NetEase Youdao](https://www.youdao.com/) — the first open-source, desktop-grade Agent from a major Chinese tech company. It works around the clock to get real work done: data analysis, slide decks, video generation, document writing, web research, email, scheduled jobs, and more.
+**LobsterAI** is an all-scenario office assistant Agent built by TopVan. It works around the clock to get real work done: data analysis, slide decks, video generation, document writing, web research, email, scheduled jobs, and more.
 
 Unlike chat-only assistants, LobsterAI is **desktop-grade**. Through its **Cowork mode** it connects to your files, terminal, browser, and local projects — executing tools and running commands directly in your real working environment, with every sensitive action gated behind your approval. Spin up purpose-built Agents (stock research, content writing, lesson planning…), extend it with Expert Kits, Skills, and MCP servers, and reach it from your phone via WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, Discord, and more — command your computer to work anytime, anywhere.
 
@@ -611,4 +611,4 @@ Please include in your PR description: a summary of changes, linked issue (if an
 
 ---
 
-Built and maintained by [NetEase Youdao](https://www.youdao.com/).
+Built and maintained by TopVan.

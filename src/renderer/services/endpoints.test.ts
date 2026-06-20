@@ -1,5 +1,6 @@
 import { afterEach, expect, test, vi } from 'vitest';
 
+import { RemoteServicesMode } from '../../shared/remoteServices/constants';
 import { configService } from './config';
 import {
   getPortalInvitationUrl,
@@ -11,7 +12,21 @@ import {
 
 const mockTestMode = (testMode: boolean) => {
   vi.spyOn(configService, 'getConfig').mockReturnValue({
-    app: { testMode },
+    app: {
+      testMode,
+      remoteServices: {
+        mode: RemoteServicesMode.Official,
+      },
+    },
+  } as ReturnType<typeof configService.getConfig>);
+};
+
+const mockRemoteServices = (remoteServices: { mode: RemoteServicesMode; serverApiBaseUrl?: string }) => {
+  vi.spyOn(configService, 'getConfig').mockReturnValue({
+    app: {
+      testMode: false,
+      remoteServices,
+    },
   } as ReturnType<typeof configService.getConfig>);
 };
 
@@ -41,4 +56,35 @@ test('portal pricing url can include html share keyfrom', () => {
   expect(getPortalPricingUrl(PortalPricingKeyfrom.HtmlShare)).toBe(
     'https://lobsterai.youdao.com/portal#/pricing?keyfrom=html_share',
   );
+});
+
+test('portal account urls use local BYOK base by default', () => {
+  vi.spyOn(configService, 'getConfig').mockReturnValue({
+    app: { testMode: false },
+  } as ReturnType<typeof configService.getConfig>);
+
+  expect(getPortalProfileUrl()).toBe('http://127.0.0.1:8787/profile');
+  expect(getPortalRechargeUrl()).toBe('http://127.0.0.1:8787/');
+  expect(getPortalInvitationUrl()).toBe('http://127.0.0.1:8787/invitation');
+});
+
+test('portal account urls use self-hosted server base', () => {
+  mockRemoteServices({
+    mode: RemoteServicesMode.SelfHosted,
+    serverApiBaseUrl: 'http://127.0.0.1:8787/',
+  });
+
+  expect(getPortalProfileUrl()).toBe('http://127.0.0.1:8787/profile');
+  expect(getPortalRechargeUrl()).toBe('http://127.0.0.1:8787/');
+  expect(getPortalInvitationUrl()).toBe('http://127.0.0.1:8787/invitation');
+});
+
+test('portal account urls use local BYOK defaults', () => {
+  mockRemoteServices({
+    mode: RemoteServicesMode.LocalByok,
+  });
+
+  expect(getPortalProfileUrl()).toBe('http://127.0.0.1:8787/profile');
+  expect(getPortalRechargeUrl()).toBe('http://127.0.0.1:8787/');
+  expect(getPortalInvitationUrl()).toBe('http://127.0.0.1:8787/invitation');
 });

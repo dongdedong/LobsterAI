@@ -1,7 +1,8 @@
-import { app } from 'electron';
 import { spawnSync } from 'child_process';
+import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
+
 import { cpRecursiveSync } from '../fsCompat';
 
 const PYTHON_RUNTIME_DIR_NAME = 'python-win';
@@ -271,7 +272,8 @@ export async function ensurePythonRuntimeReady(): Promise<{ success: boolean; er
     const bundledRoot = getBundledPythonRoot();
     if (!bundledRoot) {
       const message = 'Bundled python runtime not found in application resources.';
-      console.error(`[python-runtime] ${message}`);
+      const log = app.isPackaged ? console.error : console.warn;
+      log(`[python-runtime] ${message}`);
       return { success: false, error: message };
     }
 

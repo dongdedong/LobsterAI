@@ -242,23 +242,17 @@ export function registerKitHandlers(deps: KitHandlerDeps): void {
     const url = getKitStoreUrl();
     console.log(`[KitStore] fetching from: ${url}`);
     try {
-      const https = await import('https');
-      const data = await new Promise<string>((resolve, reject) => {
-        const req = https.get(url, { timeout: 10000 }, (res) => {
-          if (res.statusCode !== 200) {
-            reject(new Error(`HTTP ${res.statusCode}`));
-            res.resume();
-            return;
-          }
-          let body = '';
-          res.setEncoding('utf8');
-          res.on('data', (chunk: string) => { body += chunk; });
-          res.on('end', () => resolve(body));
-          res.on('error', reject);
-        });
-        req.on('error', reject);
-        req.on('timeout', () => { req.destroy(); reject(new Error('Request timeout')); });
-      });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timer));
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.text();
       return { success: true, data: appendBuiltInKitsToStoreResponse(data) };
     } catch (error) {
       console.error('[KitStore] fetch failed:', error);

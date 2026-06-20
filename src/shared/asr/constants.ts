@@ -21,6 +21,7 @@ export const AsrApiCode = {
   UpstreamAuthFailed: 41405,
   UpstreamRateLimited: 41406,
   RecognitionFailed: 41407,
+  Disabled: 41408,
   UpstreamError: 50201,
   UpstreamBalanceInsufficient: 50203,
   UpstreamInvalidParams: 50204,

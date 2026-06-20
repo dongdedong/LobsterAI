@@ -69,6 +69,8 @@ When changing Agent behavior, model routing, tool permissions, media tools, sche
 
 This repo is worked on primarily from Windows PowerShell. Prefer `rg` for search, use `Get-Content -Encoding UTF8` or Node/Python explicit UTF-8 reads for Chinese files, and avoid Bash-only idioms such as `&&`, `||`, and `python - <<'PY'`. When piping inline Node/Python from a PowerShell here-string, avoid raw Chinese string literals in the script; pass paths by enumeration or use ASCII/Unicode escapes, because stdin-piped scripts can receive Chinese as `????`.
 
+When using `rg` with glob filters in this repo, put `-g` filters before the search paths, for example `rg -n -F -g "*.ts" -- "pattern" src vendor`. In Windows PowerShell/ripgrep invocations, placing paths before later `-g` filters such as `rg pattern src vendor -g "*.ts"` can cause the later `-g` arguments to be parsed as paths and produce noisy `系统找不到指定的文件` / invalid path errors.
+
 ## Build and Development Commands
 
 ```bash

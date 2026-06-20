@@ -1,6 +1,7 @@
 import { ApiFormat, ProviderName } from '@shared/providers';
 import { expect, test } from 'vitest';
 
+import { RemoteServicesMode, ServerModelMode } from '../shared/remoteServices/constants';
 import {
   defaultConfig,
   getCustomProviderDefaultName,
@@ -77,6 +78,13 @@ test('defaultConfig uses OpenAI-compatible DeepSeek defaults', () => {
   expect(defaultConfig.api.baseUrl).toBe('https://api.deepseek.com');
   expect(defaultConfig.providers?.[ProviderName.DeepSeek]?.apiFormat).toBe(ApiFormat.OpenAI);
   expect(defaultConfig.providers?.[ProviderName.Xiaomi]?.apiFormat).toBe(ApiFormat.OpenAI);
+});
+
+test('defaultConfig uses local BYOK remote services by default', () => {
+  expect(defaultConfig.app?.remoteServices).toMatchObject({
+    mode: RemoteServicesMode.LocalByok,
+    serverModelMode: ServerModelMode.Disabled,
+  });
 });
 
 test('defaultConfig gives DeepSeek V4 models 1M context', () => {
