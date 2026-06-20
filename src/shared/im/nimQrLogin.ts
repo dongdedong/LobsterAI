@@ -7,6 +7,7 @@ export const NimQrLoginStatus = {
 export type NimQrLoginStatus = typeof NimQrLoginStatus[keyof typeof NimQrLoginStatus];
 
 export const NimQrLoginErrorCode = {
+  Disabled: 'disabled',
   RequestFailed: 'request_failed',
   InvalidPayload: 'invalid_payload',
   InvalidUserAgent: 'invalid_user_agent',
@@ -37,7 +38,7 @@ export interface NimQrLoginPollResult {
   error?: string;
 }
 
-export const DEFAULT_NIM_QR_BASE_URL = 'http://127.0.0.1:8787/nim';
+export const DEFAULT_NIM_QR_BASE_URL = '';
 export const DEFAULT_NIM_QR_EXPIRES_IN = 180;
 export const DEFAULT_NIM_QR_POLL_INTERVAL = 3000;
 

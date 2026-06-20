@@ -3,7 +3,10 @@
  * 后续新增的业务接口也应在此文件中配置。
  */
 
-import { resolveRemoteServicesConfig } from '../../shared/remoteServices/constants';
+import {
+  isLocalByokInternalUrl,
+  resolveRemoteServicesConfig,
+} from '../../shared/remoteServices/constants';
 import { configService } from './config';
 
 export const isTestModeEnabled = () => {
@@ -40,6 +43,10 @@ export const getLoginOvermindUrl = () => getRemoteServices().loginOvermindUrl;
 export const getUserCommunityUrl = () => getRemoteServices().userCommunityUrl;
 
 export const getServiceTermsUrl = () => getRemoteServices().serviceTermsUrl;
+
+export const isExternalRemoteUrlAvailable = (url: string | undefined) => (
+  typeof url === 'string' && !isLocalByokInternalUrl(url)
+);
 
 const getPortalBase = () => getRemoteServices().portalBaseUrl;
 

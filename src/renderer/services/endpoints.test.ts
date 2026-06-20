@@ -7,6 +7,7 @@ import {
   getPortalPricingUrl,
   getPortalProfileUrl,
   getPortalRechargeUrl,
+  isExternalRemoteUrlAvailable,
   PortalPricingKeyfrom,
 } from './endpoints';
 
@@ -63,9 +64,9 @@ test('portal account urls use local BYOK base by default', () => {
     app: { testMode: false },
   } as ReturnType<typeof configService.getConfig>);
 
-  expect(getPortalProfileUrl()).toBe('http://127.0.0.1:8787/profile');
-  expect(getPortalRechargeUrl()).toBe('http://127.0.0.1:8787/');
-  expect(getPortalInvitationUrl()).toBe('http://127.0.0.1:8787/invitation');
+  expect(getPortalProfileUrl()).toBe('local-byok://portal/profile');
+  expect(getPortalRechargeUrl()).toBe('local-byok://portal/');
+  expect(getPortalInvitationUrl()).toBe('local-byok://portal/invitation');
 });
 
 test('portal account urls use self-hosted server base', () => {
@@ -84,7 +85,13 @@ test('portal account urls use local BYOK defaults', () => {
     mode: RemoteServicesMode.LocalByok,
   });
 
-  expect(getPortalProfileUrl()).toBe('http://127.0.0.1:8787/profile');
-  expect(getPortalRechargeUrl()).toBe('http://127.0.0.1:8787/');
-  expect(getPortalInvitationUrl()).toBe('http://127.0.0.1:8787/invitation');
+  expect(getPortalProfileUrl()).toBe('local-byok://portal/profile');
+  expect(getPortalRechargeUrl()).toBe('local-byok://portal/');
+  expect(getPortalInvitationUrl()).toBe('local-byok://portal/invitation');
+});
+
+test('external remote URL availability rejects local BYOK internal URLs', () => {
+  expect(isExternalRemoteUrlAvailable('local-byok://portal/pricing')).toBe(false);
+  expect(isExternalRemoteUrlAvailable('https://example.com/pricing')).toBe(true);
+  expect(isExternalRemoteUrlAvailable('http://127.0.0.1:8787/pricing')).toBe(true);
 });

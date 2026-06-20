@@ -6,13 +6,19 @@ import path from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
+import {
+  COMPUTER_USE_DISABLED_MESSAGE,
+  COMPUTER_USE_RUNTIME_BUNDLED,
+} from '../../shared/computerUse/constants';
+import { LOCAL_BYOK_INTERNAL_URL_PREFIX } from '../../shared/remoteServices/constants';
+
 export const ComputerUseRuntime = {
   Id: 'computer-use',
   Version: '1.0.7',
   Platform: 'win32',
   Arch: 'x64',
   ArchiveName: 'lobsterai-computer-use-runtime-win-x64-1.0.7.zip',
-  DownloadUrl: 'http://127.0.0.1:8787/downloads/lobsterai-computer-use-runtime-win-x64-1.0.7.zip',
+  DownloadUrl: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}downloads/lobsterai-computer-use-runtime-win-x64-1.0.7.zip`,
   Sha256: 'd43c15cd69e10f0fbffe62f6c5ec947b4e61c5df84efbce46b6f73e28c9de30e',
   SizeBytes: 540139,
 } as const;
@@ -281,6 +287,10 @@ async function downloadRuntimeArchive(
 export async function installComputerUseRuntime(
   onProgress?: (progress: ComputerUseRuntimeDownloadProgress) => void,
 ): Promise<{ success: boolean; paths?: ComputerUseRuntimePaths; error?: string }> {
+  if (!COMPUTER_USE_RUNTIME_BUNDLED) {
+    return { success: false, error: COMPUTER_USE_DISABLED_MESSAGE };
+  }
+
   if (!isSupportedPlatform()) {
     return { success: false, error: 'Computer Use runtime is only available on Windows x64.' };
   }

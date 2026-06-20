@@ -1,4 +1,4 @@
-import { type ProviderConfig,ProviderRegistry } from '@shared/providers';
+import { type ProviderConfig, ProviderName, ProviderRegistry } from '@shared/providers';
 
 import {
   type BrowserWebAccessConfig,
@@ -213,12 +213,18 @@ export const EN_PRIORITY_PROVIDERS = ['openai', 'anthropic', 'gemini'] as const;
 // Provider lists derived from ProviderRegistry — single source of truth
 export const CHINA_PROVIDERS = [...ProviderRegistry.idsByRegion('china')] as const;
 export const GLOBAL_PROVIDERS = ProviderRegistry.idsByRegion('global');
+const MVP_HIDDEN_PROVIDER_IDS = new Set<string>([
+  ProviderName.Youdaozhiyun,
+]);
 
 export const getVisibleProviders = (language: 'zh' | 'en'): readonly string[] => {
+  const filterMvpHiddenProviders = (ids: readonly string[]) => (
+    ids.filter(id => !MVP_HIDDEN_PROVIDER_IDS.has(id))
+  );
   if (language === 'zh') {
-    return [...CHINA_PROVIDERS];
+    return filterMvpHiddenProviders(CHINA_PROVIDERS);
   }
-  return ProviderRegistry.idsForEnLocale();
+  return filterMvpHiddenProviders(ProviderRegistry.idsForEnLocale());
 };
 
 /**

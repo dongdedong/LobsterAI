@@ -6,6 +6,7 @@ import {
   defaultConfig,
   getCustomProviderDefaultName,
   getProviderDisplayName,
+  getVisibleProviders,
   isCustomProvider,
   ShortcutAction,
 } from './config';
@@ -85,6 +86,12 @@ test('defaultConfig uses local BYOK remote services by default', () => {
     mode: RemoteServicesMode.LocalByok,
     serverModelMode: ServerModelMode.Disabled,
   });
+});
+
+test('visible providers hide Youdao provider for backend-free MVP', () => {
+  expect(getVisibleProviders('zh')).not.toContain(ProviderName.Youdaozhiyun);
+  expect(getVisibleProviders('en')).not.toContain(ProviderName.Youdaozhiyun);
+  expect(defaultConfig.providers?.[ProviderName.Youdaozhiyun]).toBeDefined();
 });
 
 test('defaultConfig gives DeepSeek V4 models 1M context', () => {

@@ -24,11 +24,13 @@ interface AuthStateRefreshResult {
   quota: UserQuota | null;
 }
 
+export const LOCAL_BYOK_USER_ID = 'local-byok-user';
+
 const LOCAL_BYOK_USER: UserProfile = {
-  yid: 'local-byok-user',
+  yid: LOCAL_BYOK_USER_ID,
   nickname: 'Local BYOK User',
   avatarUrl: null,
-  userId: 'local-byok-user',
+  userId: LOCAL_BYOK_USER_ID,
   status: 1,
 };
 

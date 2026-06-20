@@ -96,6 +96,7 @@ import { PlatformRegistry } from '../shared/platform';
 import { OpenClawProviderId, ProviderName } from '../shared/providers';
 import {
   areCloudRemoteFeaturesEnabled,
+  isLocalByokInternalUrl,
   isServerModelModeEnabled,
   type RemoteServicesConfig,
 } from '../shared/remoteServices/constants';
@@ -3878,6 +3879,9 @@ if (!gotTheLock) {
         const durationSec = typeof args.durationSeconds === 'number' ? args.durationSeconds : null;
         const costPoints = durationSec ? durationSec * 100 : null;
         const portalTasksUrl = getPortalTasksUrl();
+        const generatedVideoHint = isLocalByokInternalUrl(portalTasksUrl)
+          ? '生成后请妥善保存视频。'
+          : `生成后请妥善保存视频，若误删可在[「个人主页-用量详情-生成任务」](${portalTasksUrl})中下载`;
         const subtitle = costPoints
           ? `本次生成大约预计消耗 **${costPoints}** 积分`
           : '费用约为 **100** 积分/秒';
@@ -3885,7 +3889,7 @@ if (!gotTheLock) {
           '请确认当前描述无误，提交后将无法取消。',
           '视频生成任务耗时较长，请耐心等待。',
           '',
-          `生成后请妥善保存视频，若误删可在[「个人主页-用量详情-生成任务」](${portalTasksUrl})中下载`,
+          generatedVideoHint,
           '~~（链接有时效性，请尽快下载）~~',
         ].join('\n');
         const confirmResponse = await getMcpRuntime().askUserInternal([{

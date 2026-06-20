@@ -83,8 +83,11 @@ export const ModelAccessPromptModal: React.FC<ModelAccessPromptModalProps> = ({
 
   const openSubscriptionPage = async () => {
     onClose();
-    const { getPortalPricingUrl } = await import('../services/endpoints');
-    await window.electron.shell.openExternal(getPortalPricingUrl());
+    const { getPortalPricingUrl, isExternalRemoteUrlAvailable } = await import('../services/endpoints');
+    const url = getPortalPricingUrl();
+    if (isExternalRemoteUrlAvailable(url)) {
+      await window.electron.shell.openExternal(url);
+    }
   };
 
   const handlePrimary = async () => {

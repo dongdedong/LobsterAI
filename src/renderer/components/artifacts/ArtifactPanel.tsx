@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { authService } from '@/services/auth';
 import { copyTextToClipboard } from '@/services/clipboard';
-import { getPortalPricingUrl, PortalPricingKeyfrom } from '@/services/endpoints';
+import { getPortalPricingUrl, isExternalRemoteUrlAvailable, PortalPricingKeyfrom } from '@/services/endpoints';
 import { i18nService } from '@/services/i18n';
 import type { RootState } from '@/store';
 import {
@@ -1128,7 +1128,10 @@ const ArtifactPanel: React.FC<ArtifactPanelProps> = ({
   }, [onOpenHtmlFileInBrowser, selectedArtifact]);
 
   const openSubscriptionPage = useCallback(() => {
-    window.electron?.shell?.openExternal(getPortalPricingUrl(PortalPricingKeyfrom.HtmlShare));
+    const url = getPortalPricingUrl(PortalPricingKeyfrom.HtmlShare);
+    if (isExternalRemoteUrlAvailable(url)) {
+      window.electron?.shell?.openExternal(url);
+    }
     setHtmlShareDialog(null);
   }, []);
 

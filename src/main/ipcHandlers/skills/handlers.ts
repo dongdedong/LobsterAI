@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
+import { isLocalByokInternalUrl } from '../../../shared/remoteServices/constants';
 import type { SkillManager } from '../../skillManager';
 import { updatePluginSkillIdsFromReport } from '../../skills';
 
@@ -19,6 +20,16 @@ export interface SkillHandlerDeps {
     } | null;
   } | null;
 }
+
+const EMPTY_LOCAL_SKILL_MARKETPLACE = JSON.stringify({
+  data: {
+    value: {
+      localSkill: [],
+      marketplace: [],
+      marketTags: [],
+    },
+  },
+});
 
 export function registerSkillHandlers(deps: SkillHandlerDeps): void {
   const { getSkillManager, getSkillStoreUrl, getOpenClawRuntimeAdapter } = deps;
@@ -143,6 +154,9 @@ export function registerSkillHandlers(deps: SkillHandlerDeps): void {
 
   ipcMain.handle('skills:fetchMarketplace', async () => {
     const url = getSkillStoreUrl();
+    if (isLocalByokInternalUrl(url)) {
+      return { success: true, data: EMPTY_LOCAL_SKILL_MARKETPLACE };
+    }
     console.log(`[SkillMarketplace] fetching from: ${url}`);
     try {
       const controller = new AbortController();

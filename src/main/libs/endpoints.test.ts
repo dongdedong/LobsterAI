@@ -15,10 +15,10 @@ beforeEach(() => {
 test('main endpoints default to local BYOK services before app_config is cached', async () => {
   const endpoints = await import('./endpoints');
 
-  expect(endpoints.getServerApiBaseUrl()).toBe('http://127.0.0.1:8787');
-  expect(endpoints.getUpdateCheckUrl()).toBe('http://127.0.0.1:8787/catalog/update.json');
-  expect(endpoints.getSkillStoreUrl()).toBe('http://127.0.0.1:8787/catalog/skill-store.json');
-  expect(endpoints.getMcpMarketplaceUrl()).toBe('http://127.0.0.1:8787/catalog/mcp-marketplace.json');
+  expect(endpoints.getServerApiBaseUrl()).toBe('local-byok://server-api');
+  expect(endpoints.getUpdateCheckUrl()).toBe('local-byok://catalog/update');
+  expect(endpoints.getSkillStoreUrl()).toBe('local-byok://catalog/skill-store');
+  expect(endpoints.getMcpMarketplaceUrl()).toBe('local-byok://catalog/mcp-marketplace');
 });
 
 test('main endpoints use explicit self-hosted app_config services', async () => {

@@ -38,8 +38,7 @@ const DEFINITIONS = [
     channel: 'openclaw-weixin',
     channelAliases: [],
     logo: 'weixin.png',
-    guideUrl:
-      'http://127.0.0.1:8787/docs/lobsterai_im_bot_config_guide/weixin-im-bot-configuration',
+    guideUrl: '',
   },
   {
     id: 'dingtalk',
@@ -48,8 +47,7 @@ const DEFINITIONS = [
     channel: 'dingtalk-connector',
     channelAliases: ['dingtalk'],
     logo: 'dingding.png',
-    guideUrl:
-      'http://127.0.0.1:8787/docs/lobsterai_im_bot_config_guide/dingtalk-im-bot-configuration',
+    guideUrl: '',
   },
   {
     id: 'feishu',
@@ -58,8 +56,7 @@ const DEFINITIONS = [
     channel: 'feishu',
     channelAliases: [],
     logo: 'feishu.png',
-    guideUrl:
-      'http://127.0.0.1:8787/docs/lobsterai_im_bot_config_guide/feishu-im-bot-configuration',
+    guideUrl: '',
   },
   {
     id: 'wecom',
@@ -68,8 +65,7 @@ const DEFINITIONS = [
     channel: 'wecom',
     channelAliases: ['wecom-openclaw-plugin'],
     logo: 'wecom.png',
-    guideUrl:
-      'http://127.0.0.1:8787/docs/lobsterai_im_bot_config_guide/wecom-im-bot-configuration',
+    guideUrl: '',
   },
   {
     id: 'qq',
@@ -78,7 +74,7 @@ const DEFINITIONS = [
     channel: 'qqbot',
     channelAliases: [],
     logo: 'qq_bot.jpeg',
-    guideUrl: 'http://127.0.0.1:8787/docs/lobsterai_im_bot_config_guide/qq-bot',
+    guideUrl: '',
   },
   {
     id: 'nim',
@@ -115,8 +111,7 @@ const DEFINITIONS = [
     channel: 'telegram',
     channelAliases: [],
     logo: 'telegram.svg',
-    guideUrl:
-      'http://127.0.0.1:8787/docs/en/lobsterai_im_bot_config_guide/telegram-bot-configuration',
+    guideUrl: '',
   },
   {
     id: 'discord',
@@ -125,8 +120,7 @@ const DEFINITIONS = [
     channel: 'discord',
     channelAliases: [],
     logo: 'discord.svg',
-    guideUrl:
-      'http://127.0.0.1:8787/docs/en/lobsterai_im_bot_config_guide/discord-bot-configuration',
+    guideUrl: '',
   },
   {
     id: 'email',
@@ -138,6 +132,12 @@ const DEFINITIONS = [
     guideUrl: '',
   },
 ] as const satisfies readonly PlatformDefInput[];
+
+const BACKEND_FREE_MVP_HIDDEN_PLATFORMS = new Set<string>([
+  'nim',
+  'netease-bee',
+  'popo',
+]);
 
 // ═══════════════════════════════════════════════════════
 // 3. Derived Types
@@ -174,14 +174,14 @@ export interface PlatformDef {
 // ═══════════════════════════════════════════════════════
 
 class PlatformRegistryImpl {
-  private readonly defs: readonly PlatformDef[];
+  private readonly visibleDefs: readonly PlatformDef[];
   private readonly platformIndex: ReadonlyMap<Platform, PlatformDef>;
   private readonly channelIndex: ReadonlyMap<string, PlatformDef>;
   private readonly _platforms: readonly Platform[];
   private readonly _channelSet: ReadonlySet<string>;
 
   constructor(definitions: readonly PlatformDef[]) {
-    this.defs = definitions;
+    this.visibleDefs = definitions.filter(def => !BACKEND_FREE_MVP_HIDDEN_PLATFORMS.has(def.id));
 
     const pIdx = new Map<Platform, PlatformDef>();
     const cIdx = new Map<string, PlatformDef>();
@@ -203,7 +203,7 @@ class PlatformRegistryImpl {
 
     this.platformIndex = pIdx;
     this.channelIndex = cIdx;
-    this._platforms = platforms;
+    this._platforms = platforms.filter(platform => !BACKEND_FREE_MVP_HIDDEN_PLATFORMS.has(platform));
     this._channelSet = channels;
   }
 
@@ -216,7 +216,7 @@ class PlatformRegistryImpl {
 
   /** Platforms filtered by region, preserving definition order. */
   platformsByRegion(region: 'china' | 'global'): readonly Platform[] {
-    return this.defs.filter(d => d.region === region).map(d => d.id);
+    return this.visibleDefs.filter(d => d.region === region).map(d => d.id);
   }
 
   // ── Single Platform Queries ──
@@ -257,7 +257,7 @@ class PlatformRegistryImpl {
 
   /** Channel options for scheduled task delivery target dropdown. */
   channelOptions(): readonly { value: ChannelName; label: string }[] {
-    return this.defs.map(d => ({ value: d.channel, label: d.label }));
+    return this.visibleDefs.map(d => ({ value: d.channel, label: d.label }));
   }
 }
 

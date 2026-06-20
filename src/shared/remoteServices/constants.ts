@@ -34,6 +34,24 @@ export type RemoteServicesConfig = {
   serviceTermsUrl?: string;
 };
 
+export const LOCAL_BYOK_INTERNAL_URL_PREFIX = 'local-byok://';
+
+export const LocalByokInternalUrl = {
+  ServerApi: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}server-api`,
+  Portal: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}portal`,
+  Docs: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}docs`,
+  Download: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}download-list`,
+  UpdateCheck: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}catalog/update`,
+  ManualUpdateCheck: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}catalog/update-manual`,
+  SkillStore: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}catalog/skill-store`,
+  KitStore: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}catalog/kit-store`,
+  McpMarketplace: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}catalog/mcp-marketplace`,
+  LoginOvermind: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}catalog/login-url`,
+  HtmlSharePublic: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}html-share`,
+  UserCommunity: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}about`,
+  ServiceTerms: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}service-terms`,
+} as const;
+
 export const OFFICIAL_REMOTE_SERVICES: Required<RemoteServicesConfig> = {
   mode: RemoteServicesMode.Official,
   serverModelMode: ServerModelMode.Official,
@@ -71,19 +89,19 @@ export const TEST_REMOTE_SERVICES: Required<RemoteServicesConfig> = {
 export const LOCAL_BYOK_REMOTE_SERVICES: Required<RemoteServicesConfig> = {
   mode: RemoteServicesMode.LocalByok,
   serverModelMode: ServerModelMode.Disabled,
-  serverApiBaseUrl: 'http://127.0.0.1:8787',
-  portalBaseUrl: 'http://127.0.0.1:8787',
-  docsBaseUrl: 'http://127.0.0.1:8787/docs',
-  downloadBaseUrl: 'http://127.0.0.1:8787/download-list',
-  updateCheckUrl: 'http://127.0.0.1:8787/catalog/update.json',
-  manualUpdateCheckUrl: 'http://127.0.0.1:8787/catalog/update-manual.json',
-  skillStoreUrl: 'http://127.0.0.1:8787/catalog/skill-store.json',
-  kitStoreUrl: 'http://127.0.0.1:8787/catalog/kit-store.json',
-  mcpMarketplaceUrl: 'http://127.0.0.1:8787/catalog/mcp-marketplace.json',
-  loginOvermindUrl: 'http://127.0.0.1:8787/catalog/login-url.json',
-  htmlSharePublicBaseUrl: 'http://127.0.0.1:8787/s',
-  userCommunityUrl: 'http://127.0.0.1:8787/about',
-  serviceTermsUrl: 'http://127.0.0.1:8787/service-terms',
+  serverApiBaseUrl: LocalByokInternalUrl.ServerApi,
+  portalBaseUrl: LocalByokInternalUrl.Portal,
+  docsBaseUrl: LocalByokInternalUrl.Docs,
+  downloadBaseUrl: LocalByokInternalUrl.Download,
+  updateCheckUrl: LocalByokInternalUrl.UpdateCheck,
+  manualUpdateCheckUrl: LocalByokInternalUrl.ManualUpdateCheck,
+  skillStoreUrl: LocalByokInternalUrl.SkillStore,
+  kitStoreUrl: LocalByokInternalUrl.KitStore,
+  mcpMarketplaceUrl: LocalByokInternalUrl.McpMarketplace,
+  loginOvermindUrl: LocalByokInternalUrl.LoginOvermind,
+  htmlSharePublicBaseUrl: LocalByokInternalUrl.HtmlSharePublic,
+  userCommunityUrl: LocalByokInternalUrl.UserCommunity,
+  serviceTermsUrl: LocalByokInternalUrl.ServiceTerms,
 };
 
 const trimTrailingSlash = (value: string): string => value.trim().replace(/\/+$/, '');
@@ -185,4 +203,8 @@ export function isServerModelModeEnabled(config: RemoteServicesConfig | undefine
 export function areCloudRemoteFeaturesEnabled(config: RemoteServicesConfig | undefined): boolean {
   const mode = resolveRemoteServicesConfig(config).mode;
   return mode !== RemoteServicesMode.LocalByok;
+}
+
+export function isLocalByokInternalUrl(value: string | undefined): boolean {
+  return typeof value === 'string' && value.startsWith(LOCAL_BYOK_INTERNAL_URL_PREFIX);
 }

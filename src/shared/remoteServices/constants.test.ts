@@ -17,9 +17,9 @@ test('uses local BYOK endpoints by default', () => {
 
   expect(config.mode).toBe(RemoteServicesMode.LocalByok);
   expect(config.serverModelMode).toBe(ServerModelMode.Disabled);
-  expect(config.serverApiBaseUrl).toBe('http://127.0.0.1:8787');
-  expect(config.portalBaseUrl).toBe('http://127.0.0.1:8787');
-  expect(config.serviceTermsUrl).toBe('http://127.0.0.1:8787/service-terms');
+  expect(config.serverApiBaseUrl).toBe('local-byok://server-api');
+  expect(config.portalBaseUrl).toBe('local-byok://portal');
+  expect(config.serviceTermsUrl).toBe('local-byok://service-terms');
 });
 
 test('default endpoints do not point to Youdao or NetEase services', () => {
@@ -29,6 +29,15 @@ test('default endpoints do not point to Youdao or NetEase services', () => {
     .map(([, value]) => value as string);
 
   expect(urls.join('\n')).not.toMatch(/youdao|netease|163\.com|127\.net|api-overmind|lobsterai-server/i);
+});
+
+test('default local BYOK endpoints do not require a local compatibility server', () => {
+  const config = resolveRemoteServicesConfig(undefined, { testMode: false });
+  const urls = Object.entries(config)
+    .filter(([, value]) => typeof value === 'string')
+    .map(([, value]) => value as string);
+
+  expect(urls.join('\n')).not.toMatch(/127\.0\.0\.1|localhost/i);
 });
 
 test('uses official production endpoints when explicitly selected', () => {
@@ -69,7 +78,7 @@ test('defaults local BYOK mode to disabled server models', () => {
   });
 
   expect(config.serverModelMode).toBe(ServerModelMode.Disabled);
-  expect(config.serverApiBaseUrl).toBe('http://127.0.0.1:8787');
+  expect(config.serverApiBaseUrl).toBe('local-byok://server-api');
   expect(isServerModelModeEnabled(config)).toBe(false);
   expect(areCloudRemoteFeaturesEnabled(config)).toBe(false);
 });

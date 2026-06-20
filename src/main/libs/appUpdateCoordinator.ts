@@ -12,6 +12,7 @@ import {
   AppUpdateStatus,
   isManualDownloadUrl,
 } from '../../shared/appUpdate/constants';
+import { isLocalByokInternalUrl } from '../../shared/remoteServices/constants';
 import type { SqliteStore } from '../sqliteStore';
 import { cancelActiveDownload, downloadUpdate, installUpdate } from './appUpdateInstaller';
 import { getFallbackDownloadUrl, getManualUpdateCheckUrl, getUpdateCheckUrl } from './endpoints';
@@ -478,6 +479,10 @@ export class AppUpdateCoordinator {
     userId?: string | null,
   ): Promise<AppUpdateInfo | null> {
     const baseUrl = manual ? getManualUpdateCheckUrl() : getUpdateCheckUrl();
+    if (isLocalByokInternalUrl(baseUrl)) {
+      console.log('[AppUpdate] update checks are disabled in local BYOK mode');
+      return null;
+    }
     const qs = this.getUpdateQueryString(userId, currentVersion);
     const url = qs ? `${baseUrl}?${qs}` : baseUrl;
     console.log(`[AppUpdate] checking update, currentVersion=${currentVersion}, url=${url}`);

@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   downloadUpdate: vi.fn(),
   installUpdate: vi.fn(),
   cancelActiveDownload: vi.fn(),
+  manualUpdateCheckUrl: 'https://updates.example.com/manual',
+  updateCheckUrl: 'https://updates.example.com/auto',
 }));
 
 vi.mock('electron', () => ({
@@ -38,8 +40,8 @@ vi.mock('./appUpdateInstaller', () => ({
 }));
 
 vi.mock('./endpoints', () => ({
-  getUpdateCheckUrl: () => 'https://updates.example.com/auto',
-  getManualUpdateCheckUrl: () => 'https://updates.example.com/manual',
+  getUpdateCheckUrl: () => mocks.updateCheckUrl,
+  getManualUpdateCheckUrl: () => mocks.manualUpdateCheckUrl,
   getFallbackDownloadUrl: () => 'https://updates.example.com/download-list',
 }));
 
@@ -102,6 +104,8 @@ describe('AppUpdateCoordinator', () => {
     mocks.downloadUpdate.mockReset();
     mocks.installUpdate.mockReset();
     mocks.cancelActiveDownload.mockReset();
+    mocks.manualUpdateCheckUrl = 'https://updates.example.com/manual';
+    mocks.updateCheckUrl = 'https://updates.example.com/auto';
 
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lobsterai-update-test-'));
     updatesDir = path.join(tmpDir, 'updates');
@@ -183,6 +187,19 @@ describe('AppUpdateCoordinator', () => {
     expect(result.state.source).toBe(AppUpdateSource.Manual);
     expect(result.state.readyFilePath).toBe(filePath);
     expect(mocks.downloadUpdate).not.toHaveBeenCalled();
+  });
+
+  test('local BYOK update endpoint returns no update without fetching', async () => {
+    const store = createStoreStub();
+    const coordinator = new AppUpdateCoordinator(store);
+    mocks.updateCheckUrl = 'local-byok://catalog/update';
+
+    const result = await coordinator.checkNow();
+
+    expect(result.success).toBe(true);
+    expect(result.updateFound).toBe(false);
+    expect(result.state.status).toBe(AppUpdateStatus.Idle);
+    expect(mocks.fetch).not.toHaveBeenCalled();
   });
 
   test('restores installIncomplete after an install attempt that never completed', async () => {

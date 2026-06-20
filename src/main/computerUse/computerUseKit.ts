@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  COMPUTER_USE_RUNTIME_BUNDLED,
   ComputerUseKitBundle,
   ComputerUseKitBundleIntegrity,
   ComputerUseKitId,
@@ -15,12 +16,13 @@ import {
   type KitSkillMetadata,
   KitStoreKey,
 } from '../../shared/kit/constants';
+import { LOCAL_BYOK_INTERNAL_URL_PREFIX } from '../../shared/remoteServices/constants';
 import type { SqliteStore } from '../sqliteStore';
 import { ComputerUseRuntime } from './computerUseRuntime';
 
 const SKILLS_DIR_NAME = 'SKILLs';
 const SKILL_STATE_KEY = 'skills_state';
-const COMPUTER_USE_KIT_ICON_URL = 'http://127.0.0.1:8787/assets/computer-use-kit.png';
+const COMPUTER_USE_KIT_ICON_URL = `${LOCAL_BYOK_INTERNAL_URL_PREFIX}assets/computer-use-kit.png`;
 const COMPUTER_USE_MCP_REF = {
   id: ComputerUseKitId.BuiltIn,
   name: 'Computer Use',
@@ -31,7 +33,8 @@ type InstalledKitsMap = Record<string, InstalledKitRecord>;
 type SkillStateMap = Record<string, { enabled: boolean }>;
 
 export function isComputerUseKitSupportedPlatform(): boolean {
-  return process.platform === ComputerUseRuntime.Platform
+  return COMPUTER_USE_RUNTIME_BUNDLED
+    && process.platform === ComputerUseRuntime.Platform
     && process.arch === ComputerUseRuntime.Arch;
 }
 

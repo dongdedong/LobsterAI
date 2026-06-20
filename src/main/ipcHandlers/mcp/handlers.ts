@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 
 import { McpIpcChannel } from '../../../shared/mcp/constants';
 import { normalizeMcpServerUrlInput } from '../../../shared/mcp/url';
+import { isLocalByokInternalUrl } from '../../../shared/remoteServices/constants';
 import { OpenClawConfigImpact } from '../../libs/openclawConfigImpact';
 import type { McpRuntime } from '../../mcp/mcpRuntime';
 import type { McpServerFormData } from '../../mcp/mcpStore';
@@ -33,6 +34,11 @@ async function fetchText(url: string): Promise<string> {
     clearTimeout(timer);
   }
 }
+
+const EMPTY_LOCAL_MCP_MARKETPLACE: { servers: unknown[]; categories: unknown[] } = {
+  servers: [],
+  categories: [],
+};
 
 function syncMcpConfig(
   syncOpenClawConfig: McpHandlerDeps['syncOpenClawConfig'],
@@ -194,6 +200,9 @@ export function registerMcpHandlers(deps: McpHandlerDeps): void {
 
   ipcMain.handle(McpIpcChannel.FetchMarketplace, async () => {
     const url = getMcpMarketplaceUrl();
+    if (isLocalByokInternalUrl(url)) {
+      return { success: true, data: EMPTY_LOCAL_MCP_MARKETPLACE };
+    }
     try {
       const data = await fetchText(url);
       const json = JSON.parse(data);

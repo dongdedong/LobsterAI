@@ -131,6 +131,9 @@ const NimInstanceSettings: React.FC<NimInstanceSettingsProps> = ({
   };
 
   const mapQrErrorToMessage = (errorCode?: string, fallback?: string) => {
+    if (errorCode === NimQrLoginErrorCode.Disabled || fallback === NimQrLoginErrorCode.Disabled) {
+      return i18nService.t('imNimQrDisabled');
+    }
     if (errorCode === NimQrLoginErrorCode.InvalidUserAgent) {
       return i18nService.t('imNimQrUnsupported');
     }

@@ -597,8 +597,11 @@ const MediaModelPicker: React.FC<MediaModelPickerProps> = ({ draftKey, disabled 
 
   const handleSubscribe = async () => {
     setIsOpen(false);
-    const { getPortalPricingUrl } = await import('../../services/endpoints');
-    await window.electron.shell.openExternal(getPortalPricingUrl());
+    const { getPortalPricingUrl, isExternalRemoteUrlAvailable } = await import('../../services/endpoints');
+    const url = getPortalPricingUrl();
+    if (isExternalRemoteUrlAvailable(url)) {
+      await window.electron.shell.openExternal(url);
+    }
   };
 
   const handleModelHover = (model: MediaModel, event: React.MouseEvent<HTMLButtonElement>) => {

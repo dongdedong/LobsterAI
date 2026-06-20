@@ -14,7 +14,7 @@ import type { CoworkSelectedTextSnippet } from '../../../shared/cowork/selectedT
 import { agentService } from '../../services/agent';
 import { configService } from '../../services/config';
 import { coworkService } from '../../services/cowork';
-import { getPortalPricingUrl } from '../../services/endpoints';
+import { getPortalPricingUrl, isExternalRemoteUrlAvailable } from '../../services/endpoints';
 import { i18nService } from '../../services/i18n';
 import { getInstalledKitSkillIds } from '../../services/kitCapability';
 import { skillService } from '../../services/skill';
@@ -1857,7 +1857,10 @@ const CoworkPromptInput = React.forwardRef<CoworkPromptInputRef, CoworkPromptInp
       return;
     }
     setShowVoiceQuotaPrompt(false);
-    await window.electron.shell.openExternal(getPortalPricingUrl());
+    const url = getPortalPricingUrl();
+    if (isExternalRemoteUrlAvailable(url)) {
+      await window.electron.shell.openExternal(url);
+    }
   };
 
   return (

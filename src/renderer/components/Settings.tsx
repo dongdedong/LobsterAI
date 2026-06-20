@@ -13,6 +13,7 @@ import { normalizeNotificationSettings } from '../../shared/notifications/consta
 import { OpenClawEnginePhase, OpenClawGatewayRepairErrorCode } from '../../shared/openclawEngine/constants';
 import { ProviderAuthType, ProviderName, ProviderRegistry, resolveCodingPlanBaseUrl } from '../../shared/providers';
 import {
+  isLocalByokInternalUrl,
   LOCAL_BYOK_REMOTE_SERVICES,
   type RemoteServicesConfig,
   RemoteServicesMode,
@@ -392,7 +393,7 @@ interface ProvidersImportPayload {
   providers?: Record<string, ProvidersImportEntry>;
 }
 
-const ABOUT_CONTACT_EMAIL = 'lobsterai.project@rd.netease.com';
+const ABOUT_CONTACT_EMAIL = 'support@topvan.ai';
 
 // MiniMax Portal OAuth constants
 const MINIMAX_OAUTH_CLIENT_ID = '78257093-7e40-4613-99e0-527b14b39113';
@@ -985,17 +986,25 @@ const Settings: React.FC<SettingsProps> = ({
     return i18nService.t('checkForUpdate');
   }, [appUpdateState?.progress?.percent, updateCheckStatus]);
 
-  const handleOpenUserManual = useCallback(() => {
-    void window.electron.shell.openExternal(`${getDocsBaseUrl()}/lobsterai_user_manual`);
+  const openExternalIfAvailable = useCallback((url: string) => {
+    if (isLocalByokInternalUrl(url)) {
+      setNoticeMessage(i18nService.t('localByokOnlinePageUnavailable'));
+      return;
+    }
+    void window.electron.shell.openExternal(url);
   }, []);
+
+  const handleOpenUserManual = useCallback(() => {
+    openExternalIfAvailable(`${getDocsBaseUrl()}/lobsterai_user_manual`);
+  }, [openExternalIfAvailable]);
 
   const handleOpenUserCommunity = useCallback(() => {
-    void window.electron.shell.openExternal(getUserCommunityUrl());
-  }, []);
+    openExternalIfAvailable(getUserCommunityUrl());
+  }, [openExternalIfAvailable]);
 
   const handleOpenServiceTerms = useCallback(() => {
-    void window.electron.shell.openExternal(getServiceTermsUrl());
-  }, []);
+    openExternalIfAvailable(getServiceTermsUrl());
+  }, [openExternalIfAvailable]);
 
   const handleExportLogs = useCallback(async () => {
     if (isExportingLogs) {
@@ -3498,6 +3507,13 @@ const Settings: React.FC<SettingsProps> = ({
   const renderTabContent = () => {
     const aboutUserManualUrl = `${getDocsBaseUrl()}/lobsterai_user_manual`;
     const aboutUserCommunityUrl = getUserCommunityUrl();
+    const aboutPageUnavailable = i18nService.t('localByokOnlinePageUnavailable');
+    const aboutUserManualLabel = isLocalByokInternalUrl(aboutUserManualUrl)
+      ? aboutPageUnavailable
+      : aboutUserManualUrl;
+    const aboutUserCommunityLabel = isLocalByokInternalUrl(aboutUserCommunityUrl)
+      ? aboutPageUnavailable
+      : aboutUserCommunityUrl;
 
     switch(activeTab) {
       case 'general':
@@ -4245,7 +4261,7 @@ const Settings: React.FC<SettingsProps> = ({
                   }}
                   className="min-w-0 break-all text-right text-sm text-secondary hover:text-primary dark:hover:text-primary bg-transparent border-none appearance-none px-1.5 py-0.5 -mx-1.5 -my-0.5 rounded-md cursor-pointer focus:outline-none hover:bg-surface-raised transition-colors"
                 >
-                  {aboutUserCommunityUrl}
+                  {aboutUserCommunityLabel}
                 </button>
               </div>
               <div className={`flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3${testModeUnlocked ? ' border-b border-border' : ''}`}>
@@ -4258,7 +4274,7 @@ const Settings: React.FC<SettingsProps> = ({
                   }}
                   className="min-w-0 break-all text-right text-sm text-secondary hover:text-primary dark:hover:text-primary bg-transparent border-none appearance-none px-1.5 py-0.5 -mx-1.5 -my-0.5 rounded-md cursor-pointer focus:outline-none hover:bg-surface-raised transition-colors"
                 >
-                  {aboutUserManualUrl}
+                  {aboutUserManualLabel}
                 </button>
               </div>
               {testModeUnlocked && (

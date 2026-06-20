@@ -35,7 +35,7 @@ describe('nimQrLoginService', () => {
       },
     });
 
-    await expect(startNimQrLogin()).resolves.toMatchObject({
+    await expect(startNimQrLogin({ baseUrl: 'https://nim.example.com' })).resolves.toMatchObject({
       uuid: 'uuid-1',
       qrValue: JSON.stringify({
         qrCode: 'uuid-1',
@@ -51,7 +51,7 @@ describe('nimQrLoginService', () => {
   test('pollNimQrLogin returns pending for live not found response shape', async () => {
     setFetchMock({ code: 404, msg: 'not found', data: null });
 
-    await expect(pollNimQrLogin('uuid-1')).resolves.toEqual({
+    await expect(pollNimQrLogin('uuid-1', { baseUrl: 'https://nim.example.com' })).resolves.toEqual({
       status: NimQrLoginStatus.Pending,
     });
   });
@@ -66,7 +66,7 @@ describe('nimQrLoginService', () => {
       },
     });
 
-    await expect(pollNimQrLogin('uuid-1')).resolves.toEqual({
+    await expect(pollNimQrLogin('uuid-1', { baseUrl: 'https://nim.example.com' })).resolves.toEqual({
       status: NimQrLoginStatus.Success,
       credentials: {
         appKey: 'app-key',
@@ -83,10 +83,28 @@ describe('nimQrLoginService', () => {
       data: null,
     });
 
-    await expect(pollNimQrLogin('uuid-1')).resolves.toEqual({
+    await expect(pollNimQrLogin('uuid-1', { baseUrl: 'https://nim.example.com' })).resolves.toEqual({
       status: NimQrLoginStatus.Failed,
       errorCode: NimQrLoginErrorCode.InvalidUserAgent,
       error: NimQrLoginErrorCode.InvalidUserAgent,
     });
+  });
+
+  test('startNimQrLogin is disabled without an explicit base URL', async () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    await expect(startNimQrLogin()).rejects.toThrow(NimQrLoginErrorCode.Disabled);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  test('pollNimQrLogin is disabled without an explicit base URL', async () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    await expect(pollNimQrLogin('uuid-1')).resolves.toEqual({
+      status: NimQrLoginStatus.Failed,
+      errorCode: NimQrLoginErrorCode.Disabled,
+      error: NimQrLoginErrorCode.Disabled,
+    });
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

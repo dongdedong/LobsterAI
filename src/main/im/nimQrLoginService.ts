@@ -28,7 +28,7 @@ interface NimQrStartResponseShape {
 function normalizeBaseUrl(baseUrl: string): string {
   const trimmed = baseUrl.trim();
   if (!trimmed) {
-    throw new Error('QR binding base URL is required.');
+    throw new Error(NimQrLoginErrorCode.Disabled);
   }
   return trimmed.replace(/\/+$/, '');
 }
@@ -100,9 +100,9 @@ export async function pollNimQrLogin(
   qrCode: string,
   options: NimQrLoginRequestOptions = {},
 ): Promise<NimQrLoginPollResult> {
-  const baseUrl = normalizeBaseUrl(options.baseUrl ?? DEFAULT_NIM_QR_BASE_URL);
-  const encodedQrCode = encodeURIComponent(String(qrCode));
   try {
+    const baseUrl = normalizeBaseUrl(options.baseUrl ?? DEFAULT_NIM_QR_BASE_URL);
+    const encodedQrCode = encodeURIComponent(String(qrCode));
     const result = await requestJson(
       `${baseUrl}/lbs/queryBindAiAccountByQrCode?qrCode=${encodedQrCode}`,
       null,

@@ -3,6 +3,8 @@ import React from 'react';
 import { getServiceTermsUrl } from '@/services/endpoints';
 import { i18nService } from '@/services/i18n';
 
+import { isLocalByokInternalUrl } from '../../shared/remoteServices/constants';
+
 interface PrivacyDialogProps {
   onAccept: () => void;
   onReject: () => void;
@@ -12,6 +14,9 @@ const PrivacyDialog: React.FC<PrivacyDialogProps> = ({ onAccept, onReject }) => 
   const privacyUrl = getServiceTermsUrl();
   const handleLinkClick = async (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isLocalByokInternalUrl(privacyUrl)) {
+      return;
+    }
     await window.electron.shell.openExternal(privacyUrl);
   };
 
@@ -34,7 +39,7 @@ const PrivacyDialog: React.FC<PrivacyDialogProps> = ({ onAccept, onReject }) => 
           <p className="text-sm text-secondary text-center leading-relaxed">
             {parts[0]}
             <a
-              href={privacyUrl}
+              href={isLocalByokInternalUrl(privacyUrl) ? '#' : privacyUrl}
               onClick={handleLinkClick}
               className="text-primary hover:text-primary-hover underline"
             >

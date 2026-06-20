@@ -1,4 +1,8 @@
 import type { LocalizedText } from '../kit/constants';
+import { LOCAL_BYOK_INTERNAL_URL_PREFIX } from '../remoteServices/constants';
+
+export const COMPUTER_USE_RUNTIME_BUNDLED = false;
+export const COMPUTER_USE_DISABLED_MESSAGE = 'Computer Use runtime is not included in this MVP build.';
 
 export const ComputerUseKitId = {
   BuiltIn: 'computer-use',
@@ -11,7 +15,7 @@ export const ComputerUseSkillId = {
 export type ComputerUseSkillId = typeof ComputerUseSkillId[keyof typeof ComputerUseSkillId];
 
 export const ComputerUseKitBundle = {
-  BuiltIn: 'http://127.0.0.1:8787/downloads/computer-use-kit.zip',
+  BuiltIn: `${LOCAL_BYOK_INTERNAL_URL_PREFIX}downloads/computer-use-kit.zip`,
 } as const;
 export type ComputerUseKitBundle =
   typeof ComputerUseKitBundle[keyof typeof ComputerUseKitBundle];

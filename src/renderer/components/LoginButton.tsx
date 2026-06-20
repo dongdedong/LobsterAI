@@ -5,7 +5,7 @@ import inviteCreditsIconUrl from '../assets/icons/invite-credits.svg';
 import logoutIconUrl from '../assets/icons/logout.svg';
 import rechargeIconUrl from '../assets/icons/recharge.svg';
 import usageOverviewIconUrl from '../assets/icons/usage-overview.svg';
-import { authService } from '../services/auth';
+import { authService, LOCAL_BYOK_USER_ID } from '../services/auth';
 import {
   getPortalInvitationUrl,
   getPortalProfileUrl,
@@ -147,10 +147,28 @@ const UserMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const profileSummary = useSelector((state: RootState) => state.auth.profileSummary);
   const [creditsExpanded, setCreditsExpanded] = useState(false);
   const isEn = i18nService.getLanguage() === 'en';
+  const isLocalByokUser = user?.yid === LOCAL_BYOK_USER_ID || user?.userId === LOCAL_BYOK_USER_ID;
 
   useEffect(() => {
-    authService.fetchProfileSummary();
-  }, []);
+    if (!isLocalByokUser) {
+      authService.fetchProfileSummary();
+    }
+  }, [isLocalByokUser]);
+
+  if (isLocalByokUser) {
+    return (
+      <div className="absolute bottom-full left-[-0.5rem] mb-1 w-[14.5rem] bg-surface rounded-xl shadow-popover border border-border overflow-hidden z-50 popover-enter">
+        <div className="px-4 py-3">
+          <div className="text-sm font-medium text-foreground truncate">
+            {i18nService.t('authLocalByokTitle')}
+          </div>
+          <div className="mt-1 text-xs leading-5 text-secondary">
+            {i18nService.t('authLocalByokDescription')}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const openPortalUrl = async (url: string) => {
     await window.electron.shell.openExternal(url);

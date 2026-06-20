@@ -18,6 +18,7 @@ import type {
   LocalizedText,
 } from '../../../shared/kit/constants';
 import { KitStoreKey as KitStoreKeyValue } from '../../../shared/kit/constants';
+import { isLocalByokInternalUrl } from '../../../shared/remoteServices/constants';
 import {
   buildComputerUseMarketplaceKit,
   buildInstalledComputerUseKitRecord,
@@ -37,6 +38,13 @@ import type { SqliteStore } from '../../sqliteStore';
 const KITS_INSTALLED_KEY: KitStoreKey = KitStoreKeyValue.Installed;
 const SKILLS_DIR_NAME = 'SKILLs';
 const SKILL_FILE_NAME = 'SKILL.md';
+const EMPTY_LOCAL_KIT_STORE = JSON.stringify({
+  data: {
+    value: {
+      kits: [],
+    },
+  },
+});
 
 function downloadBuffer(url: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -240,6 +248,9 @@ export function registerKitHandlers(deps: KitHandlerDeps): void {
   // Fetch kit store catalog from overmind
   ipcMain.handle('kits:fetchStore', async () => {
     const url = getKitStoreUrl();
+    if (isLocalByokInternalUrl(url)) {
+      return { success: true, data: EMPTY_LOCAL_KIT_STORE };
+    }
     console.log(`[KitStore] fetching from: ${url}`);
     try {
       const controller = new AbortController();
