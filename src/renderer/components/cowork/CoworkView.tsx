@@ -271,7 +271,7 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
 
     try {
       try {
-        const apiConfig = await coworkService.checkApiConfig();
+        const apiConfig = await coworkService.checkApiConfig({ probeModel: true });
         if (apiConfig && !apiConfig.hasConfig) {
           onRequestAppSettings?.({
             initialTab: 'model',
@@ -429,6 +429,19 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
 
     isContinuingRef.current = true;
     try {
+      try {
+        const apiConfig = await coworkService.checkApiConfig({ probeModel: true });
+        if (apiConfig && !apiConfig.hasConfig) {
+          onRequestAppSettings?.({
+            initialTab: 'model',
+            ...buildApiConfigNotice(apiConfig.error),
+          });
+          return false;
+        }
+      } catch (error) {
+        console.error('Failed to check cowork API config:', error);
+      }
+
       console.log('[CoworkView] handleContinueSession called', {
         hasImageAttachments: !!imageAttachments,
         imageAttachmentsCount: imageAttachments?.length ?? 0,

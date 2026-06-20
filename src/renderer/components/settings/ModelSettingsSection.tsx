@@ -15,10 +15,13 @@ import {
   getEffectiveApiFormat,
   getProviderDefaultBaseUrl,
   hasProviderAuthConfigured,
+  hasReadyProvider,
+  isByokRecommendedProvider,
   type ProviderConfig,
   providerRequiresApiKey,
   type ProvidersConfig,
   type ProviderType,
+  resolveProviderSetupStatus,
   shouldShowApiFormatSelector,
 } from './modelProviderUtils';
 
@@ -486,12 +489,53 @@ const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
     || copilotAuthStatus === 'polling';
   const copilotSignedIn = copilotAuthStatus === 'authenticated'
     || copilotProvider?.authType === ProviderAuthType.OAuth;
+  const hasAnyReadyProvider = hasReadyProvider(visibleProviders);
+  const getProviderStatusLabel = (provider: ProviderType, config: ProviderConfig): string => {
+    const status = resolveProviderSetupStatus(provider, config);
+    switch (status) {
+      case 'ready':
+        return i18nService.t('providerSetupReady');
+      case 'disabled':
+        return i18nService.t('providerSetupDisabled');
+      case 'missing-model':
+        return i18nService.t('providerSetupMissingModel');
+      case 'missing-auth':
+      default:
+        return providerRequiresApiKey(provider)
+          ? i18nService.t('providerSetupMissingApiKey')
+          : i18nService.t('providerSetupMissingModel');
+    }
+  };
 
   return (
     <>
           <div className="flex h-full">
             {/* Provider List - Left Side */}
             <div className="w-2/5 border-r border-border pr-3 space-y-1.5 overflow-y-auto">
+              <div className="mb-3 rounded-xl border border-primary/20 bg-primary-muted/40 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xs font-semibold text-foreground">
+                    {i18nService.t('byokQuickStartTitle')}
+                  </h3>
+                  <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] ${
+                    hasAnyReadyProvider
+                      ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                      : 'bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                  }`}>
+                    {hasAnyReadyProvider
+                      ? i18nService.t('byokQuickStartReady')
+                      : i18nService.t('byokQuickStartNotReady')}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-[11px] leading-5 text-secondary">
+                  {i18nService.t('byokQuickStartDescription')}
+                </p>
+                <ol className="mt-2 space-y-1 text-[11px] leading-5 text-secondary">
+                  <li>{i18nService.t('byokQuickStartStepProvider')}</li>
+                  <li>{i18nService.t('byokQuickStartStepCredential')}</li>
+                  <li>{i18nService.t('byokQuickStartStepTest')}</li>
+                </ol>
+              </div>
               <div className="flex items-center justify-between mb-2 px-1">
                 <h3 className="text-sm font-medium text-foreground">
                   {i18nService.t('modelProviders')}
@@ -528,6 +572,7 @@ const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
                 const hasValidAuth = hasProviderAuthConfigured(providerKey, config);
                 const effectiveEnabled = config.enabled && hasValidAuth;
                 const canToggleProvider = effectiveEnabled || hasValidAuth;
+                const setupStatusLabel = getProviderStatusLabel(providerKey, config);
                 const displayLabel = isCustom
                   ? ((config as ProviderConfig).displayName || getCustomProviderDefaultName(provider))
                   : (ProviderRegistry.get(providerKey)?.label ?? getProviderDisplayName(provider));
@@ -555,11 +600,21 @@ const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
                         }`}>
                           {displayLabel}
                         </span>
-                        {isCustom && (
-                          <span className="text-[9px] leading-tight mt-0.5 text-primary">
-                            {i18nService.t('customBadge')}
+                        <div className="mt-0.5 flex flex-wrap items-center gap-1">
+                          {isCustom && (
+                            <span className="rounded bg-primary-muted px-1 text-[9px] leading-4 text-primary">
+                              {i18nService.t('customBadge')}
+                            </span>
+                          )}
+                          {isByokRecommendedProvider(provider) && (
+                            <span className="rounded bg-green-500/10 px-1 text-[9px] leading-4 text-green-600 dark:text-green-400">
+                              {i18nService.t('byokRecommendedBadge')}
+                            </span>
+                          )}
+                          <span className="rounded bg-surface-raised px-1 text-[9px] leading-4 text-secondary">
+                            {setupStatusLabel}
                           </span>
-                        )}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center ml-2 gap-1">

@@ -23,6 +23,34 @@ export type ProvidersConfig = NonNullable<AppConfig['providers']>;
 export type ProviderConfig = ProvidersConfig[string];
 export type Model = NonNullable<ProviderConfig['models']>[number];
 
+export const BYOK_RECOMMENDED_PROVIDER_IDS = [
+  ProviderName.DeepSeek,
+  ProviderName.Qwen,
+  ProviderName.Moonshot,
+  ProviderName.OpenAI,
+  ProviderName.Anthropic,
+  ProviderName.Ollama,
+  ProviderName.LmStudio,
+] as const;
+
+export type ProviderSetupStatus =
+  | 'ready'
+  | 'disabled'
+  | 'missing-auth'
+  | 'missing-model';
+
+export type ProviderConnectionFailureKind =
+  | 'auth'
+  | 'model'
+  | 'base-url'
+  | 'rate-limit'
+  | 'network'
+  | 'unknown';
+
+export const isByokRecommendedProvider = (provider: string): boolean => (
+  (BYOK_RECOMMENDED_PROVIDER_IDS as readonly string[]).includes(provider)
+);
+
 export const resolveModelSupportsImageForProvider = (
   providerName: string,
   model: { id: string; supportsImage?: boolean },
@@ -63,6 +91,49 @@ export const hasProviderAuthConfigured = (provider: ProviderType, config: Provid
   }
 
   return config.apiKey.trim().length > 0;
+};
+
+export const resolveProviderSetupStatus = (
+  provider: ProviderType,
+  config: ProviderConfig,
+): ProviderSetupStatus => {
+  if (!hasProviderAuthConfigured(provider, config)) {
+    return 'missing-auth';
+  }
+  if (!config.models || config.models.length === 0) {
+    return 'missing-model';
+  }
+  return config.enabled ? 'ready' : 'disabled';
+};
+
+export const hasReadyProvider = (providers: ProvidersConfig): boolean => (
+  Object.entries(providers).some(([provider, config]) => (
+    resolveProviderSetupStatus(provider as ProviderType, config) === 'ready'
+  ))
+);
+
+export const classifyProviderConnectionFailure = (
+  status?: number,
+  message?: string,
+): ProviderConnectionFailureKind => {
+  const normalizedMessage = (message ?? '').toLowerCase();
+
+  if (status === 401 || status === 403 || /unauthorized|forbidden|invalid api key|incorrect api key|api key/.test(normalizedMessage)) {
+    return 'auth';
+  }
+  if (status === 429 || /rate limit|too many requests|quota/.test(normalizedMessage)) {
+    return 'rate-limit';
+  }
+  if (/model.*not.*found|unknown model|model does not exist|invalid model/.test(normalizedMessage)) {
+    return 'model';
+  }
+  if (status === 404) {
+    return 'base-url';
+  }
+  if (/failed to fetch|network|econnrefused|enotfound|etimedout|timeout|connection refused|could not connect/.test(normalizedMessage)) {
+    return 'network';
+  }
+  return 'unknown';
 };
 
 const normalizeBaseUrl = (baseUrl: string): string => baseUrl.trim().replace(/\/+$/, '').toLowerCase();

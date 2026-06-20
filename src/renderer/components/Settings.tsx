@@ -58,6 +58,7 @@ import BrowserWebAccessSettings from './settings/BrowserWebAccessSettings';
 import {
   buildOpenAICompatibleChatCompletionsUrl,
   buildOpenAIResponsesUrl,
+  classifyProviderConnectionFailure,
   CONNECTIVITY_TEST_TOKEN_BUDGET,
   CUSTOM_PROVIDER_KEYS,
   getDefaultActiveProvider,
@@ -2735,6 +2736,23 @@ const Settings: React.FC<SettingsProps> = ({
     setIsTestResultModalOpen(true);
   };
 
+  const buildConnectionFailureMessage = (status?: number, message?: string): string => {
+    const detail = message?.trim();
+    const prefix = detail
+      ? `${detail}${status ? ` (${status})` : ''}`
+      : status ? `${i18nService.t('connectionFailed')}: ${status}` : i18nService.t('connectionFailed');
+    const kind = classifyProviderConnectionFailure(status, detail);
+    const hintKey = {
+      auth: 'connectionFailureAuthHint',
+      model: 'connectionFailureModelHint',
+      'base-url': 'connectionFailureBaseUrlHint',
+      'rate-limit': 'connectionFailureRateLimitHint',
+      network: 'connectionFailureNetworkHint',
+      unknown: 'connectionFailureUnknownHint',
+    }[kind];
+    return `${prefix}\n\n${i18nService.t(hintKey)}`;
+  };
+
   // 测试 API 连接
   const handleTestConnection = async () => {
     const testingProvider = activeProvider;
@@ -2892,12 +2910,16 @@ const Settings: React.FC<SettingsProps> = ({
           showTestResultModal({ success: true, message: i18nService.t('connectionSuccess') }, testingProvider);
           return;
         }
-        showTestResultModal({ success: false, message: errorMessage }, testingProvider);
+        showTestResultModal({
+          success: false,
+          message: buildConnectionFailureMessage(response.status, errorMessage),
+        }, testingProvider);
       }
     } catch (err) {
+      const message = err instanceof Error ? err.message : i18nService.t('connectionFailed');
       showTestResultModal({
         success: false,
-        message: err instanceof Error ? err.message : i18nService.t('connectionFailed'),
+        message: buildConnectionFailureMessage(undefined, message),
       }, testingProvider);
     } finally {
       setIsTesting(false);
