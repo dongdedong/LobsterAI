@@ -228,6 +228,7 @@ import {
 } from './libs/htmlShare/htmlShareClient';
 import { packageHtmlFile } from './libs/htmlShare/htmlSharePackager';
 import { getKeyfromAttribution, initializeKeyfromAttribution } from './libs/keyfromAttribution';
+import { createLicenseManager, type LicenseManager } from './libs/licenseManager';
 import { exportLogsZip } from './libs/logExport';
 import { inferImageMimeTypeFromDataUrl, type PersistedGeneratedImageAsset, persistGeneratedImageAssets, type PersistGeneratedImageAssetsResult, persistGeneratedVideoAssets, type RemoteGeneratedMediaAsset } from './libs/mediaAssetPersistence';
 import { migrateAgentModelRefs, parsePrimaryModelRef, resolveQualifiedAgentModelRef } from './libs/openclawAgentModels';
@@ -1425,6 +1426,7 @@ let coworkRuntimeForwarderBound = false;
 let memoryMigrationDone = false;
 let preventSleepBlockerId: number | null = null;
 let appUpdateCoordinator: AppUpdateCoordinator | null = null;
+let licenseManager: LicenseManager | null = null;
 
 const AUTH_USER_STORE_KEY = 'auth_user';
 
@@ -1465,6 +1467,13 @@ const getStore = (): SqliteStore => {
     throw new Error('Store not initialized. Call initStore() first.');
   }
   return store;
+};
+
+const getLicenseManager = (): LicenseManager => {
+  if (!licenseManager) {
+    licenseManager = createLicenseManager(getStore());
+  }
+  return licenseManager;
 };
 
 const getOpenClawEngineManager = (): OpenClawEngineManager => {
@@ -1510,6 +1519,19 @@ const getEngineNotReadyResponse = (status: OpenClawEngineStatus) => {
     code: ENGINE_NOT_READY_CODE,
     error: status.message || fallbackMessage,
     engineStatus: status,
+  };
+};
+
+const getCoworkLicenseBlockedResponse = () => {
+  const status = getLicenseManager().getStatus();
+  if (status.canStartCowork) {
+    return null;
+  }
+  return {
+    success: false,
+    code: 'LICENSE_REQUIRED',
+    error: status.reason || 'A valid license is required to start Cowork.',
+    licenseStatus: status,
   };
 };
 
@@ -5772,6 +5794,10 @@ if (!gotTheLock) {
           `Image attachments ${options.imageAttachments?.length ?? 0}.`,
           `Agent ${options.agentId || 'main'}.`,
         );
+        const licenseBlockedResponse = getCoworkLicenseBlockedResponse();
+        if (licenseBlockedResponse) {
+          return licenseBlockedResponse;
+        }
         const engineStatus = await ensureOpenClawRunningForCowork();
         if (engineStatus.phase !== 'running') {
           return getEngineNotReadyResponse(engineStatus);
@@ -5964,6 +5990,10 @@ if (!gotTheLock) {
           `Prompt length ${options.prompt.length}.`,
           `Image attachments ${options.imageAttachments?.length ?? 0}.`,
         );
+        const licenseBlockedResponse = getCoworkLicenseBlockedResponse();
+        if (licenseBlockedResponse) {
+          return licenseBlockedResponse;
+        }
         const engineStatus = await ensureOpenClawRunningForCowork();
         if (engineStatus.phase !== 'running') {
           return getEngineNotReadyResponse(engineStatus);
@@ -8487,6 +8517,28 @@ if (!gotTheLock) {
       }
     }
     return { hasConfig: config !== null, config, error };
+  });
+
+  ipcMain.handle('license:getStatus', async () => {
+    return getLicenseManager().getStatus();
+  });
+
+  ipcMain.handle('license:importFile', async (_event, filePath: string) => {
+    try {
+      if (!filePath || typeof filePath !== 'string') {
+        return { success: false, error: 'License file path is required.' };
+      }
+      return { success: true, status: getLicenseManager().importLicenseFile(filePath) };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to import license.',
+      };
+    }
+  });
+
+  ipcMain.handle('license:clear', async () => {
+    return getLicenseManager().clearLicense();
   });
 
   ipcMain.handle(

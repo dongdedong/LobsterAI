@@ -202,6 +202,11 @@ contextBridge.exposeInMainWorld('electron', {
     model: string;
     apiType?: 'anthropic' | 'openai';
   }) => ipcRenderer.invoke('save-api-config', config),
+  license: {
+    getStatus: () => ipcRenderer.invoke('license:getStatus'),
+    importFile: (filePath: string) => ipcRenderer.invoke('license:importFile', filePath),
+    clear: () => ipcRenderer.invoke('license:clear'),
+  },
   generateSessionTitle: (userInput: string | null) =>
     ipcRenderer.invoke('generate-session-title', userInput),
   getRecentCwds: (limit?: number) => ipcRenderer.invoke('get-recent-cwds', limit),

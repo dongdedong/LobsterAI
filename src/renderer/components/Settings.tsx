@@ -1,4 +1,4 @@
-import { ArchiveBoxIcon, ArrowPathIcon, ArrowPathRoundedSquareIcon, ChatBubbleLeftIcon, CheckCircleIcon, CpuChipIcon, CubeIcon, EnvelopeIcon, ExclamationTriangleIcon, GlobeAltIcon, InformationCircleIcon, MagnifyingGlassIcon, SunIcon, TrashIcon, WrenchScrewdriverIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArchiveBoxIcon, ArrowPathIcon, ArrowPathRoundedSquareIcon, ChatBubbleLeftIcon, CheckCircleIcon, CpuChipIcon, CubeIcon, EnvelopeIcon, ExclamationTriangleIcon, GlobeAltIcon, InformationCircleIcon, MagnifyingGlassIcon, ShieldCheckIcon, SunIcon, TrashIcon, WrenchScrewdriverIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useCallback,useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,6 +9,7 @@ import {
   normalizeBrowserWebAccessConfig,
 } from '../../shared/browserWebAccess/constants';
 import { DataMigrationRestoreStatus } from '../../shared/dataMigration/constants';
+import { type LicenseStatus,LicenseStatusKind } from '../../shared/license';
 import { normalizeNotificationSettings } from '../../shared/notifications/constants';
 import { OpenClawEnginePhase, OpenClawGatewayRepairErrorCode } from '../../shared/openclawEngine/constants';
 import { ProviderAuthType, ProviderName, ProviderRegistry, resolveCodingPlanBaseUrl } from '../../shared/providers';
@@ -83,7 +84,7 @@ import ModelSettingsSection, { ModelEditorDialog } from './settings/ModelSetting
 import EmailSkillConfig from './skills/EmailSkillConfig';
 import ThemedSelect from './ui/ThemedSelect';
 
-type TabType = 'general' | 'appearance' | 'coworkAgentEngine' | 'model' | 'browserWebAccess' | 'coworkMemory' | 'coworkDreaming' | 'shortcuts' | 'im' | 'email' | 'plugins' | 'about';
+type TabType = 'general' | 'appearance' | 'coworkAgentEngine' | 'model' | 'license' | 'browserWebAccess' | 'coworkMemory' | 'coworkDreaming' | 'shortcuts' | 'im' | 'email' | 'plugins' | 'about';
 
 const waitForNextPaint = (): Promise<void> => new Promise(resolve => {
   window.requestAnimationFrame(() => {
@@ -781,6 +782,8 @@ const Settings: React.FC<SettingsProps> = ({
   }, [notice, noticeExtra, noticeI18nKey]);
 
   const [noticeMessage, setNoticeMessage] = useState<string | null>(() => buildNoticeMessage());
+  const [licenseStatus, setLicenseStatus] = useState<LicenseStatus | null>(null);
+  const [isLicenseBusy, setIsLicenseBusy] = useState(false);
   const [testResult, setTestResult] = useState<ProviderConnectionTestResult | null>(null);
   const [isTestResultModalOpen, setIsTestResultModalOpen] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -1460,6 +1463,70 @@ const Settings: React.FC<SettingsProps> = ({
     });
     return unsubscribe;
   }, [noticeI18nKey, noticeExtra]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void window.electron.license.getStatus()
+      .then(status => {
+        if (!cancelled) {
+          setLicenseStatus(status);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load license status:', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const refreshLicenseStatus = async (): Promise<LicenseStatus | null> => {
+    try {
+      const status = await window.electron.license.getStatus();
+      setLicenseStatus(status);
+      return status;
+    } catch (error) {
+      console.error('Failed to refresh license status:', error);
+      return null;
+    }
+  };
+
+  const handleImportLicense = async () => {
+    setIsLicenseBusy(true);
+    try {
+      const selected = await window.electron.dialog.selectFile({
+        title: i18nService.t('licenseImportDialogTitle'),
+        filters: [{ name: 'License', extensions: ['json', 'license'] }],
+      });
+      if (!selected?.success || !selected.path) {
+        return;
+      }
+      const result = await window.electron.license.importFile(selected.path);
+      if (result.status) {
+        setLicenseStatus(result.status);
+      }
+      if (!result.success) {
+        setError(result.error || i18nService.t('licenseImportFailed'));
+      }
+    } finally {
+      setIsLicenseBusy(false);
+    }
+  };
+
+  const handleClearLicense = async () => {
+    setIsLicenseBusy(true);
+    try {
+      setLicenseStatus(await window.electron.license.clear());
+    } finally {
+      setIsLicenseBusy(false);
+    }
+  };
+
+  const handleCopyMachineCode = async () => {
+    const machineCode = licenseStatus?.machineCode;
+    if (!machineCode) return;
+    await copyTextToClipboard(machineCode);
+  };
 
   // Compute visible providers based on language, including active custom_N entries
   const visibleProviders = useMemo(() => {
@@ -3229,6 +3296,7 @@ const Settings: React.FC<SettingsProps> = ({
       { key: 'appearance' as TabType,     label: i18nService.t('appearance'),     icon: <SunIcon className="h-5 w-5" /> },
       { key: 'coworkAgentEngine' as TabType, label: i18nService.t('coworkAgentEngine'), icon: <CpuChipIcon className="h-5 w-5" /> },
       { key: 'model' as TabType,          label: i18nService.t('settingsCustomModel'), icon: <CubeIcon className="h-5 w-5" /> },
+      { key: 'license' as TabType,        label: i18nService.t('licenseTab'), icon: <ShieldCheckIcon className="h-5 w-5" /> },
       { key: 'im' as TabType,             label: i18nService.t('imBot'),          icon: <ChatBubbleLeftIcon className="h-5 w-5" /> },
       { key: 'browserWebAccess' as TabType, label: i18nService.t('browserWebAccessTab'), icon: <GlobeAltIcon className="h-5 w-5" /> },
       { key: 'email' as TabType,          label: i18nService.t('emailTab'),       icon: <EnvelopeIcon className="h-5 w-5" /> },
@@ -3521,6 +3589,141 @@ const Settings: React.FC<SettingsProps> = ({
               {i18nService.t('remoteServicesLocalByokHint')}
             </div>
           )}
+        </div>
+      </div>
+    );
+  };
+
+  const formatLicenseDate = (isoDate?: string): string => {
+    if (!isoDate) return i18nService.t('licenseEmptyValue');
+    const time = Date.parse(isoDate);
+    if (!Number.isFinite(time)) return isoDate;
+    return new Date(time).toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US');
+  };
+
+  const getLicenseStatusLabel = (status: LicenseStatus | null): string => {
+    if (!status) return i18nService.t('licenseStatusLoading');
+    switch (status.kind) {
+      case LicenseStatusKind.Valid:
+        return i18nService.t('licenseStatusValid');
+      case LicenseStatusKind.Trial:
+        return i18nService.t('licenseStatusTrial');
+      case LicenseStatusKind.Expired:
+        return i18nService.t('licenseStatusExpired');
+      case LicenseStatusKind.InvalidSignature:
+        return i18nService.t('licenseStatusInvalidSignature');
+      case LicenseStatusKind.MachineMismatch:
+        return i18nService.t('licenseStatusMachineMismatch');
+      case LicenseStatusKind.FeatureMissing:
+        return i18nService.t('licenseStatusFeatureMissing');
+      case LicenseStatusKind.InvalidFormat:
+        return i18nService.t('licenseStatusInvalidFormat');
+      case LicenseStatusKind.Missing:
+      default:
+        return i18nService.t('licenseStatusMissing');
+    }
+  };
+
+  const renderLicenseSettings = () => {
+    const status = licenseStatus;
+    const isAllowed = status?.canStartCowork === true;
+    const customer = status?.payload?.customer || i18nService.t('licenseEmptyValue');
+    const plan = status?.payload?.plan || (status?.kind === LicenseStatusKind.Trial ? LicenseStatusKind.Trial : i18nService.t('licenseEmptyValue'));
+    const expiresAt = status?.payload?.expiresAt || status?.trialExpiresAt;
+
+    return (
+      <div className="space-y-5">
+        <div className="rounded-xl border border-border bg-surface p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">
+                {i18nService.t('licenseTitle')}
+              </h3>
+              <p className="mt-1 text-xs leading-5 text-secondary">
+                {i18nService.t('licenseDescription')}
+              </p>
+            </div>
+            <span className={`shrink-0 rounded-lg px-2 py-1 text-xs font-medium ${
+              isAllowed
+                ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                : 'bg-red-500/10 text-red-600 dark:text-red-400'
+            }`}>
+              {getLicenseStatusLabel(status)}
+            </span>
+          </div>
+
+          {status?.reason && (
+            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs leading-5 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200">
+              {status.reason}
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-border bg-surface p-3">
+            <p className="text-[11px] text-secondary">{i18nService.t('licenseCustomer')}</p>
+            <p className="mt-1 truncate text-sm font-medium text-foreground">{customer}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-3">
+            <p className="text-[11px] text-secondary">{i18nService.t('licensePlan')}</p>
+            <p className="mt-1 truncate text-sm font-medium text-foreground">{plan}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-3">
+            <p className="text-[11px] text-secondary">{i18nService.t('licenseExpiresAt')}</p>
+            <p className="mt-1 truncate text-sm font-medium text-foreground">{formatLicenseDate(expiresAt)}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-3">
+            <p className="text-[11px] text-secondary">{i18nService.t('licenseFeatures')}</p>
+            <p className="mt-1 truncate text-sm font-medium text-foreground">
+              {status?.payload?.features?.join(', ') || i18nService.t('licenseTrialFeatures')}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border bg-surface p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-foreground">{i18nService.t('licenseMachineCode')}</p>
+              <p className="mt-1 break-all font-mono text-xs text-secondary">
+                {status?.machineCode || i18nService.t('licenseEmptyValue')}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleCopyMachineCode}
+              disabled={!status?.machineCode}
+              className="shrink-0 rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {i18nService.t('copy')}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleImportLicense}
+            disabled={isLicenseBusy}
+            className="rounded-xl bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {i18nService.t('licenseImport')}
+          </button>
+          <button
+            type="button"
+            onClick={handleClearLicense}
+            disabled={isLicenseBusy}
+            className="rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {i18nService.t('licenseClear')}
+          </button>
+          <button
+            type="button"
+            onClick={() => void refreshLicenseStatus()}
+            disabled={isLicenseBusy}
+            className="rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {i18nService.t('refresh')}
+          </button>
         </div>
       </div>
     );
@@ -4104,6 +4307,9 @@ const Settings: React.FC<SettingsProps> = ({
             handleDeleteModel={handleDeleteModel}
           />
         );
+
+      case 'license':
+        return renderLicenseSettings();
 
       case 'shortcuts':
         return (

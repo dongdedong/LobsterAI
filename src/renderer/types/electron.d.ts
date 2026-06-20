@@ -30,6 +30,7 @@ import type {
   KitSkillMetadata,
   ResolvedKitCapabilities,
 } from '../../shared/kit/constants';
+import type { LicenseStatus } from '../../shared/license';
 import type {
   ListLocalWebServicesOptions,
   LocalWebService,
@@ -539,6 +540,11 @@ interface IElectronAPI {
     probeModel?: boolean;
   }) => Promise<{ hasConfig: boolean; config: CoworkApiConfig | null; error?: string }>;
   saveApiConfig: (config: CoworkApiConfig) => Promise<{ success: boolean; error?: string }>;
+  license: {
+    getStatus: () => Promise<LicenseStatus>;
+    importFile: (filePath: string) => Promise<{ success: boolean; status?: LicenseStatus; error?: string }>;
+    clear: () => Promise<LicenseStatus>;
+  };
   generateSessionTitle: (userInput: string | null) => Promise<string>;
   getRecentCwds: (limit?: number) => Promise<string[]>;
   openclaw: {

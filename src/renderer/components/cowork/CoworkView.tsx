@@ -179,6 +179,28 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
     return status.phase === 'running' || status.phase === 'ready';
   };
 
+  const ensureLicenseAllowsCowork = async (): Promise<boolean> => {
+    try {
+      const licenseStatus = await window.electron.license.getStatus();
+      if (licenseStatus.canStartCowork) {
+        return true;
+      }
+      onRequestAppSettings?.({
+        initialTab: 'license',
+        noticeI18nKey: 'licenseCoworkBlocked',
+        noticeExtra: licenseStatus.reason,
+      });
+      return false;
+    } catch (error) {
+      console.error('Failed to check license status:', error);
+      onRequestAppSettings?.({
+        initialTab: 'license',
+        noticeI18nKey: 'licenseCoworkBlocked',
+      });
+      return false;
+    }
+  };
+
   const handleRestartGateway = async () => {
     if (isRestartingGateway) return;
     setIsRestartingGateway(true);
@@ -248,6 +270,9 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
       count: imageAttachments?.length ?? 0,
       details: imageAttachments?.map(a => ({ name: a.name, mimeType: a.mimeType, base64Length: a.base64Data?.length ?? 0 })) ?? [],
     });
+    if (!(await ensureLicenseAllowsCowork())) {
+      return false;
+    }
     if (openClawStatus && !isOpenClawReadyForSession(openClawStatus)) {
       window.dispatchEvent(new CustomEvent('app:showToast', { detail: i18nService.t('coworkErrorEngineNotReady') }));
       return false;
@@ -420,6 +445,9 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
 
   const handleContinueSession = async (prompt: string, skillPrompt?: string, imageAttachments?: CoworkImageAttachment[], mediaReferences?: MediaAttachmentRef[], selectedTextSnippets?: CoworkSelectedTextSnippet[]) => {
     if (!currentSession) return false;
+    if (!(await ensureLicenseAllowsCowork())) {
+      return false;
+    }
     // Prevent duplicate submissions
     if (isContinuingRef.current) return false;
     if (openClawStatus && !isOpenClawReadyForSession(openClawStatus)) {
