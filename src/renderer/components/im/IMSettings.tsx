@@ -626,14 +626,9 @@ const IMSettings: React.FC = () => {
 
   // ==================== Email instance helpers ====================
 
-  const handleEmailGetApiKey = async () => {
+  const handleEmailGetApiKey = () => {
     if (!activeEmailInstanceId) return;
-    const apiKeyUrl = 'https://claw.163.com/projects/dashboard/?channel=LobsterAI#/api-keys';
-    try {
-      await window.electron.shell.openExternal(apiKeyUrl);
-    } catch {
-      alert('Failed to open browser. Please visit: ' + apiKeyUrl);
-    }
+    alert(i18nService.t('emailApiKeyConsoleUnavailable'));
   };
 
   // ==================== End email instance helpers ====================

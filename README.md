@@ -9,26 +9,17 @@
 </p>
 
 <p align="center">
-  <em>The first open-source, desktop-grade Agent from a major Chinese tech company — publicly praised by OpenClaw's founder.</em>
+  <em>An internal commercial fork focused on local-first desktop Agent workflows.</em>
 </p>
 
 <p align="center">
-  <a href="https://github.com/netease-youdao/LobsterAI/stargazers"><img src="https://img.shields.io/github/stars/netease-youdao/LobsterAI?style=for-the-badge&logo=github&color=FFD43B" alt="GitHub stars"></a>
-  <a href="https://github.com/netease-youdao/LobsterAI/releases"><img src="https://img.shields.io/github/v/release/netease-youdao/LobsterAI?style=for-the-badge&color=brightgreen" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
-  <br>
   <img src="https://img.shields.io/badge/Platform-macOS%20%7C%20Windows-brightgreen?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/Electron-40-47848F?style=for-the-badge&logo=electron&logoColor=white" alt="Electron">
   <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">
 </p>
 
 <p align="center">
-  <a href="https://github.com/netease-youdao/LobsterAI/releases"><strong>⬇️ Download</strong></a>
-  &nbsp;·&nbsp;
-  <a href="#community"><strong>💬 Community</strong></a>
-  &nbsp;·&nbsp;
-  <a href="https://www.star-history.com/#netease-youdao/LobsterAI&type=date"><strong>⭐ Star History</strong></a>
-  &nbsp;·&nbsp;
   English · <a href="README_zh.md">中文</a>
 </p>
 
@@ -36,21 +27,21 @@
 
 **LobsterAI** is an all-scenario office assistant Agent built by TopVan. It works around the clock to get real work done: data analysis, slide decks, video generation, document writing, web research, email, scheduled jobs, and more.
 
-Unlike chat-only assistants, LobsterAI is **desktop-grade**. Through its **Cowork mode** it connects to your files, terminal, browser, and local projects — executing tools and running commands directly in your real working environment, with every sensitive action gated behind your approval. Spin up purpose-built Agents (stock research, content writing, lesson planning…), extend it with Expert Kits, Skills, and MCP servers, and reach it from your phone via WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, Discord, and more — command your computer to work anytime, anywhere.
+Unlike chat-only assistants, LobsterAI is **desktop-grade**. Through its **Cowork mode** it connects to your files, terminal, browser, and local projects — executing tools and running commands directly in your real working environment, with every sensitive action gated behind your approval. Spin up purpose-built Agents (stock research, content writing, lesson planning…), extend it with Skills and MCP servers, and reach it from your phone through supported IM connectors — command your computer to work anytime, anywhere.
 
 ## Why LobsterAI
 
 - **🔓 Open source, secure & trustworthy** — 100% open-source code with transparent capabilities; permissions, data, and execution flows are all auditable
 - **🖥️ Desktop-grade Agent** — Connects to your files, terminal, browser, and local projects, working directly inside your real environment instead of a sandboxed chat box
 - **🧩 OpenClaw ecosystem** — Built on the open-source OpenClaw Agent framework, with continuous access to new Skills, tools, MCP servers, and models
-- **📱 Command your computer from your phone** — Drive LobsterAI 24/7 through WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, Discord, and more
+- **📱 Command your computer from your phone** — Drive LobsterAI through supported IM connectors such as WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, and Discord
 - **🔒 Local data, controlled actions** — Sessions, configuration, and memory stay on your device; every tool call is gated and logged
 
 ## Capabilities
 
 - **All-scenario productivity** — Data analysis, PPT creation, video generation, document writing, web search, email — covering the full range of daily work
 - **Custom Agents** — Create purpose-built Agents (e.g. Stock Expert, Content Writer, Lesson Planner) each with its own identity, skills, and IM channels
-- **Expert Kits & Skills** — 28 built-in skills plus installable Expert Kits; build your own with `skill-creator` and hot-load at runtime
+- **Skills** — Built-in skills plus your own skill extensions; build with `skill-creator` and hot-load at runtime
 - **MCP support** — Connect external tools and data sources through Model Context Protocol servers
 - **Scheduled tasks** — Create recurring jobs by conversation or GUI — daily news digests, inbox cleanup, periodic reports, and more
 - **Persistent memory** — Remembers your preferences and context across sessions via file-based memory; gets smarter the more you use it
@@ -86,7 +77,7 @@ Unlike chat-only assistants, LobsterAI is **desktop-grade**. Through its **Cowor
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/netease-youdao/LobsterAI.git
+git clone <your-internal-repository-url>
 cd LobsterAI
 npm install
 ```
@@ -109,8 +100,9 @@ it reuses the existing runtime and skips the OpenClaw build step:
 npm run electron:dev
 ```
 
-The Vite dev server runs at `http://localhost:5175`. By default the app connects to
-LobsterAI's **production** services, so no extra setup is needed to sign in and use it.
+The Vite dev server runs at `http://localhost:5175`. This fork is configured for
+the Local BYOK MVP by default: users bring their own model provider API key, and
+cloud login/model proxy flows are not required for the first commercial version.
 
 #### OpenClaw build options
 
@@ -223,7 +215,7 @@ LobsterAI uses Electron's strict process isolation. All cross-process communicat
 - Window lifecycle management
 - SQLite persistence
 - OpenClaw agent engine (primary) + CoworkEngineRouter dispatch layer
-- IM Gateways — WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, Discord, POPO remote access
+- IM Gateways — WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, and Discord remote access
 - 40+ IPC channel handlers
 - Security: context isolation enabled, node integration disabled, sandbox enabled
 
@@ -249,7 +241,7 @@ src/
 │   ├── sqliteStore.ts              # SQLite storage
 │   ├── coworkStore.ts              # Session/message CRUD
 │   ├── skillManager.ts             # Skill management
-│   ├── im/                         # IM gateways (WeChat/WeCom/DingTalk/Feishu/QQ/Telegram/Discord/POPO)
+│   ├── im/                         # IM gateways (WeChat/WeCom/DingTalk/Feishu/QQ/Telegram/Discord)
 │   └── libs/
 │       ├── agentEngine/
 │       │   ├── coworkEngineRouter.ts    # Dispatch layer (routes sessions to the active engine)
@@ -350,7 +342,7 @@ LobsterAI ships with a rich set of built-in skills covering productivity, creati
 | local-tools | Local system tools | File management, system operations |
 | imap-smtp-email | Email send/receive | Email processing, auto-replies |
 | create-plan | Plan authoring | Project planning, task breakdown |
-| youdaonote | Youdao Note | Note management, to-dos, web clipping |
+| youdaonote | Youdao Note legacy connector | Disabled by default; requires separate service and license review |
 | skill-vetter | Skill security audit | Safety check before installing third-party skills |
 | skill-creator | Custom skill creation | Extend new capabilities |
 
@@ -392,11 +384,10 @@ LobsterAI can bridge the Agent to multiple IM platforms. Send a message from you
 | QQ | OpenClaw gateway | QQ bot (official Bot API), supports multiple instances |
 | Telegram | OpenClaw gateway | Bot API, supports webhook and polling |
 | Discord | OpenClaw gateway | Discord bot, supports servers and DMs |
-| NetEase IM | node-nim V2 SDK | [NetEase IM P2P messaging](https://doc.yunxin.163.com/messaging2/getting-started) |
-| NetEase Bee | node-nim V2 SDK | [NetEase Bee personal digital assistant](https://wp.m.163.com/163/html/bee/lobsterai_guide/index.html) |
-| NetEase POPO | OpenClaw gateway | NetEase POPO enterprise IM, supports WebSocket and Webhook |
 
 Configure the corresponding platform Token/Secret in the Settings panel to enable. Once set up, you can send instructions directly to the Agent from your phone IM (e.g., "analyze this dataset", "make a weekly summary PPT"), and the Agent will execute on the desktop and return results.
+
+NetEase-family IM connectors from the upstream project are treated as legacy integrations in this fork. They are not part of the Local BYOK MVP surface and require separate dependency, license, and deployment review before commercial use.
 
 ## Persistent Memory
 
@@ -580,35 +571,17 @@ Avoid importing Electron-only APIs (e.g. `electron-log`) in tests — inline any
 
 </details>
 
-
-
-## Community
-
-Join our WeChat group to get help, share feedback, and stay up to date:
-
-<p align="center">
-  <img src="https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/wechat_group-B34qRm1G.png" alt="WeChat Community QR Code" width="200">
-</p>
-
 ## Contributing
 
-1. Fork this repository
+1. Create a branch from the internal mainline
 2. Create your feature branch (`git checkout -b feature/your-feature`)
 3. Commit your changes (`git commit -m 'feat: add something'`)
 4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
+5. Open an internal review request
 
 Please include in your PR description: a summary of changes, linked issue (if any), screenshots for UI changes, and notes on any Electron-specific behavior changes.
 
 ## License
 
 [MIT License](LICENSE)
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=netease-youdao/LobsterAI&type=date&legend=top-left)](https://www.star-history.com/#netease-youdao/LobsterAI&type=date&legend=top-left)
-
----
-
 Built and maintained by TopVan.
