@@ -11,6 +11,7 @@ import PlusCircleIcon from '../icons/PlusCircleIcon';
 import { GitHubCopilotIcon } from '../icons/providers';
 import TrashIcon from '../icons/TrashIcon';
 import {
+  buildProviderRecommendedConfig,
   CUSTOM_PROVIDER_KEYS,
   getEffectiveApiFormat,
   getProviderDefaultBaseUrl,
@@ -490,6 +491,20 @@ const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
   const copilotSignedIn = copilotAuthStatus === 'authenticated'
     || copilotProvider?.authType === ProviderAuthType.OAuth;
   const hasAnyReadyProvider = hasReadyProvider(visibleProviders);
+  const canApplyRecommendedConfig = isByokRecommendedProvider(activeProvider)
+    && !!ProviderRegistry.get(activeProvider);
+  const handleApplyRecommendedConfig = () => {
+    setProviders(prev => {
+      const nextConfig = buildProviderRecommendedConfig(activeProvider, prev[activeProvider]);
+      if (!nextConfig) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [activeProvider]: nextConfig,
+      };
+    });
+  };
   const getProviderStatusLabel = (provider: ProviderType, config: ProviderConfig): string => {
     const status = resolveProviderSetupStatus(provider, config);
     switch (status) {
@@ -704,6 +719,26 @@ const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
                     : i18nService.t('providerStatusOff')}
                 </div>
               </div>
+
+              {canApplyRecommendedConfig && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium text-foreground">
+                      {i18nService.t('providerRecommendedConfigTitle')}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-5 text-secondary">
+                      {i18nService.t('providerRecommendedConfigHint')}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleApplyRecommendedConfig}
+                    className="shrink-0 rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-raised active:scale-[0.98]"
+                  >
+                    {i18nService.t('applyRecommendedConfig')}
+                  </button>
+                </div>
+              )}
 
               {/* MiniMax OAuth auth section */}
               {activeProvider === 'minimax' && (

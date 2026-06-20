@@ -2,6 +2,7 @@ import { expect, test } from 'vitest';
 
 import { ProviderAuthType, ProviderName } from '../../../shared/providers';
 import {
+  buildProviderRecommendedConfig,
   classifyProviderConnectionFailure,
   hasProviderAuthConfigured,
   hasReadyProvider,
@@ -41,6 +42,50 @@ test('BYOK recommended providers highlight practical MVP choices', () => {
   expect(isByokRecommendedProvider(ProviderName.Ollama)).toBe(true);
   expect(isByokRecommendedProvider(ProviderName.LmStudio)).toBe(true);
   expect(isByokRecommendedProvider(ProviderName.Youdaozhiyun)).toBe(false);
+});
+
+test('recommended provider config restores endpoint format and models without clearing credentials', () => {
+  const config = buildProviderRecommendedConfig(
+    ProviderName.DeepSeek,
+    providerConfig({
+      enabled: true,
+      apiKey: 'sk-test',
+      baseUrl: 'https://wrong.example.com',
+      apiFormat: 'anthropic',
+      models: [{ id: 'wrong-model', name: 'Wrong Model' }],
+    }),
+  );
+
+  expect(config).toMatchObject({
+    enabled: true,
+    apiKey: 'sk-test',
+    baseUrl: 'https://api.deepseek.com',
+    apiFormat: 'openai',
+  });
+  expect(config?.models?.[0]).toMatchObject({
+    id: 'deepseek-v4-flash',
+    name: 'DeepSeek V4 Flash',
+  });
+});
+
+test('recommended provider config resets coding plan and ignores non-recommended providers', () => {
+  const qwenConfig = buildProviderRecommendedConfig(
+    ProviderName.Qwen,
+    providerConfig({
+      apiKey: 'sk-test',
+      codingPlanEnabled: true,
+      baseUrl: 'https://custom.example.com',
+      models: [{ id: 'coding-model', name: 'Coding Model' }],
+    }),
+  );
+
+  expect(qwenConfig?.codingPlanEnabled).toBe(false);
+  expect(qwenConfig?.baseUrl).toBe('https://dashscope.aliyuncs.com/apps/anthropic');
+
+  expect(buildProviderRecommendedConfig(
+    ProviderName.Youdaozhiyun,
+    providerConfig({ apiKey: 'sk-test' }),
+  )).toBeNull();
 });
 
 test('provider setup status explains the next required action', () => {

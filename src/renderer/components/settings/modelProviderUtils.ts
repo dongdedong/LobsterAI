@@ -51,6 +51,27 @@ export const isByokRecommendedProvider = (provider: string): boolean => (
   (BYOK_RECOMMENDED_PROVIDER_IDS as readonly string[]).includes(provider)
 );
 
+export const buildProviderRecommendedConfig = (
+  provider: ProviderType,
+  currentConfig: ProviderConfig,
+): ProviderConfig | null => {
+  const def = ProviderRegistry.get(provider);
+  if (!def || !isByokRecommendedProvider(provider)) {
+    return null;
+  }
+
+  return {
+    ...currentConfig,
+    baseUrl: def.defaultBaseUrl,
+    apiFormat: def.defaultApiFormat,
+    ...(def.codingPlanSupported ? { codingPlanEnabled: false } : {}),
+    models: def.defaultModels.map(model => ({
+      ...model,
+      supportsImage: ProviderRegistry.resolveModelSupportsImage(provider, model.id, model.supportsImage),
+    })),
+  };
+};
+
 export const resolveModelSupportsImageForProvider = (
   providerName: string,
   model: { id: string; supportsImage?: boolean },
