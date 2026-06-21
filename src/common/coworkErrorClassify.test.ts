@@ -44,7 +44,7 @@ test('billing: OpenAI insufficient_quota', () => {
   expect(classifyError('You exceeded your current quota, please check your plan and billing details. insufficient_quota')).toBe('coworkErrorInsufficientBalance');
 });
 
-test('billing: LobsterAI free quota exhausted', () => {
+test('billing: TopVanAI free quota exhausted', () => {
   expect(classifyError('免费额度已用完，请升级套餐')).toBe('coworkErrorFreeQuotaExhausted');
 });
 

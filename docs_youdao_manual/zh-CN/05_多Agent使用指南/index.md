@@ -4,14 +4,14 @@ title: "多Agent使用指南"
 locale: zh-CN
 route: /docs/lobsterai_multi_agent_guide
 source_url: "https://lobsterai.youdao.com/#/docs/lobsterai_multi_agent_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-%E5%A4%9AAgent%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-CkfYaJML.js"
----# LobsterAI 多 Agent 使用指南
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI-%E5%A4%9AAgent%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-CkfYaJML.js"
+---# TopVanAI 多 Agent 使用指南
 
-> 📖 本指南将介绍 LobsterAI 的 **多 Agent** 功能，帮助你创建和管理多个专属 AI 助手，让不同领域的任务各有专攻。
+> 📖 本指南将介绍 TopVanAI 的 **多 Agent** 功能，帮助你创建和管理多个专属 AI 助手，让不同领域的任务各有专攻。
 
 **什么是多 Agent？**
 
-多 Agent 功能允许你在 LobsterAI 中创建多个独立的 AI 助手（Agent），每个 Agent 拥有：
+多 Agent 功能允许你在 TopVanAI 中创建多个独立的 AI 助手（Agent），每个 Agent 拥有：
 - 🎭 **独立的身份和人设** — 自定义名称、图标、系统提示词
 - 🛠️ **专属的技能组合** — 每个 Agent 可以配置不同的技能集
 - 💬 **独立的对话历史** — 切换 Agent 时自动加载对应的会话记录
@@ -32,7 +32,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 ## 准备工作
 
 在开始之前，请确保：
-- ✅ LobsterAI 已升级到 **2026.3.26 版本**及以上
+- ✅ TopVanAI 已升级到 **2026.3.26 版本**及以上
 - ✅ 已配置至少一个可用的 AI 模型
 
 ---
@@ -41,7 +41,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ### 方式一：侧边栏入口
 
-在 LobsterAI 左侧边栏，点击 **「我的 Agent」** 按钮（用户组图标），即可进入 Agent 管理页面。
+在 TopVanAI 左侧边栏，点击 **「我的 Agent」** 按钮（用户组图标），即可进入 Agent 管理页面。
 
 ![我的 Agent 入口](./assets/001_4549184a84.png)
 
@@ -49,7 +49,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ## 使用预设 Agent
 
-LobsterAI 内置了多个精心调教的预设 Agent 模板，开箱即用。
+TopVanAI 内置了多个精心调教的预设 Agent 模板，开箱即用。
 
 ### 查看预设 Agent
 
@@ -235,12 +235,12 @@ LobsterAI 内置了多个精心调教的预设 Agent 模板，开箱即用。
 
 ## 主 Agent（Main Agent）
 
-LobsterAI 始终存在一个 **主 Agent**，它是系统的默认 Agent：
+TopVanAI 始终存在一个 **主 Agent**，它是系统的默认 Agent：
 
 - **不可删除**：主 Agent 始终存在
 - **默认回退**：未绑定专属 Agent 的 IM 平台，消息由主 Agent 处理
 - **全量技能**：主 Agent 默认可以使用所有已启用的技能
-- **初始状态**：首次使用 LobsterAI 时，所有对话都归属于主 Agent
+- **初始状态**：首次使用 TopVanAI 时，所有对话都归属于主 Agent
 
 > **理解主 Agent**: 你可以把主 Agent 想象成"通用助手"。专属 Agent 负责特定领域，主 Agent 负责兜底处理所有其他请求。
 
@@ -271,7 +271,7 @@ LobsterAI 始终存在一个 **主 Agent**，它是系统的默认 Agent：
 
 - 在钉钉上向机器人发消息："帮我分析一下宁德时代最近走势" → 股票助手响应
 - 在飞书上向机器人发消息："帮我写一篇关于 AI 的公众号文章" → 内容创作 Agent 响应
-- 在 LobsterAI 客户端直接对话 → 使用当前选中的 Agent
+- 在 TopVanAI 客户端直接对话 → 使用当前选中的 Agent
 
 ---
 
@@ -309,13 +309,13 @@ A: 可以。目前钉钉、飞书、QQ可以通过创建多个实例，绑定多
 
 **Q: 不绑定 IM 渠道也能正常使用 Agent 吗？**
 
-A: 当然可以。IM 绑定是可选功能。你可以直接在 LobsterAI 客户端中切换 Agent 并进行对话，完全不需要配置 IM。
+A: 当然可以。IM 绑定是可选功能。你可以直接在 TopVanAI 客户端中切换 Agent 并进行对话，完全不需要配置 IM。
 
 ---
 
 **Q: 如何让 Agent 在多个 IM 群里都能用？**
 
-A: Agent 绑定的是 IM 平台，不是单个会话。绑定后，该平台上的消息都会由对应 Agent 处理。前提是 IM 机器人已配置完成（具体配置方法请参考 [IM 机器人配置指南](LobsterAI-IM机器人配置指南.md)）。
+A: Agent 绑定的是 IM 平台，不是单个会话。绑定后，该平台上的消息都会由对应 Agent 处理。前提是 IM 机器人已配置完成（具体配置方法请参考 [IM 机器人配置指南](TopVanAI-IM机器人配置指南.md)）。
 
 ---
 

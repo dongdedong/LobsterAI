@@ -4,10 +4,10 @@ title: "模型配置指南"
 locale: zh-CN
 route: /docs/lobsterai_model_config_guide
 source_url: "https://lobsterai.youdao.com/#/docs/lobsterai_model_config_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-%E5%9B%BD%E5%86%85%E5%90%84%E6%A8%A1%E5%9E%8B%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-Cyw6YAtO.js"
----# LobsterAI 模型配置操作指南
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI-%E5%9B%BD%E5%86%85%E5%90%84%E6%A8%A1%E5%9E%8B%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-Cyw6YAtO.js"
+---# TopVanAI 模型配置操作指南
 
-> 本指南将详细说明如何配置国内主流AI模型,帮助您将模型接入LobsterAI使用。
+> 本指南将详细说明如何配置国内主流AI模型,帮助您将模型接入TopVanAI使用。
 
 ---
 
@@ -18,18 +18,18 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 想象一下:
 - **AI模型**是一个超级聪明的助手,运行在服务商的云端服务器上
 - **API Key**是服务商给你的专属访问密钥
-- **LobsterAI**是帮你连接和使用这些AI模型的工具
+- **TopVanAI**是帮你连接和使用这些AI模型的工具
 
 ### 使用流程
 
 1. 在AI服务商网站注册账号
 2. 获取该服务商提供的API Key(密钥)
-3. 在LobsterAI中配置API Key
-4. 即可在LobsterAI中使用该模型
+3. 在TopVanAI中配置API Key
+4. 即可在TopVanAI中使用该模型
 
 ### 费用说明
 
-- **LobsterAI本身免费**,我们不收取任何费用
+- **TopVanAI本身免费**,我们不收取任何费用
 - AI模型服务由各服务商提供,费用直接支付给服务商
 - 就像微信(免费)和滴滴打车(付费)的关系,微信是工具,打车服务需要单独付费
 
@@ -37,7 +37,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ## 🎯 支持的国内模型
 
-LobsterAI支持以下国内AI模型服务商:
+TopVanAI支持以下国内AI模型服务商:
 
 | 服务商 | 主要特点 | 官网 |
 |--------|----------|------|
@@ -54,7 +54,7 @@ LobsterAI支持以下国内AI模型服务商:
 所有模型的配置流程基本相同:
 
 ```
-1️⃣ 注册账号 → 2️⃣ 实名认证 → 3️⃣ 获取API Key → 4️⃣ 账户充值 → 5️⃣ 在LobsterAI中配置
+1️⃣ 注册账号 → 2️⃣ 实名认证 → 3️⃣ 获取API Key → 4️⃣ 账户充值 → 5️⃣ 在TopVanAI中配置
 ```
 
 ### ⚡ 快速跳转(适合已注册用户)
@@ -62,18 +62,18 @@ LobsterAI支持以下国内AI模型服务商:
 如果您已经在某个服务商注册过账号,可以根据情况直接跳转:
 
 #### 情况一:已有账号和API Key,账户有余额
-**直接跳转到**: 选择您使用的服务商,找到"在LobsterAI中配置"章节
-- [DeepSeek - 第五步:在LobsterAI中配置](#第五步在lobsterai中配置)
-- [智谱AI - 第六步:在LobsterAI中配置](#第六步在lobsterai中配置)
-- [通义千问 - 第七步:在LobsterAI中配置](#第七步在lobsterai中配置)
-- [Moonshot - 第五步:在LobsterAI中配置](#第五步在lobsterai中配置-2)
-- [MiniMax - 第五步:在LobsterAI中配置](#第五步在lobsterai中配置-3)
+**直接跳转到**: 选择您使用的服务商,找到"在TopVanAI中配置"章节
+- [DeepSeek - 第五步:在TopVanAI中配置](#第五步在lobsterai中配置)
+- [智谱AI - 第六步:在TopVanAI中配置](#第六步在lobsterai中配置)
+- [通义千问 - 第七步:在TopVanAI中配置](#第七步在lobsterai中配置)
+- [Moonshot - 第五步:在TopVanAI中配置](#第五步在lobsterai中配置-2)
+- [MiniMax - 第五步:在TopVanAI中配置](#第五步在lobsterai中配置-3)
 
 #### 情况二:已有账号,但没有API Key
-**操作**: 登录对应平台 → 找到"API管理"或"密钥管理" → 创建新密钥 → 然后跳到上面的"在LobsterAI中配置"
+**操作**: 登录对应平台 → 找到"API管理"或"密钥管理" → 创建新密钥 → 然后跳到上面的"在TopVanAI中配置"
 
 #### 情况三:已有账号和API Key,但余额不足
-**操作**: 登录对应平台 → 进入"充值"或"费用中心" → 充值 → 然后跳到上面的"在LobsterAI中配置"
+**操作**: 登录对应平台 → 进入"充值"或"费用中心" → 充值 → 然后跳到上面的"在TopVanAI中配置"
 
 #### 情况四:完全新用户
 **操作**: 请按照下面的完整教程从第一步开始操作
@@ -135,7 +135,7 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 2. **创建新密钥**:
    - 点击"创建API Key"按钮
-   - 给密钥命名(如"LobsterAI")
+   - 给密钥命名(如"TopVanAI")
    - 点击"创建"
 
 ![创建API Key](./assets/008_278c1e76ce.png)
@@ -173,15 +173,15 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 ![支付页面](./assets/013_94f0c7a3d0.png)
 
-### 第五步:在LobsterAI中配置
+### 第五步:在TopVanAI中配置
 
-1. **打开LobsterAI设置**:
-   - 启动LobsterAI
+1. **打开TopVanAI设置**:
+   - 启动TopVanAI
    - 点击右上角"设置"图标(齿轮⚙️)
    - 点击左侧"模型"选项
 
-![LobsterAI设置入口](./assets/014_e6dd88d470.png)
-![LobsterAI模型设置](./assets/015_8f53d5ee5c.png)
+![TopVanAI设置入口](./assets/014_e6dd88d470.png)
+![TopVanAI模型设置](./assets/015_8f53d5ee5c.png)
 
 2. **找到DeepSeek**: 在模型列表中找到"DeepSeek"
 
@@ -292,9 +292,9 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 3. **完成支付**
 
-### 第六步:在LobsterAI中配置
+### 第六步:在TopVanAI中配置
 
-1. **打开设置**: LobsterAI → 设置⚙️ → 模型
+1. **打开设置**: TopVanAI → 设置⚙️ → 模型
 
 2. **找到智谱AI**: 在列表中找到"Zhipu GLM"
 
@@ -456,17 +456,17 @@ API Key是访问模型服务的密钥,请妥善保管。
 
    ![支付成功](./assets/040_83d7111aff.png)
 
-### 第七步:在LobsterAI中配置
+### 第七步:在TopVanAI中配置
 
-完成以上所有步骤后,就可以在LobsterAI中使用通义千问了。
+完成以上所有步骤后,就可以在TopVanAI中使用通义千问了。
 
-1. **打开LobsterAI设置**:
-   - 启动LobsterAI应用
+1. **打开TopVanAI设置**:
+   - 启动TopVanAI应用
    - 点击右上角"设置"图标(齿轮⚙️)
    - 点击左侧"模型"选项
 
-   ![LobsterAI设置入口](./assets/014_e6dd88d470.png)
-   ![LobsterAI模型设置](./assets/015_8f53d5ee5c.png)
+   ![TopVanAI设置入口](./assets/014_e6dd88d470.png)
+   ![TopVanAI模型设置](./assets/015_8f53d5ee5c.png)
 
 2. **找到通义千问**: 在模型列表中找到"Qwen"或"通义千问"
 
@@ -497,7 +497,7 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 配置完成后:
 
-1. 回到LobsterAI聊天界面
+1. 回到TopVanAI聊天界面
 2. 在模型选择器中选择"通义千问"或"Qwen"
 3. 即可开始对话
 
@@ -561,9 +561,9 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 3. **支付**: 支持微信/支付宝
 
-### 第五步:在LobsterAI中配置
+### 第五步:在TopVanAI中配置
 
-1. **打开设置**: LobsterAI → 设置 → 模型
+1. **打开设置**: TopVanAI → 设置 → 模型
 
 2. **找到Moonshot**: 列表中找到"Moonshot"
 
@@ -632,9 +632,9 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 ![MiniMax充值](./assets/055_e274f2b11b.png)
 
-### 第五步:在LobsterAI中配置
+### 第五步:在TopVanAI中配置
 
-1. **打开设置**: LobsterAI → 设置 → 模型
+1. **打开设置**: TopVanAI → 设置 → 模型
 
 2. **找到MiniMax**: 列表中找到"MiniMax"
 
@@ -661,7 +661,7 @@ API Key是访问模型服务的密钥,请妥善保管。
 - ✅ 是否有可用的API Key(如果没有,创建一个)
 - ✅ 账户余额是否充足(如果不足,充值)
 
-**步骤2**: 打开LobsterAI设置 → 模型 → 找到对应服务商
+**步骤2**: 打开TopVanAI设置 → 模型 → 找到对应服务商
 
 **步骤3**: 填写配置:
 - 启用开关
@@ -713,7 +713,7 @@ API Key是访问模型服务的密钥,请妥善保管。
 
 ### 5. 多个模型可以同时配置吗?
 
-可以。LobsterAI支持同时配置多个模型服务商,您可以:
+可以。TopVanAI支持同时配置多个模型服务商,您可以:
 - 在对话中切换不同模型
 - 同时使用多个服务商的服务
 - 根据需要选择使用的模型

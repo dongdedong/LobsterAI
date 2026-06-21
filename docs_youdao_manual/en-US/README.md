@@ -1,4 +1,4 @@
-# LobsterAI Docs (en-US)
+# TopVanAI Docs (en-US)
 
 - [Quick Start](./01_Quick_Start/index.md)
 - [Model Configuration Guide](./02_Model_Configuration_Guide/index.md)

@@ -4,10 +4,10 @@ title: "Model Configuration Guide"
 locale: en-US
 route: /en/docs/lobsterai_model_config_guide
 source_url: "https://lobsterai.youdao.com/#/en/docs/lobsterai_model_config_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_Model_Configuration_Guide-DaZ-4T1P.js"
----# LobsterAI Model Configuration Guide
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI_Model_Configuration_Guide-DaZ-4T1P.js"
+---# TopVanAI Model Configuration Guide
 
-> This guide details how to configure mainstream domestic (Chinese) AI models, helping you integrate them into LobsterAI.
+> This guide details how to configure mainstream domestic (Chinese) AI models, helping you integrate them into TopVanAI.
 
 ---
 
@@ -19,18 +19,18 @@ Imagine this:
 
 * **The AI Model** is a super-smart assistant running on the provider's cloud server.
 * **The API Key** is an exclusive access pass given to you by the provider.
-* **LobsterAI** is the tool that helps you connect to and use these AI models.
+* **TopVanAI** is the tool that helps you connect to and use these AI models.
 
 ### Usage Workflow
 
 1. Register an account on the AI provider's website.
 2. Get the API Key provided by that service.
-3. Configure the API Key inside LobsterAI.
-4. You can now use that model within LobsterAI.
+3. Configure the API Key inside TopVanAI.
+4. You can now use that model within TopVanAI.
 
 ### Cost Explanation
 
-* **LobsterAI itself is free**; we do not charge any fees.
+* **TopVanAI itself is free**; we do not charge any fees.
 * AI model services are provided by their respective companies, and fees are paid directly to them.
 * It's like the relationship between WeChat (Free) and Didi Taxi (Paid): WeChat is the tool, but the taxi service requires separate payment.
 
@@ -38,7 +38,7 @@ Imagine this:
 
 ## 🎯 Supported Domestic Models
 
-LobsterAI supports the following domestic AI model providers:
+TopVanAI supports the following domestic AI model providers:
 
 | Provider | Key Features | Official Website |
 | --- | --- | --- |
@@ -55,7 +55,7 @@ LobsterAI supports the following domestic AI model providers:
 The configuration process is basically the same for all models:
 
 ```
-1️⃣ Register Account → 2️⃣ Real-name Verification → 3️⃣ Get API Key → 4️⃣ Top up Account → 5️⃣ Configure in LobsterAI
+1️⃣ Register Account → 2️⃣ Real-name Verification → 3️⃣ Get API Key → 4️⃣ Top up Account → 5️⃣ Configure in TopVanAI
 
 ```
 
@@ -65,21 +65,21 @@ If you have already registered an account with a provider, you can jump directly
 
 #### Scenario 1: Have Account, API Key, and Balance
 
-**Jump directly to**: Select your provider and find the "Configure in LobsterAI" section.
+**Jump directly to**: Select your provider and find the "Configure in TopVanAI" section.
 
-* [DeepSeek - Step 5: Configure in LobsterAI](https://www.google.com/search?q=%23step-5-configure-in-lobsterai)
-* [Zhipu AI - Step 6: Configure in LobsterAI](https://www.google.com/search?q=%23step-6-configure-in-lobsterai)
-* [Qwen - Step 7: Configure in LobsterAI](https://www.google.com/search?q=%23step-7-configure-in-lobsterai)
-* [Moonshot - Step 5: Configure in LobsterAI](https://www.google.com/search?q=%23step-5-configure-in-lobsterai-2)
-* [MiniMax - Step 5: Configure in LobsterAI](https://www.google.com/search?q=%23step-5-configure-in-lobsterai-3)
+* [DeepSeek - Step 5: Configure in TopVanAI](https://www.google.com/search?q=%23step-5-configure-in-lobsterai)
+* [Zhipu AI - Step 6: Configure in TopVanAI](https://www.google.com/search?q=%23step-6-configure-in-lobsterai)
+* [Qwen - Step 7: Configure in TopVanAI](https://www.google.com/search?q=%23step-7-configure-in-lobsterai)
+* [Moonshot - Step 5: Configure in TopVanAI](https://www.google.com/search?q=%23step-5-configure-in-lobsterai-2)
+* [MiniMax - Step 5: Configure in TopVanAI](https://www.google.com/search?q=%23step-5-configure-in-lobsterai-3)
 
 #### Scenario 2: Have Account, but NO API Key
 
-**Action**: Log in to the platform → Find "API Management" or "Key Management" → Create a new Key → Then jump to "Configure in LobsterAI" above.
+**Action**: Log in to the platform → Find "API Management" or "Key Management" → Create a new Key → Then jump to "Configure in TopVanAI" above.
 
 #### Scenario 3: Have Account and API Key, but Insufficient Balance
 
-**Action**: Log in to the platform → Enter "Top up" or "Billing Center" → Recharge → Then jump to "Configure in LobsterAI" above.
+**Action**: Log in to the platform → Enter "Top up" or "Billing Center" → Recharge → Then jump to "Configure in TopVanAI" above.
 
 #### Scenario 4: Completely New User
 
@@ -127,7 +127,7 @@ The API Key is the secret key to access the model service. Please keep it safe.
 1. **Enter API Management**: Click "API Keys" in the left menu.
 2. **Create New Key**:
 * Click the "Create API Key" button.
-* Name the key (e.g., "LobsterAI").
+* Name the key (e.g., "TopVanAI").
 * Click "Create".
 
 
@@ -160,10 +160,10 @@ The API Key is the secret key to access the model service. Please keep it safe.
 
 
 
-### Step 5: Configure in LobsterAI
+### Step 5: Configure in TopVanAI
 
-1. **Open LobsterAI Settings**:
-* Launch LobsterAI.
+1. **Open TopVanAI Settings**:
+* Launch TopVanAI.
 * Click the "Settings" icon (gear ⚙️) in the top right.
 * Click the "Models" option on the left.
 
@@ -257,9 +257,9 @@ According to regulations, AI services require real-name verification.
 
 3. **Complete Payment**.
 
-### Step 6: Configure in LobsterAI
+### Step 6: Configure in TopVanAI
 
-1. **Open Settings**: LobsterAI → Settings ⚙️ → Models.
+1. **Open Settings**: TopVanAI → Settings ⚙️ → Models.
 2. **Find Zhipu AI**: Locate "Zhipu GLM" in the list.
 3. **Fill Config**:
 * **Enable**: Turn on switch.
@@ -376,9 +376,9 @@ If you have a Taobao/Alipay account, you can log in directly.
 
 3. **Complete Payment**.
 
-### Step 7: Configure in LobsterAI
+### Step 7: Configure in TopVanAI
 
-1. **Open LobsterAI Settings**: Settings ⚙️ → Models.
+1. **Open TopVanAI Settings**: Settings ⚙️ → Models.
 2. **Find Qwen**: Locate "Qwen" or "Tongyi Qianwen".
 3. **Fill Info**:
 * **Enable**: On.
@@ -420,7 +420,7 @@ If you have a Taobao/Alipay account, you can log in directly.
 1. **Finance**: Left menu → "Account Top Up".
 2. **Pay**.
 
-### Step 5: Configure in LobsterAI
+### Step 5: Configure in TopVanAI
 
 1. **Settings**: Models → Moonshot.
 2. **Fill**: API Key, Base URL (default), Model.
@@ -455,7 +455,7 @@ If you have a Taobao/Alipay account, you can log in directly.
 
 1. **Top Up**: "Account Management" → "Balance" → "Recharge Now".
 
-### Step 5: Configure in LobsterAI
+### Step 5: Configure in TopVanAI
 
 1. **Settings**: Models → MiniMax.
 2. **Fill**:
@@ -478,7 +478,7 @@ If you have a Taobao/Alipay account, you can log in directly.
 * ✅ Is there a valid API Key?
 * ✅ Is the balance sufficient?
 
-**Step 2**: Open LobsterAI Settings → Models → Find provider.
+**Step 2**: Open TopVanAI Settings → Models → Find provider.
 
 **Step 3**: Fill Config: Switch On, Paste Key, Base URL, Test & Save.
 

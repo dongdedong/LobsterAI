@@ -1,4 +1,4 @@
-# LobsterAI Docs (zh-CN)
+# TopVanAI Docs (zh-CN)
 
 - [快速开始](./01_%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/index.md)
 - [模型配置指南](./02_%E6%A8%A1%E5%9E%8B%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/index.md)

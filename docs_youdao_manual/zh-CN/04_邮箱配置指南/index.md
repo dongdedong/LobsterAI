@@ -4,8 +4,8 @@ title: "邮箱配置指南"
 locale: zh-CN
 route: /docs/email_config_guide
 source_url: "https://lobsterai.youdao.com/#/docs/email_config_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-%E9%82%AE%E7%AE%B1%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-DWCWXXfT.js"
----# LobsterAI 邮箱配置指南
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI-%E9%82%AE%E7%AE%B1%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-DWCWXXfT.js"
+---# TopVanAI 邮箱配置指南
 
 ![](./assets/001_f592284dd6.png)
 

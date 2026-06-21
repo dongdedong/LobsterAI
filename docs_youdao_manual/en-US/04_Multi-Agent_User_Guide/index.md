@@ -4,14 +4,14 @@ title: "Multi-Agent User Guide"
 locale: en-US
 route: /en/docs/lobsterai_multi_agent_guide
 source_url: "https://lobsterai.youdao.com/#/en/docs/lobsterai_multi_agent_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-Multi-Agent-User-Guide-BSV5wQ7V.js"
----# LobsterAI Multi-Agent User Guide
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI-Multi-Agent-User-Guide-BSV5wQ7V.js"
+---# TopVanAI Multi-Agent User Guide
 
-> 📖 This guide introduces LobsterAI's **Multi-Agent** feature, helping you create and manage multiple dedicated AI assistants for specialized tasks across different domains.
+> 📖 This guide introduces TopVanAI's **Multi-Agent** feature, helping you create and manage multiple dedicated AI assistants for specialized tasks across different domains.
 
 **What is Multi-Agent?**
 
-The Multi-Agent feature allows you to create multiple independent AI assistants (Agents) in LobsterAI. Each Agent has:
+The Multi-Agent feature allows you to create multiple independent AI assistants (Agents) in TopVanAI. Each Agent has:
 - 🎭 **Independent identity and persona** — Custom name, icon, and system prompt
 - 🛠️ **Exclusive skill set** — Each Agent can be configured with different skills
 - 💬 **Independent conversation history** — Switching Agents automatically loads the corresponding conversation records
@@ -32,7 +32,7 @@ For more preset Agents, please refer to the "Using Preset Agents" section below.
 ## Prerequisites
 
 Before starting, please ensure:
-- ✅ LobsterAI is upgraded to **version 2026.3.26** or above
+- ✅ TopVanAI is upgraded to **version 2026.3.26** or above
 - ✅ At least one AI model is configured and available
 
 ---
@@ -41,7 +41,7 @@ Before starting, please ensure:
 
 ### Method 1: Sidebar Entry
 
-In LobsterAI's left sidebar, click the **"My Agents"** button (user group icon) to enter the Agent management page.
+In TopVanAI's left sidebar, click the **"My Agents"** button (user group icon) to enter the Agent management page.
 
 ![My Agents Entry](./assets/001_4549184a84.png)
 
@@ -49,7 +49,7 @@ In LobsterAI's left sidebar, click the **"My Agents"** button (user group icon) 
 
 ## Using Preset Agents
 
-LobsterAI comes with multiple carefully tuned preset Agent templates that are ready to use out of the box.
+TopVanAI comes with multiple carefully tuned preset Agent templates that are ready to use out of the box.
 
 ### Viewing Preset Agents
 
@@ -233,12 +233,12 @@ Every conversation (Session) belongs to the Agent selected at creation time:
 
 ## Main Agent
 
-LobsterAI always has a **Main Agent**, which is the system's default Agent:
+TopVanAI always has a **Main Agent**, which is the system's default Agent:
 
 - **Cannot be deleted**: Main Agent always exists
 - **Default fallback**: Messages from IM platforms without a dedicated Agent bound are handled by the Main Agent
 - **Full skills**: Main Agent can use all enabled skills by default
-- **Initial state**: When using LobsterAI for the first time, all conversations belong to the Main Agent
+- **Initial state**: When using TopVanAI for the first time, all conversations belong to the Main Agent
 
 > **Understanding Main Agent**: You can think of the Main Agent as a "general assistant". Dedicated Agents are responsible for specific domains, while the Main Agent handles all other requests as a fallback.
 
@@ -269,7 +269,7 @@ Continue to find "✍️ Content Creator" in Preset Agents → Click "Add"
 
 - Send a message to the bot on DingTalk: "Help me analyze CATL's recent trend" → Stock Assistant responds
 - Send a message to the bot on Feishu: "Help me write a WeChat article about AI" → Content Creator Agent responds
-- Direct conversation in LobsterAI client → Uses the currently selected Agent
+- Direct conversation in TopVanAI client → Uses the currently selected Agent
 
 ---
 
@@ -307,13 +307,13 @@ A: No. Each IM platform can only be bound to one Agent at a time. If you need to
 
 **Q: Can I use Agents normally without binding IM channels?**
 
-A: Of course. IM binding is an optional feature. You can directly switch Agents in the LobsterAI client and have conversations without any IM configuration.
+A: Of course. IM binding is an optional feature. You can directly switch Agents in the TopVanAI client and have conversations without any IM configuration.
 
 ---
 
 **Q: How can I make an Agent available in multiple IM groups?**
 
-A: Agents are bound to IM platforms, not individual conversations. After binding, messages on that platform will be handled by the corresponding Agent. The prerequisite is that the IM bot has been configured (for specific configuration methods, please refer to the [IM Bot Configuration Guide](LobsterAI-IM-Bot-Configuration-Guide.md)).
+A: Agents are bound to IM platforms, not individual conversations. After binding, messages on that platform will be handled by the corresponding Agent. The prerequisite is that the IM bot has been configured (for specific configuration methods, please refer to the [IM Bot Configuration Guide](TopVanAI-IM-Bot-Configuration-Guide.md)).
 
 ---
 

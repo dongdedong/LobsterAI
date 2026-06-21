@@ -735,7 +735,7 @@ const CoworkView: React.FC<CoworkViewProps> = ({ onRequestAppSettings, onShowSki
           <div className="w-full max-w-3xl text-center">
             <img
               src="logo.png"
-              alt="LobsterAI"
+              alt="TopVanAI"
               className="mx-auto h-12 w-12 animate-fade-in-up"
             />
             <h2

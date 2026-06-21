@@ -26,7 +26,7 @@ vi.mock('electron', () => ({
 
 import { installUpdate } from './appUpdateInstaller';
 
-const INSTALLER_PATH = 'C:\\Users\\test\\AppData\\Roaming\\LobsterAI\\updates\\lobsterai-update-manual-1.exe';
+const INSTALLER_PATH = 'C:\\Users\\test\\AppData\\Roaming\\TopVanAI\\updates\\lobsterai-update-manual-1.exe';
 
 describe('Windows update install', () => {
   const originalPlatform = process.platform;

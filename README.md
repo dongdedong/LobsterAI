@@ -1,7 +1,7 @@
-# LobsterAI — All-Scenario Office Assistant Agent
+# TopVanAI — All-Scenario Office Assistant Agent
 
 <p align="center">
-  <img src="public/logo.png" alt="LobsterAI" width="120">
+  <img src="public/logo.png" alt="TopVanAI" width="120">
 </p>
 
 <p align="center">
@@ -25,16 +25,16 @@
 
 ---
 
-**LobsterAI** is an all-scenario office assistant Agent built by TopVan. It works around the clock to get real work done: data analysis, slide decks, video generation, document writing, web research, email, scheduled jobs, and more.
+**TopVanAI** is an all-scenario office assistant Agent built by TopVan. It works around the clock to get real work done: data analysis, slide decks, video generation, document writing, web research, email, scheduled jobs, and more.
 
-Unlike chat-only assistants, LobsterAI is **desktop-grade**. Through its **Cowork mode** it connects to your files, terminal, browser, and local projects — executing tools and running commands directly in your real working environment, with every sensitive action gated behind your approval. Spin up purpose-built Agents (stock research, content writing, lesson planning…), extend it with Skills and MCP servers, and reach it from your phone through supported IM connectors — command your computer to work anytime, anywhere.
+Unlike chat-only assistants, TopVanAI is **desktop-grade**. Through its **Cowork mode** it connects to your files, terminal, browser, and local projects — executing tools and running commands directly in your real working environment, with every sensitive action gated behind your approval. Spin up purpose-built Agents (stock research, content writing, lesson planning…), extend it with Skills and MCP servers, and reach it from your phone through supported IM connectors — command your computer to work anytime, anywhere.
 
-## Why LobsterAI
+## Why TopVanAI
 
 - **🔓 Open source, secure & trustworthy** — 100% open-source code with transparent capabilities; permissions, data, and execution flows are all auditable
 - **🖥️ Desktop-grade Agent** — Connects to your files, terminal, browser, and local projects, working directly inside your real environment instead of a sandboxed chat box
 - **🧩 OpenClaw ecosystem** — Built on the open-source OpenClaw Agent framework, with continuous access to new Skills, tools, MCP servers, and models
-- **📱 Command your computer from your phone** — Drive LobsterAI through supported IM connectors such as WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, and Discord
+- **📱 Command your computer from your phone** — Drive TopVanAI through supported IM connectors such as WeChat, WeCom, DingTalk, Feishu, QQ, Telegram, and Discord
 - **🔒 Local data, controlled actions** — Sessions, configuration, and memory stay on your device; every tool call is gated and logged
 
 ## Capabilities
@@ -78,7 +78,7 @@ Unlike chat-only assistants, LobsterAI is **desktop-grade**. Through its **Cowor
 
 ```bash
 git clone <your-internal-repository-url>
-cd LobsterAI
+cd TopVanAI
 npm install
 ```
 
@@ -194,7 +194,7 @@ OPENCLAW_SRC=/path/to/openclaw npm run dist:win
 ```
 
 Windows builds bundle a portable Python runtime under `resources/python-win` (included as installer resource `python-win`), so end users do not need to install Python manually.
-The bundled runtime is interpreter-focused and does not preinstall LobsterAI skill Python packages; those can be installed at runtime on demand.
+The bundled runtime is interpreter-focused and does not preinstall TopVanAI skill Python packages; those can be installed at runtime on demand.
 By default, packaging downloads the official Python embeddable runtime from python.org if no prebuilt archive is provided.
 For offline/non-network builds, provide a prebuilt runtime archive explicitly.
 
@@ -207,7 +207,7 @@ Offline/runtime source options for packaging:
 
 ## Architecture
 
-LobsterAI uses Electron's strict process isolation. All cross-process communication goes through IPC.
+TopVanAI uses Electron's strict process isolation. All cross-process communication goes through IPC.
 
 ### Process Model
 
@@ -280,7 +280,7 @@ SKILLs/                              # Skill definitions
 
 ## Cowork System
 
-Cowork is the core feature of LobsterAI — an AI working session system powered by OpenClaw as the primary agent engine. Designed for productivity scenarios, it can autonomously complete complex tasks like data analysis, document generation, and information retrieval.
+Cowork is the core feature of TopVanAI — an AI working session system powered by OpenClaw as the primary agent engine. Designed for productivity scenarios, it can autonomously complete complex tasks like data analysis, document generation, and information retrieval.
 
 <details>
 <summary>Execution modes, stream events & permission control</summary>
@@ -310,7 +310,7 @@ All tool invocations involving file system access, terminal commands, or network
 
 ## Skills System
 
-LobsterAI ships with a rich set of built-in skills covering productivity, creative, investment research, and automation scenarios, configured via `SKILLs/skills.config.json`. Below are some typical examples:
+TopVanAI ships with a rich set of built-in skills covering productivity, creative, investment research, and automation scenarios, configured via `SKILLs/skills.config.json`. Below are some typical examples:
 
 <details>
 <summary>View the full skill list</summary>
@@ -352,7 +352,7 @@ Custom skills can be created via `skill-creator` and hot-loaded at runtime.
 
 ## Scheduled Tasks
 
-LobsterAI supports scheduled tasks that let the Agent automatically execute recurring work on a set schedule.
+TopVanAI supports scheduled tasks that let the Agent automatically execute recurring work on a set schedule.
 
 ### How to Create
 
@@ -373,7 +373,7 @@ Scheduled tasks are powered by Cron expressions, supporting minute, hourly, dail
 
 ## IM Integration — Mobile Remote Control
 
-LobsterAI can bridge the Agent to multiple IM platforms. Send a message from your phone via IM to remotely trigger the desktop Agent — command your personal assistant anytime, anywhere.
+TopVanAI can bridge the Agent to multiple IM platforms. Send a message from your phone via IM to remotely trigger the desktop Agent — command your personal assistant anytime, anywhere.
 
 | Platform | Protocol | Description |
 |----------|----------|-------------|
@@ -391,7 +391,7 @@ NetEase-family IM connectors from the upstream project are treated as legacy int
 
 ## Persistent Memory
 
-LobsterAI's memory system is built on OpenClaw and persists information as files in the working directory, so the Agent remembers your preferences and context across sessions.
+TopVanAI's memory system is built on OpenClaw and persists information as files in the working directory, so the Agent remembers your preferences and context across sessions.
 
 ### Memory File Structure
 
@@ -439,7 +439,7 @@ All data is stored in a local SQLite database (`lobsterai.sqlite` in the user da
 
 ## Security Model
 
-LobsterAI enforces security at multiple layers:
+TopVanAI enforces security at multiple layers:
 
 - **Process Isolation** — Context isolation enabled, node integration disabled
 - **Permission Gating** — Tool invocations require explicit user approval
@@ -489,7 +489,7 @@ Currently English and Chinese are supported. Switch languages in the Settings pa
 <details>
 <summary>Version pinning, how it works, updating & env vars</summary>
 
-LobsterAI pins its OpenClaw dependency to a specific release version, declared in `package.json`:
+TopVanAI pins its OpenClaw dependency to a specific release version, declared in `package.json`:
 
 ```json
 {

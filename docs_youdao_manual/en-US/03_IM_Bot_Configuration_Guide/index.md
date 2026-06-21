@@ -4,10 +4,10 @@ title: "IM Bot Configuration Guide"
 locale: en-US
 route: /en/docs/lobsterai_im_bot_config_guide
 source_url: "https://lobsterai.youdao.com/#/en/docs/lobsterai_im_bot_config_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_IM_Bot_Configuration_Guide-C4_b_iWV.js"
----# LobsterAI IM Bot Configuration Guide
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI_IM_Bot_Configuration_Guide-C4_b_iWV.js"
+---# TopVanAI IM Bot Configuration Guide
 
-> 📖 This guide will show you step-by-step how to configure LobsterAI bots in Telegram and Discord. It’s easy to follow, even for beginners!
+> 📖 This guide will show you step-by-step how to configure TopVanAI bots in Telegram and Discord. It’s easy to follow, even for beginners!
 
 **Supported Platforms:**
 
@@ -48,11 +48,11 @@ Start a conversation with BotFather and send the `/newbot` command. BotFather wi
 
 **3.1 Set Bot Name**
 
-BotFather will first ask you to enter a display name for your bot, e.g., `LobsterAI`
+BotFather will first ask you to enter a display name for your bot, e.g., `TopVanAI`
 
 **3.2 Set Bot Username**
 
-Next, you need to set a username for the bot. It must end in `bot`, e.g., `LobsterAI_bot`
+Next, you need to set a username for the bot. It must end in `bot`, e.g., `TopVanAI_bot`
 
 ![Bot Creation Process](./assets/002_f69732694a.png)
 
@@ -75,11 +75,11 @@ Once created successfully, BotFather will return a message containing the Token:
 
 ---
 
-#### Step 4: Enter the Token into the LobsterAI Client
+#### Step 4: Enter the Token into the TopVanAI Client
 
-Open the IM configuration interface in your LobsterAI client:
+Open the IM configuration interface in your TopVanAI client:
 
-![LobsterAI Configuration Interface](./assets/004_ec3180620b.png)
+![TopVanAI Configuration Interface](./assets/004_ec3180620b.png)
 
 In the Telegram configuration section:
 
@@ -90,7 +90,7 @@ In the Telegram configuration section:
 
 #### Step 5: Search for your bot in Telegram
 
-Enter the bot username you just created (e.g., `@LobsterAI_bot`) in the Telegram search bar:
+Enter the bot username you just created (e.g., `@TopVanAI_bot`) in the Telegram search bar:
 
 ![Search and Open Bot](./assets/005_fb1086d1a4.png)
 
@@ -157,7 +157,7 @@ Click the **New Application** button in the top right corner. In the pop-up dial
 
 ![Create Application](./assets/007_d0280d880b.png)
 
-* **Application Name**: e.g., LobsterAI
+* **Application Name**: e.g., TopVanAI
 * Check the box to agree to the terms of service.
 * Click **Create**.
 
@@ -197,9 +197,9 @@ After confirming, the system will display the Token.
 
 ---
 
-#### Step 4: Enter the Token into the LobsterAI Client
+#### Step 4: Enter the Token into the TopVanAI Client
 
-Open the IM configuration interface in your LobsterAI client. In the Discord configuration section, paste the Token you copied above into the **Bot Token** field:
+Open the IM configuration interface in your TopVanAI client. In the Discord configuration section, paste the Token you copied above into the **Bot Token** field:
 
 ![Enter Token](./assets/010_ae37df0e54.png)
 
@@ -253,7 +253,7 @@ In the **Bot Permissions** section, check the following permissions:
 * **Add Reactions**: Uses emojis to react to user messages.
 * **View Channels**: Allows the bot to see the list of channels in the server.
 
-> 💡 **Tip**: These are the minimum permissions required for the LobsterAI bot to function normally. You can adjust permissions based on your specific needs.
+> 💡 **Tip**: These are the minimum permissions required for the TopVanAI bot to function normally. You can adjust permissions based on your specific needs.
 
 Copy the invitation link automatically generated at the bottom of the page, paste it into your browser's address bar, and select the server you want to add the bot to:
 
@@ -315,4 +315,4 @@ In any text channel of your Discord server, @mention your bot and send a message
 
 * Check if the Token was entered correctly.
 * Confirm the client shows a "Connected" status.
-* Restart the LobsterAI client.
+* Restart the TopVanAI client.

@@ -19,7 +19,7 @@ The current strategic secondary-development goal is to cut the project off from 
 
 Important server-side dependency clusters already identified:
 
-- Main LobsterAI server: `lobsterai-server.youdao.com` / `lobsterai-server.inner.youdao.com`.
+- Main TopVanAI server: `lobsterai-server.youdao.com` / `lobsterai-server.inner.youdao.com`.
 - Login and account Portal: `lobsterai.youdao.com/portal#` / `lobsterai.inner.youdao.com/portal#`.
 - Server model proxy and quota APIs: `/api/proxy/*`, `/api/models/available`, `/api/models/pricing-catalog`, `/api/user/quota`, `/api/user/profile`.
 - Media generation and ASR: `/api/media/*`, `/api/asr/realtime/sessions`.
@@ -111,7 +111,7 @@ npm run openclaw:runtime:host   # current platform
 
 ## Architecture Overview
 
-LobsterAI is an Electron + React desktop application with two primary modes:
+TopVanAI is an Electron + React desktop application with two primary modes:
 1. **Cowork Mode** - AI-assisted coding sessions powered by OpenClaw as the primary agent engine
 2. **Artifacts System** - Rich preview of code outputs (HTML, SVG, React, Mermaid)
 

@@ -4,10 +4,10 @@ title: "IM机器人配置指南"
 locale: zh-CN
 route: /docs/lobsterai_im_bot_config_guide
 source_url: "https://lobsterai.youdao.com/#/docs/lobsterai_im_bot_config_guide"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI-IM%E6%9C%BA%E5%99%A8%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-CnmssoVE.js"
----# LobsterAI 机器人配置指南
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI-IM%E6%9C%BA%E5%99%A8%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-CnmssoVE.js"
+---# TopVanAI 机器人配置指南
 
-> 📖 本指南将手把手教你如何在钉钉和飞书中配置 LobsterAI 的 **IM 机器人**(双向对话)和 **Webhook 机器人**(单向推送),小白也能轻松上手!
+> 📖 本指南将手把手教你如何在钉钉和飞书中配置 TopVanAI 的 **IM 机器人**(双向对话)和 **Webhook 机器人**(单向推送),小白也能轻松上手!
 
 **支持的平台:**
 - ✅ 微信（WeChat）
@@ -28,7 +28,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 | 特性 | IM 机器人 (Stream 模式) | Webhook 机器人 |
 |------|----------------------|---------------|
-| **通信方向** | 双向对话(你 ↔ LobsterAI) | 单向推送(LobsterAI → 群聊) |
+| **通信方向** | 双向对话(你 ↔ TopVanAI) | 单向推送(TopVanAI → 群聊) |
 | **能否对话** | ✅ 可以问答、多轮对话 | ❌ 不能对话,只能推送通知 |
 | **会话记录** | ✅ 有完整会话记录 | ❌ 无会话历史 |
 | **配置难度** | ⚠️ 较复杂,需要企业认证和权限申请 | ✅ 超简单,1-2分钟搞定 |
@@ -116,7 +116,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ![创建应用表单](./assets/009_b52fa9465c.png)
 
-- **应用名称**: LobsterAI
+- **应用名称**: TopVanAI
 - **应用描述**: AI Agent,可自主规划并执行复杂任务
 - **应用图标**: 上传龙虾 logo
 
@@ -140,7 +140,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ![机器人配置表单](./assets/013_4b650af3ab.png)
 
-- **机器人名称**: LobsterAI
+- **机器人名称**: TopVanAI
 - **机器人描述**: AI Agent,可自主规划并执行复杂任务
 - ⚠️ **重要**: 消息接收模式选择 **Stream 模式**
 
@@ -200,11 +200,11 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ---
 
-#### 步骤 7: 在 LobsterAI 中配置
+#### 步骤 7: 在 TopVanAI 中配置
 
-打开 LobsterAI 客户端的 IM 配置界面:
+打开 TopVanAI 客户端的 IM 配置界面:
 
-![LobsterAI 配置界面](./assets/021_f8edca8be7.png)
+![TopVanAI 配置界面](./assets/021_f8edca8be7.png)
 
 在钉钉配置区域填入:
 - **Client ID**: 刚才复制的 AppKey
@@ -218,7 +218,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 **桌面端测试:**
 
-在钉钉桌面客户端搜索框中搜索"LobsterAI":
+在钉钉桌面客户端搜索框中搜索"TopVanAI":
 
 ![钉钉搜索机器人](./assets/022_00c2af9d87.png)
 
@@ -278,7 +278,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ![填写应用基本信息](./assets/027_a1f5819997.png)
 
-- **应用名称**: LobsterAI
+- **应用名称**: TopVanAI
 - **应用描述**: AI Agent,可自主规划并执行复杂任务
 - **应用图标**: 上传龙虾 logo(推荐尺寸: 240×240px,支持 PNG、JPG 格式)
 
@@ -302,7 +302,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ![配置机器人信息](./assets/031_85868ee762.png)
 
-- **机器人名称**: LobsterAI
+- **机器人名称**: TopVanAI
 - **机器人头像**: 龙虾 logo
 - **机器人描述**: AI Agent,可自主规划并执行复杂任务
 
@@ -344,11 +344,11 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 ---
 
-#### 步骤 6: 在 LobsterAI 中配置
+#### 步骤 6: 在 TopVanAI 中配置
 
-打开 LobsterAI 客户端的 IM 配置界面:
+打开 TopVanAI 客户端的 IM 配置界面:
 
-![LobsterAI 配置界面](./assets/037_88fb2a5205.png)
+![TopVanAI 配置界面](./assets/037_88fb2a5205.png)
 
 在飞书配置区域填入:
 - **App ID**: 刚才复制的 App ID
@@ -389,7 +389,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 **桌面端测试:**
 
-在飞书桌面客户端搜索框中搜索"LobsterAI":
+在飞书桌面客户端搜索框中搜索"TopVanAI":
 
 ![飞书搜索机器人](./assets/040_a69e468787.png)
 
@@ -442,7 +442,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 
 填写机器人基本信息:
 
-- **机器人名称**: LobsterAI (或任何你喜欢的名称)
+- **机器人名称**: TopVanAI (或任何你喜欢的名称)
 - **机器人头像**: 可以上传龙虾 logo
 
 ---
@@ -452,7 +452,7 @@ source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0
 **重要:** 钉钉要求至少启用一种安全设置,推荐选择 **自定义关键词**:
 
 **推荐配置:**
-- ☑️ **自定义关键词**: 填写 `LobsterAI` 或 `AI`
+- ☑️ **自定义关键词**: 填写 `TopVanAI` 或 `AI`
   - 这样机器人发送的消息中必须包含这个关键词
 
 **其他选项:**
@@ -481,20 +481,20 @@ https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxxxx
 
 #### 步骤 6: 保存 Webhook 信息(推荐)
 
-**💡 推荐做法**: 在 LobsterAI 客户端的 **设置 → 记忆** 中保存 Webhook 信息,方便后续直接使用。
+**💡 推荐做法**: 在 TopVanAI 客户端的 **设置 → 记忆** 中保存 Webhook 信息,方便后续直接使用。
 
 **保存格式示例:**
 ```
-我的钉钉LobsterAI群 Webhook: https://oapi.dingtalk.com/robot/send?access_token=你的access_token
+我的钉钉TopVanAI群 Webhook: https://oapi.dingtalk.com/robot/send?access_token=你的access_token
 ```
 
-这样以后你直接对 LobsterAI 说 **"给钉钉LobsterAI群推送消息"**,它就能自动从记忆中读取 Webhook 地址并执行!
+这样以后你直接对 TopVanAI 说 **"给钉钉TopVanAI群推送消息"**,它就能自动从记忆中读取 Webhook 地址并执行!
 
 ---
 
 #### 步骤 7: 测试机器人
 
-**测试方法**: 直接把 Webhook 地址发给 LobsterAI,让它发一条测试消息。
+**测试方法**: 直接把 Webhook 地址发给 TopVanAI,让它发一条测试消息。
 
 **测试示例:**
 ```
@@ -559,7 +559,7 @@ https://oapi.dingtalk.com/robot/send?access_token=1babea08cc7d1a12a9ffb2711a2c18
 
 ![配置机器人信息](./assets/046_bcd18fb4d1.png)
 
-- **机器人名称**: LobsterAI (或任何你喜欢的名称)
+- **机器人名称**: TopVanAI (或任何你喜欢的名称)
 - **机器人描述**: AI Agent,可自主规划并执行复杂任务
 - **机器人头像**: 可以上传龙虾 logo
 
@@ -583,20 +583,20 @@ https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxxxxxxxx
 
 #### 步骤 5: 保存 Webhook 信息(推荐)
 
-**💡 推荐做法**: 在 LobsterAI 客户端的 **设置 → 记忆** 中保存 Webhook 信息,方便后续直接使用。
+**💡 推荐做法**: 在 TopVanAI 客户端的 **设置 → 记忆** 中保存 Webhook 信息,方便后续直接使用。
 
 **保存格式示例:**
 ```
-我的飞书LobsterAI群 Webhook: https://open.feishu.cn/open-apis/bot/v2/hook/你的webhook_id
+我的飞书TopVanAI群 Webhook: https://open.feishu.cn/open-apis/bot/v2/hook/你的webhook_id
 ```
 
-这样以后你直接对 LobsterAI 说 **"给飞书LobsterAI群推送消息"**,它就能自动从记忆中读取 Webhook 地址并执行!
+这样以后你直接对 TopVanAI 说 **"给飞书TopVanAI群推送消息"**,它就能自动从记忆中读取 Webhook 地址并执行!
 
 ---
 
 #### 步骤 6: 测试机器人
 
-**测试方法**: 直接把 Webhook 地址发给 LobsterAI,让它发一条测试消息。
+**测试方法**: 直接把 Webhook 地址发给 TopVanAI,让它发一条测试消息。
 
 **测试示例:**
 ```
@@ -667,7 +667,7 @@ https://open.feishu.cn/open-apis/bot/v2/hook/你的webhook_id
 2. 如果报错参数不合法，大概率是因为你的可见范围没有选择。
 3. 如果想要设置机器人的名称和头像，点击右上角的编辑，可以设置。
 
-#### 步骤 3：在 LobsterAI 中配置
+#### 步骤 3：在 TopVanAI 中配置
 
 打开有道龙虾应用，点击左下角的设置，点击 IM 配置，在企业微信配置区域填入：
 
@@ -716,7 +716,7 @@ https://open.feishu.cn/open-apis/bot/v2/hook/你的webhook_id
 
 注意：这里的 AppID 和 AppSecret 是 QQ 机器人的凭证，需要妥善保管。
 
-#### 步骤 3：在 LobsterAI 中配置
+#### 步骤 3：在 TopVanAI 中配置
 
 打开有道龙虾应用，点击左下角的设置，点击 IM 配置，在 QQ 配置区域填入：
 
@@ -745,7 +745,7 @@ https://open.feishu.cn/open-apis/bot/v2/hook/你的webhook_id
 A:
 - 检查网络是否能访问钉钉 API
 - 确认 Client ID 和 Client Secret 是否正确
-- 重启 LobsterAI 应用重新建立连接
+- 重启 TopVanAI 应用重新建立连接
 
 ---
 
@@ -759,15 +759,15 @@ A:
 
 ### 飞书 IM 机器人相关问题
 
-**Q: LobsterAI 客户端的"机器人"标签页是空白的,没有对话框?**
+**Q: TopVanAI 客户端的"机器人"标签页是空白的,没有对话框?**
 
 A:
 这是最常见的问题,通常是由于配置步骤顺序错误导致的。
 
 **解决方法:**
-1. 确认配置顺序: 获取凭证 → 在 LobsterAI 中配置并建立连接 → 配置事件与回调 → 发布版本
+1. 确认配置顺序: 获取凭证 → 在 TopVanAI 中配置并建立连接 → 配置事件与回调 → 发布版本
 2. 如果顺序错了,需要重新发布一个新版本(如从 1.0.0 升级到 1.0.1)
-3. 重启 LobsterAI 客户端
+3. 重启 TopVanAI 客户端
 
 ---
 
@@ -780,7 +780,7 @@ A:
 1. 进入飞书开放平台的 **事件与回调** 页面
 2. 在 **事件配置** 区域搜索 `im.message.receive_v1`
 3. 点击 **添加事件** 按钮
-4. 保存配置并重启 LobsterAI 客户端
+4. 保存配置并重启 TopVanAI 客户端
 
 > **提示**: 此事件是接收用户消息的核心权限,没有它机器人将无法接收任何消息!
 
@@ -791,11 +791,11 @@ A:
 **Q: 保存事件配置时提示"应用未建立长连接"?**
 
 A:
-说明 LobsterAI 客户端还没有启动或连接失败。
+说明 TopVanAI 客户端还没有启动或连接失败。
 
 **正确做法:**
-1. 先在 LobsterAI 中配置 App ID 和 App Secret
-2. 重启 LobsterAI 客户端,等待连接建立
+1. 先在 TopVanAI 中配置 App ID 和 App Secret
+2. 重启 TopVanAI 客户端,等待连接建立
 3. 再到飞书后台保存"事件与回调"配置
 
 ![飞书长连接状态](./assets/061_06708b6d9d.png)
@@ -809,7 +809,7 @@ A:
 A:
 1. 检查推送消息中是否包含配置的关键词
 2. 确认 Webhook URL 是否正确复制(不要有空格或换行)
-3. 检查 LobsterAI 是否在运行
+3. 检查 TopVanAI 是否在运行
 4. 查看机器人是否被群管理员禁用
 
 ---
@@ -826,7 +826,7 @@ A:
 **Q: 机器人提示"关键词不匹配"?**
 
 A:
-- 在推送消息中添加配置的关键词,例如: "LobsterAI: Hello World"
+- 在推送消息中添加配置的关键词,例如: "TopVanAI: Hello World"
 - 或者重新创建机器人,修改关键词设置
 
 ---
@@ -837,7 +837,7 @@ A:
 
 A:
 1. 检查 Webhook URL 是否正确
-2. 确认 LobsterAI 是否在运行
+2. 确认 TopVanAI 是否在运行
 3. 查看群设置中机器人是否被禁用
 4. 检查飞书是否有网络限制
 
@@ -859,23 +859,23 @@ A:
 A:
 - 不能。Webhook 机器人创建时就绑定了特定的群
 - 如需多群使用,需要在每个群中分别创建机器人
-- 然后在 LobsterAI 中配置多个 Webhook URL
+- 然后在 TopVanAI 中配置多个 Webhook URL
 
 ---
 
-**Q: 如何在 LobsterAI 中管理多个 Webhook?**
+**Q: 如何在 TopVanAI 中管理多个 Webhook?**
 
 A:
-**推荐方法**: 在 LobsterAI 的 **设置 → 记忆** 中保存所有 Webhook 信息。
+**推荐方法**: 在 TopVanAI 的 **设置 → 记忆** 中保存所有 Webhook 信息。
 
 **示例格式:**
 ```
-技术LobsterAI群 Webhook: https://oapi.dingtalk.com/robot/send?access_token=xxx
-运营LobsterAI群 Webhook: https://oapi.dingtalk.com/robot/send?access_token=yyy
+技术TopVanAI群 Webhook: https://oapi.dingtalk.com/robot/send?access_token=xxx
+运营TopVanAI群 Webhook: https://oapi.dingtalk.com/robot/send?access_token=yyy
 产品飞书群 Webhook: https://open.feishu.cn/open-apis/bot/v2/hook/zzz
 ```
 
-这样后续使用时,LobsterAI 能自动从记忆中读取对应群的 Webhook 地址!
+这样后续使用时,TopVanAI 能自动从记忆中读取对应群的 Webhook 地址!
 
 ---
 
@@ -893,14 +893,14 @@ A:
 ### Webhook 机器人典型使用场景
 
 #### 定时信息推送
-你在 LobsterAI 中设置:
+你在 TopVanAI 中设置:
 ```
-每天早上 8 点给钉钉LobsterAI群推送今日 AI 要闻
+每天早上 8 点给钉钉TopVanAI群推送今日 AI 要闻
 ```
 
 群聊效果:
 ```
-🤖 LobsterAI 机器人
+🤖 TopVanAI 机器人
 ━━━━━━━━━━━━━━━
 📰 今日 AI 要闻 (2026-03-07)
 
@@ -924,7 +924,7 @@ A:
    - 建议设置定时推送而非实时推送
 
 3. **定期检查机器人状态**
-   - 查看 LobsterAI 连接状态
+   - 查看 TopVanAI 连接状态
    - 测试机器人推送是否正常
 
 4. **备份 Webhook 信息**

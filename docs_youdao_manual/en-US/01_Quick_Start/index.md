@@ -4,16 +4,16 @@ title: "Quick Start"
 locale: en-US
 route: /en/docs/lobsterai_user_manual
 source_url: "https://lobsterai.youdao.com/#/en/docs/lobsterai_user_manual"
-source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/LobsterAI_User_Manual-F1CkTqAc.js"
----# LobsterAI User Manual
+source_chunk: "https://shared.ydstatic.com/market/souti/fihserChatWeb/online/2.0.4/dist/assets/TopVanAI_User_Manual-F1CkTqAc.js"
+---# TopVanAI User Manual
 
 > A full-scenario personal assistant Agent available 24/7 to help you get things done.
 
 ## Quick Start
 
-### What is LobsterAI?
+### What is TopVanAI?
 
-LobsterAI is your full-scenario AI personal assistant, capable of helping you complete various work tasks 24/7. Whether it's writing code, processing documents, analyzing data, designing prototypes, searching for information, or creating games, LobsterAI can handle it all. Through its built-in **Skill System**, LobsterAI acts like an all-around assistant mastering multiple professional skills, always ready to serve you.
+TopVanAI is your full-scenario AI personal assistant, capable of helping you complete various work tasks 24/7. Whether it's writing code, processing documents, analyzing data, designing prototypes, searching for information, or creating games, TopVanAI can handle it all. Through its built-in **Skill System**, TopVanAI acts like an all-around assistant mastering multiple professional skills, always ready to serve you.
 
 ### Core Advantages
 
@@ -21,13 +21,13 @@ LobsterAI is your full-scenario AI personal assistant, capable of helping you co
 * **Rich Skill Library**: Built-in 12+ professional skills covering development, design, office work, and more.
 * **Task History Management**: Automatically saves all conversation records, allowing you to review and continue previous work at any time.
 * **Local Deployment**: Supports local models like Ollama to protect data privacy.
-* **Open Extensions**: Create your own skills to let LobsterAI learn any capability you need.
+* **Open Extensions**: Create your own skills to let TopVanAI learn any capability you need.
 
 ### First Launch
 
 **Step 1: Configure AI Model**
 
-After opening LobsterAI for the first time, you need to configure at least one AI model to start using it:
+After opening TopVanAI for the first time, you need to configure at least one AI model to start using it:
 
 1. Click the "Settings" icon in the bottom left corner.
 2. Go to the "Models" tab.
@@ -56,11 +56,11 @@ Once configured, return to the main interface, and you will see a clean chat box
 
 ### Smart Dialogue
 
-LobsterAI's chat interface is your work center; all tasks start here.
+TopVanAI's chat interface is your work center; all tasks start here.
 
 **Features:**
 
-* **Context Understanding**: LobsterAI remembers conversation history and understands the relationship between context.
+* **Context Understanding**: TopVanAI remembers conversation history and understands the relationship between context.
 * **File Upload**: Supports dragging and dropping files into the chat box for direct AI analysis and processing.
 * **Code Highlighting**: Automatically identifies code blocks and provides syntax highlighting.
 * **Multi-turn Iteration**: You can provide feedback on the AI's output to gradually refine the results.
@@ -92,7 +92,7 @@ The left sidebar is your task history center, where all conversations are automa
 
 ### Skill System
 
-Skills are the core feature of LobsterAI; each skill is a professional capability module.
+Skills are the core feature of TopVanAI; each skill is a professional capability module.
 
 **How to Enable Skills:**
 
@@ -113,7 +113,7 @@ Skills are the core feature of LobsterAI; each skill is a professional capabilit
 
 ### Multi-Model Support
 
-LobsterAI supports almost all mainstream AI models on the market. You can choose the most suitable model based on task characteristics.
+TopVanAI supports almost all mainstream AI models on the market. You can choose the most suitable model based on task characteristics.
 
 **Supported Model Providers:**
 
@@ -522,7 +522,7 @@ Helps you formulate project plans and task breakdowns.
 
 #### skill-creator - Skill Creator
 
-Create custom skills to extend LobsterAI's capabilities.
+Create custom skills to extend TopVanAI's capabilities.
 
 **Use Cases:**
 
@@ -544,7 +544,7 @@ Create custom skills to extend LobsterAI's capabilities.
 
 ### Custom Skills
 
-LobsterAI allows you to create your own skills, enabling the AI to master your specific workflows.
+TopVanAI allows you to create your own skills, enabling the AI to master your specific workflows.
 
 **Creation Steps:**
 
@@ -656,9 +656,9 @@ If "VM Runtime Not Detected" appears when selecting Sandbox mode:
 
 ### Basic Usage
 
-**Q1: What is the difference between LobsterAI and other AI assistants?**
+**Q1: What is the difference between TopVanAI and other AI assistants?**
 
-The biggest feature of LobsterAI is its **Skill System** and **Full-Scenario Coverage**. Traditional AI assistants are just chat tools, whereas LobsterAI modularizes different capabilities through skills, making the AI more professional in specific domains. Whether it's programming, document processing, data analysis, or design work, LobsterAI serves you like an all-around assistant on standby 24/7.
+The biggest feature of TopVanAI is its **Skill System** and **Full-Scenario Coverage**. Traditional AI assistants are just chat tools, whereas TopVanAI modularizes different capabilities through skills, making the AI more professional in specific domains. Whether it's programming, document processing, data analysis, or design work, TopVanAI serves you like an all-around assistant on standby 24/7.
 
 **Q2: Can multiple skills be enabled at the same time?**
 
@@ -683,7 +683,7 @@ Yes. The AI will automatically choose which skills to use based on your task. Fo
 
 **Q5: Is the API Key safe?**
 
-The API Key is stored only on your local device and is not uploaded to any server. You can create a dedicated Key for LobsterAI and set usage limits.
+The API Key is stored only on your local device and is not uploaded to any server. You can create a dedicated Key for TopVanAI and set usage limits.
 
 **Q6: Why does model configuration fail?**
 
@@ -698,7 +698,7 @@ Common reasons:
 
 **Q7: How to view API usage?**
 
-LobsterAI itself does not track usage; please visit the corresponding provider's console:
+TopVanAI itself does not track usage; please visit the corresponding provider's console:
 
 * OpenAI: [Usage Dashboard](https://platform.openai.com/usage)
 * Anthropic: [Console Dashboard](https://console.anthropic.com)
@@ -771,7 +771,7 @@ Possible causes:
 * Avoid accumulating too many conversation turns in a single task.
 * Restart the application to release memory.
 
-**Q14: Does LobsterAI support offline use?**
+**Q14: Does TopVanAI support offline use?**
 
 Some features can be used offline:
 
@@ -811,10 +811,10 @@ Consider the following methods:
 
 Yes. Custom skills are stored as files locally and can be shared via:
 
-1. Find the skill file location (usually in `~/Library/Application Support/LobsterAI/SKILLs/`).
+1. Find the skill file location (usually in `~/Library/Application Support/TopVanAI/SKILLs/`).
 2. Pack the skill folder and send it to team members.
 3. Team members place the folder in the same location.
-4. Restart LobsterAI, and the new skill will automatically appear.
+4. Restart TopVanAI, and the new skill will automatically appear.
 
 Teams can establish a skill library repository to uniformly manage and distribute custom skills.
 

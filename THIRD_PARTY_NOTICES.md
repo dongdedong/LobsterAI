@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-20
 
-This document is an engineering inventory for the internal commercial fork of LobsterAI. It is not legal advice and should be reviewed with legal/compliance before external distribution.
+This document is an engineering inventory for the internal commercial fork of TopVanAI. It is not legal advice and should be reviewed with legal/compliance before external distribution.
 
 ## Product Positioning
 
@@ -33,7 +33,7 @@ The upstream project still contains code or package metadata for integrations th
 
 | Integration | Current MVP status | Required before commercial use |
 | --- | --- | --- |
-| Youdao/LobsterAI hosted services | Disabled or bypassed by Local BYOK mode | Replace with self-owned service or keep explicitly disabled. |
+| Youdao/TopVanAI hosted services | Disabled or bypassed by Local BYOK mode | Replace with self-owned service or keep explicitly disabled. |
 | Youdao model proxy and quota APIs | Not required for MVP | Do not re-enable unless billing, privacy, and service ownership are designed. |
 | Youdao provider gateway | Hidden from normal provider selection | Review provider terms and customer data flow before use. |
 | Youdao Note skill | Disabled by default | Review API terms, CLI distribution, account dependency, and customer data flow before enabling. |

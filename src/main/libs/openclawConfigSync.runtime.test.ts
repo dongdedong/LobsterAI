@@ -1256,7 +1256,7 @@ describe('OpenClawConfigSync runtime config output', () => {
 
     const agentsMdPath = path.join(stateDir, 'workspace-main', 'AGENTS.md');
     const agentsMd = fs.readFileSync(agentsMdPath, 'utf8');
-    expect(agentsMd).toContain('LobsterAI does not support sandbox browser execution in this version.');
+    expect(agentsMd).toContain('TopVanAI does not support sandbox browser execution in this version.');
     expect(agentsMd).toContain('For every `browser` tool call, set `target="host"` explicitly.');
   });
 
@@ -1333,7 +1333,7 @@ describe('OpenClawConfigSync runtime config output', () => {
           timeoutSeconds: 25,
           maxRedirects: 4,
           maxChars: 12000,
-          userAgent: 'LobsterAI Test',
+          userAgent: 'TopVanAI Test',
           readability: false,
           allowRfc2544BenchmarkRange: true,
         },
@@ -1387,7 +1387,7 @@ describe('OpenClawConfigSync runtime config output', () => {
       timeoutSeconds: 25,
       maxRedirects: 4,
       maxChars: 12000,
-      userAgent: 'LobsterAI Test',
+      userAgent: 'TopVanAI Test',
       ssrfPolicy: { allowRfc2544BenchmarkRange: true },
     });
     expect(config.tools.web.fetch.useEnvProxy).toBeUndefined();

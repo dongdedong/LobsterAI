@@ -130,25 +130,38 @@ const buildRemoteServicesForSettingsSave = (
   serverApiBaseUrl: string,
   serverModelMode: ServerModelMode,
 ): RemoteServicesConfig => {
-  const normalizedBaseUrl = normalizeRemoteServerApiBaseUrl(serverApiBaseUrl);
-  if (mode !== RemoteServicesMode.Official) {
-    if (!normalizedBaseUrl) {
-      throw new Error(i18nService.t('remoteServicesBaseUrlRequired'));
-    }
-    let parsed: URL;
-    try {
-      parsed = new URL(normalizedBaseUrl);
-    } catch {
-      throw new Error(i18nService.t('remoteServicesBaseUrlInvalid'));
-    }
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      throw new Error(i18nService.t('remoteServicesBaseUrlInvalid'));
-    }
+  if (mode === RemoteServicesMode.LocalByok) {
+    return {
+      ...LOCAL_BYOK_REMOTE_SERVICES,
+      serverModelMode: ServerModelMode.Disabled,
+    };
   }
+
+  if (mode === RemoteServicesMode.Official) {
+    return {
+      mode,
+      serverModelMode,
+    };
+  }
+
+  const normalizedBaseUrl = normalizeRemoteServerApiBaseUrl(serverApiBaseUrl);
+  if (!normalizedBaseUrl) {
+    throw new Error(i18nService.t('remoteServicesBaseUrlRequired'));
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(normalizedBaseUrl);
+  } catch {
+    throw new Error(i18nService.t('remoteServicesBaseUrlInvalid'));
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error(i18nService.t('remoteServicesBaseUrlInvalid'));
+  }
+
   return {
     mode,
     serverModelMode,
-    ...(mode === RemoteServicesMode.Official ? {} : { serverApiBaseUrl: normalizedBaseUrl }),
+    serverApiBaseUrl: normalizedBaseUrl,
   };
 };
 
@@ -4417,7 +4430,7 @@ const Settings: React.FC<SettingsProps> = ({
             {/* Logo & App Name */}
             <img
               src="logo.png"
-              alt="LobsterAI"
+              alt="TopVanAI"
               className="w-16 h-16 mb-3 cursor-pointer select-none"
               onClick={(e) => {
                 if (!e.altKey || !e.shiftKey) return;
@@ -4429,7 +4442,7 @@ const Settings: React.FC<SettingsProps> = ({
                 }
               }}
             />
-            <h3 className="text-lg font-semibold text-foreground">LobsterAI</h3>
+            <h3 className="text-lg font-semibold text-foreground">TopVanAI</h3>
             <span className="text-xs text-secondary mt-1">v{appVersion}</span>
 
             {/* Info Card */}

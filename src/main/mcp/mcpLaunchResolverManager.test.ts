@@ -4,7 +4,7 @@ import { expect, test, vi } from 'vitest';
 vi.mock('electron', () => ({
   app: {
     getAppPath: () => process.cwd(),
-    getName: () => 'LobsterAI',
+    getName: () => 'TopVanAI',
     getPath: () => process.cwd(),
     isPackaged: false,
   },

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import Database from 'better-sqlite3';
 import {
   app,
   BrowserWindow,
@@ -1260,7 +1261,117 @@ const configureUserDataPath = (): void => {
   }
 };
 
+const LEGACY_APP_NAME = 'LobsterAI';
+
+const readKvJsonValue = (db: Database.Database, key: string): unknown => {
+  try {
+    const row = db.prepare('SELECT value FROM kv WHERE key = ?').get(key) as
+      | { value: string }
+      | undefined;
+    if (!row?.value) return undefined;
+    return JSON.parse(row.value);
+  } catch {
+    return undefined;
+  }
+};
+
+const hasConfiguredModelProvider = (appConfig: unknown): boolean => {
+  if (!appConfig || typeof appConfig !== 'object') return false;
+  const providers = (appConfig as { providers?: unknown }).providers;
+  if (!providers || typeof providers !== 'object') return false;
+
+  return Object.values(providers as Record<string, unknown>).some((provider) => {
+    if (!provider || typeof provider !== 'object') return false;
+    const config = provider as {
+      enabled?: unknown;
+      apiKey?: unknown;
+      oauthAccessToken?: unknown;
+      models?: unknown;
+    };
+    if (config.enabled !== true) return false;
+    const hasModel = Array.isArray(config.models)
+      && config.models.some((model) => (
+        model
+        && typeof model === 'object'
+        && typeof (model as { id?: unknown }).id === 'string'
+        && Boolean(((model as { id: string }).id).trim())
+      ));
+    if (!hasModel) return false;
+    return (
+      (typeof config.apiKey === 'string' && Boolean(config.apiKey.trim()))
+      || (typeof config.oauthAccessToken === 'string' && Boolean(config.oauthAccessToken.trim()))
+    );
+  });
+};
+
+const migrateLegacyBrandUserDataIfNeeded = (): void => {
+  if (APP_NAME === LEGACY_APP_NAME) return;
+
+  const appDataPath = app.getPath('appData');
+  const currentUserDataPath = app.getPath('userData');
+  const legacyUserDataPath = path.join(appDataPath, LEGACY_APP_NAME);
+  const currentDbPath = path.join(currentUserDataPath, DB_FILENAME);
+  const legacyDbPath = path.join(legacyUserDataPath, DB_FILENAME);
+
+  if (!fs.existsSync(legacyDbPath)) return;
+
+  let currentDb: Database.Database | null = null;
+  let legacyDb: Database.Database | null = null;
+  try {
+    fs.mkdirSync(currentUserDataPath, { recursive: true });
+    currentDb = new Database(currentDbPath);
+    legacyDb = new Database(legacyDbPath, { readonly: true, fileMustExist: true });
+
+    const currentAppConfig = readKvJsonValue(currentDb, 'app_config');
+    if (hasConfiguredModelProvider(currentAppConfig)) return;
+
+    const legacyAppConfig = readKvJsonValue(legacyDb, 'app_config');
+    if (hasConfiguredModelProvider(legacyAppConfig)) {
+      currentDb.prepare(`
+        CREATE TABLE IF NOT EXISTS kv (
+          key TEXT PRIMARY KEY,
+          value TEXT NOT NULL,
+          updated_at INTEGER NOT NULL
+        )
+      `).run();
+      currentDb.prepare(`
+        INSERT INTO kv (key, value, updated_at)
+        VALUES ('app_config', ?, ?)
+        ON CONFLICT(key) DO UPDATE SET
+          value = excluded.value,
+          updated_at = excluded.updated_at
+      `).run(JSON.stringify(legacyAppConfig), Date.now());
+      console.log(`[Main] migrated app_config from ${legacyUserDataPath} to ${currentUserDataPath}`);
+    }
+  } catch (error) {
+    console.warn('[Main] failed to migrate legacy brand user data:', error);
+  } finally {
+    try {
+      legacyDb?.close();
+    } catch {
+      // Ignore close failures during startup migration.
+    }
+    try {
+      currentDb?.close();
+    } catch {
+      // Ignore close failures during startup migration.
+    }
+  }
+
+  const legacyApiConfigPath = path.join(legacyUserDataPath, 'api-config.json');
+  const currentApiConfigPath = path.join(currentUserDataPath, 'api-config.json');
+  try {
+    if (fs.existsSync(legacyApiConfigPath) && !fs.existsSync(currentApiConfigPath)) {
+      fs.copyFileSync(legacyApiConfigPath, currentApiConfigPath);
+      console.log(`[Main] migrated api-config.json from ${legacyUserDataPath} to ${currentUserDataPath}`);
+    }
+  } catch (error) {
+    console.warn('[Main] failed to migrate legacy api-config.json:', error);
+  }
+};
+
 configureUserDataPath();
+migrateLegacyBrandUserDataIfNeeded();
 let startupDataMigrationRestoreResult: DataMigrationLastRestoreResult | null = null;
 try {
   startupDataMigrationRestoreResult = performPendingDataMigrationRestoreSync({
@@ -3410,7 +3521,7 @@ if (!gotTheLock) {
             ? [
                 {
                   archiveName: 'install-timing.log',
-                  filePath: path.join(app.getPath('appData'), 'LobsterAI', 'install-timing.log'),
+                  filePath: path.join(app.getPath('appData'), 'TopVanAI', 'install-timing.log'),
                   optional: true,
                 },
               ]
@@ -5493,7 +5604,7 @@ if (!gotTheLock) {
       console.error('[DataMigration] backup failed:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to back up LobsterAI data',
+        error: error instanceof Error ? error.message : 'Failed to back up TopVanAI data',
       };
     }
   });
@@ -5552,11 +5663,11 @@ if (!gotTheLock) {
         success,
         scheduledRestart: rendererReleased,
         rollbackPath: restoreResult?.rollbackPath,
-        error: success ? undefined : restoreResult?.error || 'Failed to import LobsterAI data backup',
+        error: success ? undefined : restoreResult?.error || 'Failed to import TopVanAI data backup',
       };
     } catch (error) {
       isCleanupInProgress = false;
-      const message = error instanceof Error ? error.message : 'Failed to import LobsterAI data backup';
+      const message = error instanceof Error ? error.message : 'Failed to import TopVanAI data backup';
       console.error('[DataMigration] restore scheduling failed:', error);
       if (rendererReleased) {
         dialog.showErrorBox(t('dataMigrationRestoreDialogTitle'), message);
@@ -8517,14 +8628,27 @@ if (!gotTheLock) {
   });
 
   ipcMain.handle('check-api-config', async (_event, options?: { probeModel?: boolean }) => {
+    const rawResolution = resolveRawApiConfig();
+    if (!rawResolution.config) {
+      return {
+        hasConfig: false,
+        config: null,
+        error: rawResolution.error,
+      };
+    }
+
     const { config, error } = resolveCurrentApiConfig();
     if (config && options?.probeModel) {
       const probe = await probeCoworkModelReadiness();
       if (probe.ok === false) {
-        return { hasConfig: false, config: null, error: probe.error };
+        return { hasConfig: true, config, error: probe.error };
       }
     }
-    return { hasConfig: config !== null, config, error };
+    return {
+      hasConfig: true,
+      config: config ?? rawResolution.config,
+      error,
+    };
   });
 
   ipcMain.handle('license:getStatus', async () => {

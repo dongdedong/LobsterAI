@@ -369,7 +369,7 @@ async function installWindowsNsis(exePath: string): Promise<void> {
   //
   // Quitting in parallel with the installer starting is safe: once the user
   // confirms the wizard, the NSIS customCheckAppRunning macro stops remaining
-  // LobsterAI processes by image name and polls until they are gone before
+  // TopVanAI processes by image name and polls until they are gone before
   // replacing files. The installer process itself is named lobsterai-update-*,
   // so it is not affected by that kill. Until the user confirms, the installer
   // touches nothing, so cancelling the wizard leaves the current install
