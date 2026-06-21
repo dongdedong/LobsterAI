@@ -1839,7 +1839,7 @@ const getOpenClawConfigSync = (): OpenClawConfigSync => {
           .map(p => ({ pluginId: p.pluginId, enabled: p.enabled, config: p.config })),
       canUseMediaGeneration: () => (
         cachedMediaGenerationEntitled &&
-        areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))
+        isCloudEnabled()
       ),
     });
   }
@@ -3033,6 +3033,14 @@ const cloudFeatureDisabledResult = (feature: string): { success: false; error: s
   code: 'LOCAL_BYOK_CLOUD_FEATURE_DISABLED',
 });
 
+/** Read current app config and return whether cloud remote features are active. */
+const isCloudEnabled = (): boolean =>
+  areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'));
+
+/** Read current app config and return whether server model mode is active. */
+const isServerModelEnabled = (): boolean =>
+  isServerModelModeEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'));
+
 const hasBrowserWebAccessConfigChanged = (
   previousConfig?: AppConfigSettings,
   nextConfig?: AppConfigSettings,
@@ -3690,7 +3698,7 @@ if (!gotTheLock) {
     args: Record<string, unknown>;
     context: { sessionKey: string; toolCallId: string };
   }): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean; details?: Record<string, unknown> }> => {
-    if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+    if (!isCloudEnabled()) {
       console.warn('[MediaGeneration] blocked tool request because cloud remote features are disabled.');
       return {
         content: [{ type: 'text', text: 'Media generation is disabled in local BYOK mode.' }],
@@ -4787,7 +4795,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(AuthIpcChannel.GetPricingCatalog, async () => {
     try {
-      if (!isServerModelModeEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isServerModelEnabled()) {
         console.log('[Auth:getPricingCatalog] skipped because server model mode is disabled.');
         return { success: true, textModels: [] };
       }
@@ -4832,7 +4840,7 @@ if (!gotTheLock) {
 
   ipcMain.handle('auth:getModels', async () => {
     try {
-      if (!isServerModelModeEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isServerModelEnabled()) {
         console.log('[Auth:getModels] skipped because server model mode is disabled.');
         return { success: true, models: [] };
       }
@@ -4896,7 +4904,7 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.CreateFromHtmlFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeCreateFromHtmlFileInput(input);
@@ -4956,7 +4964,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.GetByHtmlFile, async (_event, input: unknown) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeGetByHtmlFileInput(input);
@@ -4980,7 +4988,7 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.UpdateFromHtmlFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeUpdateFromHtmlFileInput(input);
@@ -5030,7 +5038,7 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.CreateFromArtifactFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeCreateFromArtifactFileInput(input);
@@ -5090,7 +5098,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.GetByArtifactFile, async (_event, input: unknown) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeGetByArtifactFileInput(input);
@@ -5114,7 +5122,7 @@ if (!gotTheLock) {
   ipcMain.handle(HtmlShareIpc.UpdateFromArtifactFile, async (_event, input: unknown) => {
     let archivePath: string | undefined;
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeUpdateFromArtifactFileInput(input);
@@ -5169,7 +5177,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.UpdateStatus, async (_event, input: unknown) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeUpdateHtmlShareStatusInput(input);
@@ -5191,7 +5199,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.UpdateAccessMode, async (_event, input: unknown) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const options = sanitizeUpdateHtmlShareAccessModeInput(input);
@@ -5213,7 +5221,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.Get, async (_event, shareId: unknown) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const id = sanitizeHtmlShareString(shareId, 'shareId', 64);
@@ -5239,7 +5247,7 @@ if (!gotTheLock) {
 
   ipcMain.handle(HtmlShareIpc.Disable, async (_event, shareId: unknown) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         return cloudFeatureDisabledResult('HTML sharing');
       }
       const id = sanitizeHtmlShareString(shareId, 'shareId', 64);
@@ -5261,7 +5269,7 @@ if (!gotTheLock) {
   // Media generation IPC handlers
   ipcMain.handle('media:getModels', async (_event, type: 'image' | 'video') => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         console.warn('[Media:getModels] skipped because cloud remote features are disabled.');
         return { success: true, models: [] };
       }
@@ -5294,7 +5302,7 @@ if (!gotTheLock) {
 
   ipcMain.handle('media:getTaskStatus', async (_event, taskId: number, type: 'image' | 'video') => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         console.warn('[Media:getTaskStatus] skipped because cloud remote features are disabled.');
         return cloudFeatureDisabledResult('Media generation');
       }
@@ -6753,7 +6761,7 @@ if (!gotTheLock) {
 
   ipcMain.handle('cowork:media:cancel', async (_event, taskId: string) => {
     try {
-      if (!areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))) {
+      if (!isCloudEnabled()) {
         console.warn('[Media:cancel] skipped because cloud remote features are disabled.');
         return { success: false, message: 'Media generation is disabled in local BYOK mode.' };
       }
@@ -9019,7 +9027,7 @@ if (!gotTheLock) {
   registerAsrIpcHandlers({
     getAuthTokens,
     canUseCloudRemoteFeatures: () => (
-      areCloudRemoteFeaturesEnabledFromConfig(getStore().get<AppConfigSettings>('app_config'))
+      isCloudEnabled()
     ),
     fetchWithAuth,
     getServerApiBaseUrl,

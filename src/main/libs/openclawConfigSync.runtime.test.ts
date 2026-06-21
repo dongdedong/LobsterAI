@@ -1158,7 +1158,9 @@ describe('OpenClawConfigSync runtime config output', () => {
     expect(config.plugins.entries).not.toHaveProperty('clawemail-email');
     expect(config.plugins.entries).not.toHaveProperty('openclaw-nim-channel');
     expect(config.plugins.entries.email).toEqual({ enabled: true });
-    expect(config.plugins.entries['nimsuite-openclaw-nim-channel']).toEqual({ enabled: true });
+    // NIM plugin was removed from package.json for MVP — hasPreinstalledPlugin
+    // returns false, so no NIM plugin entry should be written.
+    expect(config.plugins.entries).not.toHaveProperty('nimsuite-openclaw-nim-channel');
   });
 
   test('writes weixin channel config using dmPolicy and allowFrom instead of unsupported accountId', async () => {

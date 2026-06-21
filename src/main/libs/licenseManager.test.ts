@@ -9,7 +9,7 @@ import {
   LicenseStatusKind,
   type SignedLicense,
 } from '../../shared/license';
-import { canonicalizeLicensePayload, LicenseManager } from './licenseManager';
+import { buildLocalMachineCode, canonicalizeLicensePayload, LicenseManager } from './licenseManager';
 
 class MemoryStore {
   private values = new Map<string, unknown>();
@@ -130,5 +130,12 @@ describe('LicenseManager', () => {
     }));
 
     expect(manager.getStatus().kind).toBe(LicenseStatusKind.FeatureMissing);
+  });
+
+  test('buildLocalMachineCode returns a 32-char hex string', () => {
+    const code = buildLocalMachineCode();
+    expect(code).toMatch(/^[0-9a-f]{32}$/);
+    // Deterministic: same machine should produce the same code
+    expect(buildLocalMachineCode()).toBe(code);
   });
 });

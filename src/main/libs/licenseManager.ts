@@ -1,6 +1,7 @@
 import crypto from 'crypto';
+import { execSync } from 'child_process';
 import fs from 'fs';
-import os from 'os';
+import path from 'path';
 
 import {
   LICENSE_PRODUCT_ID,
@@ -83,12 +84,89 @@ const normalizeSignedLicense = (value: unknown): SignedLicense | null => {
   return raw as SignedLicense;
 };
 
+const getHardwareId = (): string => {
+  try {
+    if (process.platform === 'win32') {
+      // Windows: CPU ProcessorId — stable across hostname/user changes
+      const output = execSync(
+        'powershell -NoProfile -Command "(Get-CimInstance Win32_Processor).ProcessorId"',
+        { encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'ignore'] },
+      );
+      return output.trim();
+    }
+    if (process.platform === 'darwin') {
+      // macOS: Hardware UUID
+      const output = execSync(
+        'system_profiler SPHardwareDataType | grep "Hardware UUID"',
+        { encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'ignore'] },
+      );
+      return output.replace(/.*:\s*/, '').trim();
+    }
+    // Linux: machine-id
+    if (fs.existsSync('/etc/machine-id')) {
+      return fs.readFileSync('/etc/machine-id', 'utf8').trim();
+    }
+    return '';
+  } catch {
+    return '';
+  }
+};
+
+/**
+ * Return a persistent installation ID, generating one if it does not exist.
+ * Stored in `~/.topvan-machine-id` (home directory, not userData, to avoid
+ * dependency on Electron's app.getPath which is unavailable at import time).
+ *
+ * This is used as a fallback when hardware-level IDs cannot be retrieved
+ * (e.g. PowerShell/CIM disabled by security policy). The file survives app
+ * reinstalls but not OS reinstalls — acceptable for a fallback tier.
+ */
+const getOrCreateInstallationId = (): string => {
+  const idPath = path.join(process.env.HOME || process.env.USERPROFILE || '.', '.topvan-machine-id');
+  try {
+    const existing = fs.readFileSync(idPath, 'utf8').trim();
+    if (existing.length >= 32) return existing;
+  } catch { /* file doesn't exist yet */ }
+  const newId = crypto.randomUUID();
+  try {
+    fs.writeFileSync(idPath, newId, 'utf8');
+  } catch (error) {
+    console.warn('[License] failed to persist fallback installation id; machine code may change after restart:', error);
+    // If we can't persist, return the generated ID anyway. It may be
+    // regenerated on next launch, but avoids all machines sharing one code.
+  }
+  return newId;
+};
+
+/**
+ * Build a device-specific machine code for license binding.
+ *
+ * Strategy: **pure device binding** — the code must be stable across hostname
+ * changes, user account switches, or running as a different Windows user.
+ * Only platform-level and hardware-level identifiers are included.
+ *
+ * **Tier 1** (preferred): hardware ID — Windows CPU ProcessorId, macOS
+ * Hardware UUID, Linux /etc/machine-id. Stable across OS reinstalls on same
+ * hardware.
+ *
+ * **Tier 2** (fallback): persistent installation UUID stored in
+ * `~/.topvan-machine-id`. Generated on first use, stable for the lifetime
+ * of that home directory. Used when hardware ID retrieval fails (e.g.
+ * PowerShell/CIM blocked by security policy, unsupported platform).
+ *
+ * Machine code version: 2 (pure device binding, no hostname/username).
+ */
+export const MACHINE_CODE_VERSION = 2;
+
 export const buildLocalMachineCode = (): string => {
+  let hwId = getHardwareId();
+  if (!hwId) {
+    hwId = `install:${getOrCreateInstallationId()}`;
+  }
   const material = [
-    os.hostname(),
-    os.userInfo().username,
     process.platform,
     process.arch,
+    hwId,
   ].join('|');
   return crypto.createHash('sha256').update(material).digest('hex').slice(0, 32);
 };

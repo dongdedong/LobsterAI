@@ -2033,61 +2033,64 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
     }
 
     // Sync POPO OpenClaw channel config (via moltbot-popo plugin) — multi-instance via accounts
-    const enabledPopoInstances = popoInstances.filter(i => i.enabled && i.appKey);
-    if (enabledPopoInstances.length > 0) {
-      const popoAccounts: Record<string, unknown> = {};
-      for (let idx = 0; idx < enabledPopoInstances.length; idx++) {
-        const inst = enabledPopoInstances[idx];
-        // Migration: old configs lack connectionMode. If token is set, the user
-        // was using webhook mode; otherwise default to the new websocket mode.
-        const effectiveConnectionMode =
-          inst.connectionMode || (inst.token ? 'webhook' : 'websocket');
-        const isWebSocket = effectiveConnectionMode === 'websocket';
-        const secretVar = idx === 0 ? 'LOBSTER_POPO_APP_SECRET' : `LOBSTER_POPO_APP_SECRET_${idx}`;
-        const account: Record<string, unknown> = {
-          enabled: true,
-          name: inst.instanceName,
-          connectionMode: effectiveConnectionMode,
-          appKey: inst.appKey,
-          appSecret: `\${${secretVar}}`,
-          aesKey: inst.aesKey,
-          dmPolicy: inst.dmPolicy || 'open',
-          allowFrom: (() => {
-            const ids = inst.allowFrom?.length ? [...inst.allowFrom] : [];
-            if (inst.dmPolicy === 'open' && !ids.includes('*')) ids.push('*');
-            return ids;
-          })(),
-          groupPolicy: inst.groupPolicy || 'open',
-          groupAllowFrom: (() => {
-            const ids = inst.groupAllowFrom?.length ? [...inst.groupAllowFrom] : [];
-            if (inst.groupPolicy === 'open' && !ids.includes('*')) ids.push('*');
-            return ids;
-          })(),
+    // Only write when the plugin is actually installed (removed in MVP).
+    if (hasPreinstalledPlugin('moltbot-popo')) {
+      const enabledPopoInstances = popoInstances.filter(i => i.enabled && i.appKey);
+      if (enabledPopoInstances.length > 0) {
+        const popoAccounts: Record<string, unknown> = {};
+        for (let idx = 0; idx < enabledPopoInstances.length; idx++) {
+          const inst = enabledPopoInstances[idx];
+          // Migration: old configs lack connectionMode. If token is set, the user
+          // was using webhook mode; otherwise default to the new websocket mode.
+          const effectiveConnectionMode =
+            inst.connectionMode || (inst.token ? 'webhook' : 'websocket');
+          const isWebSocket = effectiveConnectionMode === 'websocket';
+          const secretVar = idx === 0 ? 'LOBSTER_POPO_APP_SECRET' : `LOBSTER_POPO_APP_SECRET_${idx}`;
+          const account: Record<string, unknown> = {
+            enabled: true,
+            name: inst.instanceName,
+            connectionMode: effectiveConnectionMode,
+            appKey: inst.appKey,
+            appSecret: `\${${secretVar}}`,
+            aesKey: inst.aesKey,
+            dmPolicy: inst.dmPolicy || 'open',
+            allowFrom: (() => {
+              const ids = inst.allowFrom?.length ? [...inst.allowFrom] : [];
+              if (inst.dmPolicy === 'open' && !ids.includes('*')) ids.push('*');
+              return ids;
+            })(),
+            groupPolicy: inst.groupPolicy || 'open',
+            groupAllowFrom: (() => {
+              const ids = inst.groupAllowFrom?.length ? [...inst.groupAllowFrom] : [];
+              if (inst.groupPolicy === 'open' && !ids.includes('*')) ids.push('*');
+              return ids;
+            })(),
+          };
+          // Webhook-only fields
+          if (!isWebSocket) {
+            const tokenVar = idx === 0 ? 'LOBSTER_POPO_TOKEN' : `LOBSTER_POPO_TOKEN_${idx}`;
+            account.token = `\${${tokenVar}}`;
+            account.webhookPort = inst.webhookPort || 3100;
+            if (inst.webhookBaseUrl) {
+              account.webhookBaseUrl = inst.webhookBaseUrl;
+            }
+            if (inst.webhookPath && inst.webhookPath !== '/popo/callback') {
+              account.webhookPath = inst.webhookPath;
+            }
+          }
+          if (inst.textChunkLimit && inst.textChunkLimit !== 3000) {
+            account.textChunkLimit = inst.textChunkLimit;
+          }
+          if (inst.richTextChunkLimit && inst.richTextChunkLimit !== 5000) {
+            account.richTextChunkLimit = inst.richTextChunkLimit;
+          }
+          popoAccounts[inst.instanceId.slice(0, 8)] = account;
+        }
+        managedConfig.channels = {
+          ...((managedConfig.channels as Record<string, unknown>) || {}),
+          'moltbot-popo': { enabled: true, accounts: popoAccounts },
         };
-        // Webhook-only fields
-        if (!isWebSocket) {
-          const tokenVar = idx === 0 ? 'LOBSTER_POPO_TOKEN' : `LOBSTER_POPO_TOKEN_${idx}`;
-          account.token = `\${${tokenVar}}`;
-          account.webhookPort = inst.webhookPort || 3100;
-          if (inst.webhookBaseUrl) {
-            account.webhookBaseUrl = inst.webhookBaseUrl;
-          }
-          if (inst.webhookPath && inst.webhookPath !== '/popo/callback') {
-            account.webhookPath = inst.webhookPath;
-          }
-        }
-        if (inst.textChunkLimit && inst.textChunkLimit !== 3000) {
-          account.textChunkLimit = inst.textChunkLimit;
-        }
-        if (inst.richTextChunkLimit && inst.richTextChunkLimit !== 5000) {
-          account.richTextChunkLimit = inst.richTextChunkLimit;
-        }
-        popoAccounts[inst.instanceId.slice(0, 8)] = account;
       }
-      managedConfig.channels = {
-        ...((managedConfig.channels as Record<string, unknown>) || {}),
-        'moltbot-popo': { enabled: true, accounts: popoAccounts },
-      };
     }
 
     // Sync Email OpenClaw channel config (multi-instance)
@@ -2160,34 +2163,38 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
       }
     }
     // Sync NIM OpenClaw channel config (via openclaw-nim plugin) — multi-instance via accounts
-    const configuredNimInstances = nimInstances.filter((inst) =>
-      Boolean((inst.nimToken && inst.nimToken.trim()) || (inst.appKey && inst.account && inst.token))
-    );
-    if (configuredNimInstances.length > 0) {
-      const accounts: Record<string, Record<string, unknown>> = {};
-      configuredNimInstances.forEach((inst, idx) => {
-        const tokenEnvVar = idx === 0 ? 'LOBSTER_NIM_TOKEN' : `LOBSTER_NIM_TOKEN_${idx}`;
-        const nimToken = inst.nimToken?.trim()
-          ? inst.nimToken.trim()
-          : `${inst.appKey}|${inst.account}|\${${tokenEnvVar}}`;
-        const nimInstance: Record<string, unknown> = {
-          enabled: inst.enabled ?? false,
-          nimToken,
-          antispamEnabled: inst.antispamEnabled ?? true,
-        };
-        if (inst.p2p) nimInstance.p2p = inst.p2p;
-        if (inst.team) nimInstance.team = inst.team;
-        if (inst.qchat) nimInstance.qchat = inst.qchat;
-        if (inst.advanced) nimInstance.advanced = inst.advanced;
-        const preferredKey = deriveNimAccountConfigKey(inst) || deriveNimAccountId(inst) || `nim_${idx + 1}`;
-        const accountKey = accounts[preferredKey] ? (deriveNimAccountId(inst) || `${preferredKey}_${idx + 1}`) : preferredKey;
-        accounts[accountKey] = nimInstance;
-      });
-      managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), nim: { accounts } };
+    // Only write when the plugin is actually installed (removed in MVP).
+    if (hasPreinstalledPlugin('openclaw-nim-channel', NIM_CHANNEL_PLUGIN_ID, 'nim')) {
+      const configuredNimInstances = nimInstances.filter((inst) =>
+        Boolean((inst.nimToken && inst.nimToken.trim()) || (inst.appKey && inst.account && inst.token))
+      );
+      if (configuredNimInstances.length > 0) {
+        const accounts: Record<string, Record<string, unknown>> = {};
+        configuredNimInstances.forEach((inst, idx) => {
+          const tokenEnvVar = idx === 0 ? 'LOBSTER_NIM_TOKEN' : `LOBSTER_NIM_TOKEN_${idx}`;
+          const nimToken = inst.nimToken?.trim()
+            ? inst.nimToken.trim()
+            : `${inst.appKey}|${inst.account}|\${${tokenEnvVar}}`;
+          const nimInstance: Record<string, unknown> = {
+            enabled: inst.enabled ?? false,
+            nimToken,
+            antispamEnabled: inst.antispamEnabled ?? true,
+          };
+          if (inst.p2p) nimInstance.p2p = inst.p2p;
+          if (inst.team) nimInstance.team = inst.team;
+          if (inst.qchat) nimInstance.qchat = inst.qchat;
+          if (inst.advanced) nimInstance.advanced = inst.advanced;
+          const preferredKey = deriveNimAccountConfigKey(inst) || deriveNimAccountId(inst) || `nim_${idx + 1}`;
+          const accountKey = accounts[preferredKey] ? (deriveNimAccountId(inst) || `${preferredKey}_${idx + 1}`) : preferredKey;
+          accounts[accountKey] = nimInstance;
+        });
+        managedConfig.channels = { ...(managedConfig.channels as Record<string, unknown> || {}), nim: { accounts } };
+      }
     }
 
     // Sync NeteaseBee OpenClaw channel config (via openclaw-netease-bee plugin)
-    if (
+    // Only write when the plugin is actually installed (removed in MVP).
+    if (hasPreinstalledPlugin('openclaw-netease-bee') &&
       neteaseBeeChanConfig?.enabled &&
       neteaseBeeChanConfig.clientId &&
       neteaseBeeChanConfig.secret
@@ -2436,25 +2443,29 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
       }
     }
 
-    // POPO — per-instance secrets (must match sync() indexing: enabled instances only)
-    const enabledPopo = this.getPopoInstances().filter(i => i.enabled && i.appSecret);
-    for (let idx = 0; idx < enabledPopo.length; idx++) {
-      if (idx === 0) {
-        env.LOBSTER_POPO_APP_SECRET = enabledPopo[idx].appSecret;
-        if (enabledPopo[idx].token) {
-          env.LOBSTER_POPO_TOKEN = enabledPopo[idx].token;
+    // POPO — per-instance secrets (only when plugin is installed)
+    const secretPreinstalled = readPreinstalledPlugins();
+    const hasPlugin = (...ids: string[]) => secretPreinstalled.some(p => pluginMatches(p, ...ids));
+    if (hasPlugin('moltbot-popo')) {
+      const enabledPopo = this.getPopoInstances().filter(i => i.enabled && i.appSecret);
+      for (let idx = 0; idx < enabledPopo.length; idx++) {
+        if (idx === 0) {
+          env.LOBSTER_POPO_APP_SECRET = enabledPopo[idx].appSecret;
+          if (enabledPopo[idx].token) {
+            env.LOBSTER_POPO_TOKEN = enabledPopo[idx].token;
+          } else {
+            // Provide non-empty fallback so stale openclaw.json files that still
+            // contain ${LOBSTER_POPO_TOKEN} from a previous webhook config
+            // don't crash the gateway with MissingEnvVarError.
+            env.LOBSTER_POPO_TOKEN = 'unconfigured';
+          }
         } else {
-          // Provide non-empty fallback so stale openclaw.json files that still
-          // contain ${LOBSTER_POPO_TOKEN} from a previous webhook config
-          // don't crash the gateway with MissingEnvVarError.
-          env.LOBSTER_POPO_TOKEN = 'unconfigured';
-        }
-      } else {
-        env[`LOBSTER_POPO_APP_SECRET_${idx}`] = enabledPopo[idx].appSecret;
-        if (enabledPopo[idx].token) {
-          env[`LOBSTER_POPO_TOKEN_${idx}`] = enabledPopo[idx].token;
-        } else {
-          env[`LOBSTER_POPO_TOKEN_${idx}`] = 'unconfigured';
+          env[`LOBSTER_POPO_APP_SECRET_${idx}`] = enabledPopo[idx].appSecret;
+          if (enabledPopo[idx].token) {
+            env[`LOBSTER_POPO_TOKEN_${idx}`] = enabledPopo[idx].token;
+          } else {
+            env[`LOBSTER_POPO_TOKEN_${idx}`] = 'unconfigured';
+          }
         }
       }
     }
@@ -2477,11 +2488,13 @@ loopDetection: MANAGED_TOOL_LOOP_DETECTION,
       }
     }
 
-    // NIM
-    const nimInstances = this.getNimInstances().filter((inst) => inst.enabled && inst.token);
-    for (let idx = 0; idx < nimInstances.length; idx++) {
-      const key = idx === 0 ? 'LOBSTER_NIM_TOKEN' : `LOBSTER_NIM_TOKEN_${idx}`;
-      env[key] = nimInstances[idx].token;
+    // NIM — only when plugin is installed
+    if (hasPlugin('openclaw-nim-channel', NIM_CHANNEL_PLUGIN_ID, 'nim')) {
+      const nimInstances = this.getNimInstances().filter((inst) => inst.enabled && inst.token);
+      for (let idx = 0; idx < nimInstances.length; idx++) {
+        const key = idx === 0 ? 'LOBSTER_NIM_TOKEN' : `LOBSTER_NIM_TOKEN_${idx}`;
+        env[key] = nimInstances[idx].token;
+      }
     }
 
     const D = gwDiagTs;

@@ -40,6 +40,7 @@ export const ProviderName = {
   Ollama: 'ollama',
   LmStudio: 'lm-studio',
   Custom: 'custom',
+  /** @deprecated Legacy cloud provider — gated by isServerModelModeEnabled() in local-byok mode. */
   LobsteraiServer: 'lobsterai-server',
   Copilot: 'github-copilot',
 } as const;
@@ -48,6 +49,7 @@ export type ProviderName = typeof ProviderName[keyof typeof ProviderName];
 // ─── OpenClaw Provider ID ───────────────────────────────────────────────
 // OpenClaw gateway provider identifiers. May differ from ProviderName.
 export const OpenClawProviderId = {
+  /** @deprecated Legacy cloud provider — gated by isServerModelModeEnabled() in local-byok mode. */
   LobsteraiServer: 'lobsterai-server',
   Moonshot: 'moonshot',
   Google: 'google',
